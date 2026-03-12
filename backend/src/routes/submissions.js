@@ -12,7 +12,7 @@ const env = require('../config/env');
  */
 router.post('/', async (req, res) => {
   try {
-    const { code, userId } = req.body;
+    const { code, userId, problemId } = req.body;
 
     // Validate request
     const validation = validators.validateSubmissionRequest(req.body);
