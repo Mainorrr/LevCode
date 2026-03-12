@@ -1,0 +1,13 @@
+# Docker .gitignore
+
+# Docker build artifacts
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# Development Docker compose files
+docker-compose.dev.yml
+docker-compose.local.yml
+
+# Temporary Docker files
+docker.log

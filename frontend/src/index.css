@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #2E3440;
+  color: #D8DEE9;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+

@@ -1,9 +1,13 @@
 {
   "name": "levcode",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Online Judge for beginner Java programming",
+  "main": "backend/src/index.js",
   "scripts": {
+    "dev": "node backend/src/index.js",
+    "dev:docker": "docker-compose -f docker-compose.yml up --build",
+    "frontend": "cd frontend && npm run dev",
+    "frontend:install": "cd frontend && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,5 +21,13 @@
   "bugs": {
     "url": "https://github.com/Mainorrr/LevCode/issues"
   },
-  "homepage": "https://github.com/Mainorrr/LevCode#readme"
+  "homepage": "https://github.com/Mainorrr/LevCode#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
 }
