@@ -2,46 +2,75 @@
 
 ## 📋 Overview
 
-Backend for **LevCode Online Judge** built with:
-- **Node.js + Express** — REST API
-- **Docker** — Java code execution sandbox
-- **JavaScript** — No TypeScript complexity
+Backend para **LevCode Online Judge** construido con:
+
+- **Node.js 20 + Express** — REST API
+- **Docker** — Java sandbox para código seguro
+- **JavaScript** — Sin TypeScript
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Mac Silicon Recomendado)
 
-### Prerequisites
-- **Node.js 20+** (for local development)
-- **Docker** installed and running
-- **Docker Compose** (optional, recommended)
+### ✨ OPCIÓN 2: Híbrido (RECOMENDADO - Backend en Docker, Frontend local)
 
-### Option 1: Local Development (No Docker Compilation)
+**Mejor para Mac Silicon** — Evita overhead de Docker en Node.js
 
 ```bash
-# Install dependencies
+# 1️⃣ Desde la raíz del proyecto
 npm ci
 
-# Copy environment file
-cp backend/.env.example backend/.env.development
+# 2️⃣ Instalar dependencias del Frontend
+cd frontend && npm install && cd ..
 
-# Run backend
-npm run dev
+# 3️⃣ Levantar Backend + Java Sandbox con Docker Compose
+docker-compose up --build
+
+# 4️⃣ En otra terminal, iniciar el Frontend (Vite en puerto 5173)
+npm run frontend
 ```
 
-**Note:** This mode expects Docker to be available for executing submissions (it spawns `docker run` commands).
+**URLs:**
 
-### Option 2: Full Docker Setup (Recommended for Production-like Testing)
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3000
+- Java Sandbox: interno (en Docker)
+
+---
+
+## 🔧 Opciones de Ejecución Alternativas
+
+### Alternativa 1: Todo Local (Sin Docker - Requiere Java 17+)
+
+Solo si tienes **Java JDK 17+ instalado** y Docker corriendo:
 
 ```bash
-# Build and run everything
-npm run dev:docker
+npm ci && cd frontend && npm install && cd ..
 
-# In another terminal, test:
-curl -X POST http://localhost:3000/api/submissions \
-  -H "Content-Type: application/json" \
-  -d '{"code":"public class Solution { public static void main(String[] args) { System.out.println(\"Hello, LevCode!\"); } }"}'
+# Terminal 1: Backend
+npm run dev
+
+# Terminal 2: Frontend
+npm run frontend
 ```
+
+✅ Más rápido en desarrollo  
+❌ Requiere Java 17+ en tu Mac  
+⚠️ Java aún corre en Docker para sandbox
+
+---
+
+### Alternativa 3: Todo en Docker (Sin requerimientos locales)
+
+```bash
+# Desde raíz del proyecto
+docker-compose up --build
+
+# Accede a http://localhost:3000
+```
+
+✅ Sin dependencias locales  
+❌ Más lento en Mac Silicon (Docker en ARM64)
 
 ---
 
@@ -50,68 +79,65 @@ curl -X POST http://localhost:3000/api/submissions \
 ```
 backend/
 ├── src/
-│   ├── index.js              ← Entry point (starts server)
-│   ├── server.js             ← Express app configuration
+│   ├── index.js              ← Punto de entrada
+│   ├── server.js             ← Configuración Express
 │   ├── config/
-│   │   ├── env.js            ← Environment variables
-│   │   └── docker.js         ← Docker container limits
+│   │   ├── env.js            ← Variables de entorno
+│   │   └── docker.js         ← Límites del container
 │   ├── routes/
 │   │   └── submissions.js    ← POST /api/submissions
 │   ├── services/
-│   │   ├── javaExecutor.js   ← Compilation + execution logic
-│   │   └── dockerManager.js  ← Docker container management
+│   │   ├── javaExecutor.js   ← Lógica de compilación/ejecución
+│   │   └── dockerManager.js  ← Gestión de containers Docker
 │   └── utils/
 │       ├── logger.js         ← Logging
-│       └── validators.js     ← Input validation (security)
-├── .env.example
-├── .env.development
-└── Dockerfile (for Railway deployment)
+│       └── validators.js     ← Validación de seguridad
+├── package.json
+├── .env.development          ← Config local (crear)
+└── Dockerfile                ← Para docker-compose
 ```
 
 ---
 
-## 🔧 Configuration
+## 🔐 Configuración de Entorno
 
-Environment variables (`.env.development`):
+Crea `backend/.env.development` en la raíz del backend:
 
 ```dotenv
+# Server
 PORT=3000
 NODE_ENV=development
 
-# Docker & Java Execution
+# Docker & Java Sandbox
 DOCKER_IMAGE=levcode-java:latest
 JAVA_TIMEOUT=5000              # milliseconds
 JAVA_MEMORY=128m               # memory limit
 JAVA_OUTPUT_MAX=10485760       # 10MB max output
 
-# Database (future)
+# Database (para después)
 DATABASE_URL=postgresql://localhost:5432/levcode
 
 # CORS
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173  # ← Vite en 5173, NO 3000
 ```
 
 ---
 
-## 🐳 Docker Setup
+## 🐳 Arquitectura Docker
 
-### Build Java Sandbox Image (Standalone)
+### Containers en docker-compose.yml:
 
-```bash
-docker build -t levcode-java:latest -f docker/java/Dockerfile docker/java/
-```
+1. **`java-sandbox`** (OpenJDK 17)
+   - Lee código Java vía stdin
+   - Compila con `javac`
+   - Ejecuta con `java`
+   - Límite: 128MB RAM, 5s timeout
+   - **NO expone puertos** (interno)
 
-### Using Docker Compose (Development)
-
-```bash
-docker-compose up --build
-```
-
-This will:
-1. Build the Java sandbox image (`levcode-java:latest`)
-2. Build the backend image (`levcode-backend:latest`)
-3. Start both containers on the same network
-4. Backend listens on `http://localhost:3000`
+2. **`backend`** (Node.js 20)
+   - API REST en puerto 3000
+   - Se comunica con java-sandbox via Docker API
+   - Monta `/var/run/docker.sock` para control de containers
 
 ---
 
@@ -119,63 +145,55 @@ This will:
 
 ### POST `/api/submissions`
 
-Submit Java code for execution.
+Envía código Java para compilar y ejecutar.
 
-**Headers (Required):**
+**Headers (Requerido):**
+
 ```
 X-API-Password: levcode123
 Content-Type: application/json
 ```
 
 **Request:**
+
 ```json
 {
-  "code": "public class Solution { ... }",
-  "userId": "user123",        // optional, for research tracking
-  "problemId": "problem_001"  // optional
+  "code": "public class Solution { public static void main(String[] args) { System.out.println(\"Hello\"); } }",
+  "userId": "user123", // opcional, para tracking
+  "problemId": "problem_001" // opcional
 }
 ```
 
-**Response (Success):**
+**Response (Éxito):**
+
 ```json
 {
   "success": true,
-  "output": "Hello, World!\n",
+  "output": "Hello\n",
   "error": "",
-  "executionTime": 234,
-  "limits": {
-    "timeout": 5000,
-    "memory": "128m",
-    "maxOutput": 10485760
-  }
+  "exitCode": 0,
+  "executionTime": 234
 }
 ```
 
-**Response (Wrong Password):**
-```json
-{
-  "success": false,
-  "error": "Invalid password",
-  "code": "AUTH_FAILED"
-}
-```
+**Response (Error de Compilación):**
 
-**Response (Compilation Error):**
 ```json
 {
   "success": false,
   "output": "",
   "error": "Solution.java:1: error: illegal start of type ...",
-  "executionTime": 45,
-  "limits": { ... }
+  "exitCode": 1,
+  "executionTime": 45
 }
 ```
 
 ### GET `/api/submissions/limits`
 
-Get execution limits.
+Obtiene límites de ejecución.
 
 **Response:**
+
 ```json
 {
   "limits": {
@@ -188,15 +206,70 @@ Get execution limits.
 
 ### GET `/health`
 
-Health check endpoint.
+Endpoint de health check.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
   "timestamp": "2026-03-11T10:30:45.123Z"
 }
 ```
+
+---
+
+## 🛠️ Troubleshooting - Mac Silicon
+
+### ❌ "docker: command not found" en backend container
+
+**Solución:** Asegúrate que `docker-cli` está en el Dockerfile
+
+```dockerfile
+RUN apk add --no-cache docker-cli
+```
+
+### ❌ Error de arquitectura (arm64 vs amd64)
+
+```bash
+# Verificar tu arquitectura
+arch
+# Si dice `arm64` → tienes Apple Silicon ✅
+```
+
+### ❌ "Cannot connect to Docker daemon"
+
+```bash
+# Asegurar que Docker está corriendo
+docker ps
+
+# Si no funciona:
+# 1. Abre Docker Desktop
+# 2. Settings → Resources → Make sure it's enabled
+```
+
+### ❌ Puerto 3000 ya en uso
+
+```bash
+# Encontrar qué usa el puerto
+lsof -i :3000
+
+# Matar el proceso
+kill -9 <PID>
+```
+
+---
+
+## 📚 Recursos
+
+- [Docker Docs](https://docs.docker.com/)
+- [Express.js](https://expressjs.com/)
+- [Java Docker Best Practices](https://docs.docker.com/language/java/)
+
+---
+
+**Last Updated:** March 2026  
+**Author:** LevCode Development Team
 
 ---
 
@@ -267,36 +340,36 @@ curl http://localhost:3000/health
 
 ```javascript
 // test-backend.js
-const http = require('http');
+const http = require("http");
 
 function submitCode(code) {
   const data = JSON.stringify({ code });
 
   const options = {
-    hostname: 'localhost',
+    hostname: "localhost",
     port: 3000,
-    path: '/api/submissions',
-    method: 'POST',
+    path: "/api/submissions",
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': data.length,
+      "Content-Type": "application/json",
+      "Content-Length": data.length,
     },
   };
 
   return new Promise((resolve, reject) => {
     const req = http.request(options, (res) => {
-      let responseData = '';
+      let responseData = "";
 
-      res.on('data', (chunk) => {
+      res.on("data", (chunk) => {
         responseData += chunk;
       });
 
-      res.on('end', () => {
+      res.on("end", () => {
         resolve(JSON.parse(responseData));
       });
     });
 
-    req.on('error', reject);
+    req.on("error", reject);
     req.write(data);
     req.end();
   });
@@ -364,4 +437,3 @@ For production, integrate with a logging service (e.g., Datadog, LogRocket).
 - Use `docker exec -it levcode-java-sandbox bash` to debug sandbox
 - Always run `npm ci` (not `npm install`) for reproducible dependencies
 - Add `nodemon` for auto-reload: `npm install -D nodemon`, then `nodemon src/index.js`
-

@@ -1,7 +1,7 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk
 
 # Install bash (required for docker exec)
-RUN apk add --no-cache bash
+RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /workspace
