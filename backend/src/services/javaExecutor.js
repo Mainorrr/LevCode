@@ -1,7 +1,7 @@
-const dockerManager = require('./dockerManager');
-const validators = require('../utils/validators');
-const logger = require('../utils/logger');
-const dockerConfig = require('../config/docker');
+const dockerManager = require("./dockerManager");
+const validators = require("../utils/validators");
+const logger = require("../utils/logger");
+const dockerConfig = require("../config/docker");
 
 /**
  * Manages Java code compilation and execution
@@ -18,7 +18,7 @@ class JavaExecutor {
     if (!validation.valid) {
       return {
         success: false,
-        output: '',
+        output: "",
         error: validation.error,
         executionTime: 0,
       };
@@ -28,11 +28,11 @@ class JavaExecutor {
     const startTime = Date.now();
     const result = await dockerManager.executeInDocker(
       code,
-      dockerConfig.LIMITS.timeout
+      dockerConfig.LIMITS.timeout,
     );
     const executionTime = Date.now() - startTime;
 
-    logger.info('Java code executed', {
+    logger.info("Java code executed", {
       success: result.success,
       executionTime,
       exitCode: result.exitCode,

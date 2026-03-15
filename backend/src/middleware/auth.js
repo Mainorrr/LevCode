@@ -1,5 +1,5 @@
-const logger = require('../utils/logger');
-const env = require('../config/env');
+const logger = require("../utils/logger");
+const env = require("../config/env");
 
 /**
  * Middleware to validate API password on every request
@@ -7,25 +7,25 @@ const env = require('../config/env');
  */
 const authMiddleware = (req, res, next) => {
   // Skip auth for health check and limits (public endpoints)
-  if (req.path === '/health' || req.path === '/api/submissions/limits') {
+  if (req.path === "/health" || req.path === "/api/submissions/limits") {
     return next();
   }
 
   // Extract password from header or body
-  const password = req.headers['x-api-password'] || req.body?.password;
+  const password = req.headers["x-api-password"] || req.body?.password;
 
   // Validate password
   if (!password || password !== env.API_PASSWORD) {
-    logger.warn('Invalid password attempt', { 
-      ip: req.ip, 
+    logger.warn("Invalid password attempt", {
+      ip: req.ip,
       path: req.path,
-      method: req.method 
+      method: req.method,
     });
 
     return res.status(401).json({
       success: false,
-      error: 'Invalid password',
-      code: 'AUTH_FAILED',
+      error: "Invalid password",
+      code: "AUTH_FAILED",
     });
   }
 

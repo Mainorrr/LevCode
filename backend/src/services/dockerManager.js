@@ -1,10 +1,10 @@
-const { spawn } = require('child_process');
-const path = require('path');
-const fs = require('fs').promises;
-const os = require('os');
-const logger = require('../utils/logger');
-const config = require('../config/env');
-const dockerConfig = require('../config/docker');
+const { spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs").promises;
+const os = require("os");
+const logger = require("../utils/logger");
+const config = require("../config/env");
+const dockerConfig = require("../config/docker");
 
 /**
  * Manages Docker container execution for Java code
@@ -22,10 +22,10 @@ class DockerManager {
       const result = await this._runDockerContainer(javaCode, timeout);
       return result;
     } catch (error) {
-      logger.error('Docker execution failed', { error: error.message });
+      logger.error("Docker execution failed", { error: error.message });
       return {
         success: false,
-        output: '',
+        output: "",
         error: error.message,
         exitCode: -1,
       };
@@ -39,23 +39,23 @@ class DockerManager {
   async _runDockerContainer(javaCode, timeout) {
     return new Promise((resolve) => {
       const dockerCmd = [
-        'run',
-        '--rm',
-        '-i',
+        "run",
+        "--rm",
+        "-i",
         `--memory=${dockerConfig.LIMITS.memory}`,
-        '--network=none',
+        "--network=none",
         config.DOCKER_IMAGE,
-        'bash',
-        '-c',
-        'cat > Solution.java && javac Solution.java && java Solution',
+        "bash",
+        "-c",
+        "cat > Solution.java && javac Solution.java && java Solution",
       ];
 
-      logger.debug('Running Docker command', { dockerCmd });
+      logger.debug("Running Docker command", { dockerCmd });
 
-      const process = spawn('docker', dockerCmd);
+      const process = spawn("docker", dockerCmd);
 
-      let stdout = '';
-      let stderr = '';
+      let stdout = "";
+      let stderr = "";
       let timedOut = false;
 
       // Write Java code to stdin
@@ -66,26 +66,28 @@ class DockerManager {
       const timeoutHandle = setTimeout(() => {
         timedOut = true;
         process.kill();
-        logger.warn('Docker execution timeout', { timeout });
+        logger.warn("Docker execution timeout", { timeout });
       }, timeout);
 
-      process.stdout.on('data', (data) => {
+      process.stdout.on("data", (data) => {
         const chunk = data.toString();
         if (stdout.length + chunk.length <= dockerConfig.LIMITS.maxOutput) {
           stdout += chunk;
         } else {
-          logger.warn('Output exceeded max size', { maxSize: dockerConfig.LIMITS.maxOutput });
+          logger.warn("Output exceeded max size", {
+            maxSize: dockerConfig.LIMITS.maxOutput,
+          });
         }
       });
 
-      process.stderr.on('data', (data) => {
+      process.stderr.on("data", (data) => {
         const chunk = data.toString();
         if (stderr.length + chunk.length <= dockerConfig.LIMITS.maxOutput) {
           stderr += chunk;
         }
       });
 
-      process.on('close', (code) => {
+      process.on("close", (code) => {
         clearTimeout(timeoutHandle);
 
         if (timedOut) {
@@ -98,7 +100,8 @@ class DockerManager {
         }
 
         const success = code === 0;
-        const error = stderr || (success ? '' : `Process exited with code ${code}`);
+        const error =
+          stderr || (success ? "" : `Process exited with code ${code}`);
 
         resolve({
           success,
@@ -107,16 +110,16 @@ class DockerManager {
           exitCode: code,
         });
 
-        logger.debug('Docker execution completed', { exitCode: code, success });
+        logger.debug("Docker execution completed", { exitCode: code, success });
       });
 
-      process.on('error', (err) => {
+      process.on("error", (err) => {
         clearTimeout(timeoutHandle);
-        logger.error('Docker process error', { error: err.message });
+        logger.error("Docker process error", { error: err.message });
 
         resolve({
           success: false,
-          output: '',
+          output: "",
           error: `Docker error: ${err.message}`,
           exitCode: -1,
         });
@@ -129,18 +132,18 @@ class DockerManager {
    */
   async checkImageExists() {
     return new Promise((resolve) => {
-      const process = spawn('docker', ['images', config.DOCKER_IMAGE, '-q']);
+      const process = spawn("docker", ["images", config.DOCKER_IMAGE, "-q"]);
 
-      let output = '';
-      process.stdout.on('data', (data) => {
+      let output = "";
+      process.stdout.on("data", (data) => {
         output += data.toString();
       });
 
-      process.on('close', () => {
+      process.on("close", () => {
         resolve(output.trim().length > 0);
       });
 
-      process.on('error', () => {
+      process.on("error", () => {
         resolve(false);
       });
     });

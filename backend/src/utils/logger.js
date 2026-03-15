@@ -1,10 +1,10 @@
-const env = require('../config/env');
+const env = require("../config/env");
 
 const LOG_LEVELS = {
-  ERROR: 'ERROR',
-  WARN: 'WARN',
-  INFO: 'INFO',
-  DEBUG: 'DEBUG',
+  ERROR: "ERROR",
+  WARN: "WARN",
+  INFO: "INFO",
+  DEBUG: "DEBUG",
 };
 
 const log = (level, message, data = null) => {

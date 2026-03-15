@@ -1,14 +1,14 @@
-const logger = require('./logger');
+const logger = require("./logger");
 
 /**
  * Validates Java source code before compilation
  */
 const validateJavaCode = (code) => {
   // Check if code is empty
-  if (!code || typeof code !== 'string' || code.trim().length === 0) {
+  if (!code || typeof code !== "string" || code.trim().length === 0) {
     return {
       valid: false,
-      error: 'Code cannot be empty',
+      error: "Code cannot be empty",
     };
   }
 
@@ -25,7 +25,7 @@ const validateJavaCode = (code) => {
     if (pattern.test(code)) {
       return {
         valid: false,
-        error: 'Code contains potentially dangerous operations',
+        error: "Code contains potentially dangerous operations",
       };
     }
   }
@@ -35,7 +35,7 @@ const validateJavaCode = (code) => {
   if (code.length > maxSize) {
     return {
       valid: false,
-      error: 'Code size exceeds maximum (1MB)',
+      error: "Code size exceeds maximum (1MB)",
     };
   }
 
@@ -50,7 +50,7 @@ const validateSubmissionRequest = (body) => {
 
   // Validate code
   if (!code) {
-    return { valid: false, error: 'Code is required' };
+    return { valid: false, error: "Code is required" };
   }
 
   const codeValidation = validateJavaCode(code);
