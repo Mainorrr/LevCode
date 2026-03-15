@@ -6,12 +6,13 @@ import './UserForm.css'
  * Esta información se almacena con cada submission para análisis estadístico.
  *
  * Props:
- *   - onSubmit: function({ carnet, grupo, semestre }) - callback al confirmar datos
+ *   - onSubmit: function({ carnet, grupo, semestre, curso }) - callback al confirmar datos
  */
 export default function UserForm({ onSubmit }) {
   const [carnet, setCarnet] = useState('')
   const [grupo, setGrupo] = useState('')
   const [semestre, setSemestre] = useState('')
+  const [curso, setCurso] = useState('')
   const [error, setError] = useState('')
 
   const validateCarnet = (value) => /^[A-Za-z]\d{5}$/.test(value)
@@ -32,12 +33,16 @@ export default function UserForm({ onSubmit }) {
       setError('El grupo es requerido.')
       return
     }
-    if (!semestre || semestre < 1 || semestre > 16) {
-      setError('El semestre debe ser un número entre 1 y 16.')
+    if (!semestre || semestre < 1 || semestre > 8) {
+      setError('El semestre debe ser un número entre 1 y 8.')
+      return
+    }
+    if (!curso.trim()) {
+      setError('El curso es requerido.')
       return
     }
 
-    onSubmit({ carnet: carnet.toUpperCase(), grupo: grupo.trim(), semestre: Number(semestre) })
+    onSubmit({ carnet: carnet.toUpperCase(), grupo: grupo.trim(), semestre: Number(semestre), curso: curso.trim() })
   }
 
   return (
@@ -63,6 +68,19 @@ export default function UserForm({ onSubmit }) {
           </div>
 
           <div className="userform-field">
+            <label htmlFor="curso">Curso</label>
+            <input
+              id="curso"
+              type="text"
+              placeholder="ej: Programación I"
+              value={curso}
+              onChange={(e) => setCurso(e.target.value)}
+              maxLength={255}
+              className="userform-input"
+            />
+          </div>
+
+          <div className="userform-field">
             <label htmlFor="grupo">Grupo</label>
             <input
               id="grupo"
@@ -75,7 +93,15 @@ export default function UserForm({ onSubmit }) {
           </div>
 
           <div className="userform-field">
-            <label htmlFor="semestre">Semestre de la carrera</label>
+            <label htmlFor="semestre">
+              Semestre de la carrera
+              <span className="userform-tooltip">
+                i
+                <span className="userform-tooltip-text">
+                  Indica el semestre en el que llevas la mayoría de tus cursos actualmente.
+                </span>
+              </span>
+            </label>
             <input
               id="semestre"
               type="number"
@@ -83,7 +109,7 @@ export default function UserForm({ onSubmit }) {
               value={semestre}
               onChange={(e) => setSemestre(e.target.value)}
               min={1}
-              max={16}
+              max={8}
               className="userform-input"
             />
           </div>

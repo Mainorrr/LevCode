@@ -13,6 +13,7 @@ async function migrate() {
       grupo        VARCHAR(255) NOT NULL,
       semestre     INTEGER      NOT NULL,
       problem_id   VARCHAR(100) NOT NULL,
+      curso        VARCHAR(255) NOT NULL DEFAULT '',
       attempts     INTEGER      NOT NULL DEFAULT 0,
       solved       BOOLEAN      NOT NULL DEFAULT FALSE,
       created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -23,6 +24,11 @@ async function migrate() {
 
   try {
     await pool.query(sql);
+    // Agregar columnas nuevas a tablas existentes (idempotente)
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        ADD COLUMN IF NOT EXISTS curso VARCHAR(255) NOT NULL DEFAULT '';
+    `);
     logger.info("Database migration completed");
   } catch (err) {
     // No fatal: el servidor arranca igual; los endpoints de sesión

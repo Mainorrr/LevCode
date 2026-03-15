@@ -14,7 +14,7 @@ export default function ExerciseMenu({ exercises, onSelect, userInfo }) {
       <div className="menu-header">
         <h2 className="menu-title">Ejercicios</h2>
         <span className="menu-user">
-          {userInfo.carnet} &nbsp;|&nbsp; Grupo {userInfo.grupo} &nbsp;|&nbsp; Semestre {userInfo.semestre}
+          {userInfo.carnet} &nbsp;|&nbsp; {userInfo.curso} &nbsp;|&nbsp; Grupo {userInfo.grupo} &nbsp;|&nbsp; Semestre {userInfo.semestre}
         </span>
       </div>
 

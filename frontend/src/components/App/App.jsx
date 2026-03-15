@@ -114,6 +114,7 @@ export default function App() {
         carnet: userInfo.carnet,
         grupo: userInfo.grupo,
         semestre: userInfo.semestre,
+        curso: userInfo.curso,
         problemId: selectedExercise.config.id,
         solved,
       }),
@@ -126,7 +127,7 @@ export default function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>LevCode</h1>
+        <h1>Lev Code</h1>
         <p>Escuela de Ciencias de la Computación e Informática</p>
       </header>
 
@@ -162,7 +163,7 @@ export default function App() {
             </div>
 
             <div className="user-badge">
-              {userInfo.carnet} &nbsp;·&nbsp; Grupo {userInfo.grupo} &nbsp;·&nbsp; Semestre {userInfo.semestre}
+              {userInfo.carnet} &nbsp;·&nbsp; {userInfo.curso} &nbsp;·&nbsp; Grupo {userInfo.grupo} &nbsp;·&nbsp; Semestre {userInfo.semestre}
             </div>
 
             {/* key={id} hace que CodeMirror se reinicie al cambiar de ejercicio */}

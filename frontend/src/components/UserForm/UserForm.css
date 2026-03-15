@@ -18,13 +18,13 @@
 .userform-title {
   font-size: 1.5em;
   color: #88C0D0;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .userform-subtitle {
   font-size: 0.9em;
   color: #81A1C1;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   line-height: 1.5;
 }
 
@@ -63,6 +63,49 @@
 
 .userform-input::placeholder {
   color: #4C566A;
+}
+
+.userform-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #4C566A;
+  color: #81A1C1;
+  font-size: 0.7em;
+  font-style: italic;
+  font-weight: 700;
+  cursor: default;
+  margin-left: 6px;
+  position: relative;
+  vertical-align: middle;
+}
+
+.userform-tooltip-text {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2E3440;
+  border: 1px solid #434C5E;
+  color: #D8DEE9;
+  font-size: 1.05em;
+  font-weight: 400;
+  font-style: normal;
+  padding: 8px 10px;
+  border-radius: 4px;
+  width: 240px;
+  line-height: 1.5;
+  white-space: normal;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.userform-tooltip:hover .userform-tooltip-text {
+  display: block;
 }
 
 .userform-error {
