@@ -21,9 +21,15 @@
 
 .app-header p {
   font-size: 1.1em;
-  color: #D8DEE9;
+  color: #81A1C1;
 }
 
+/* ── Menu view ── */
+.app-body {
+  flex: 1;
+}
+
+/* ── Exercise view ── */
 .app-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -34,39 +40,61 @@
 .editor-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  flex: 1;
+  gap: 12px;
 }
 
-.metadata {
+.exercise-header {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 14px;
 }
 
-.input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #3B4252;
-  border-radius: 4px;
-  font-size: 0.95em;
-  background: #3B4252;
-  color: #D8DEE9;
-  transition: border-color 0.2s;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #88C0D0;
-}
-
-.input::placeholder {
+.back-btn {
+  background: none;
+  border: 1px solid #4C566A;
   color: #81A1C1;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.back-btn:hover {
+  border-color: #88C0D0;
+  color: #88C0D0;
+}
+
+.exercise-title {
+  font-size: 1.25em;
+  color: #D8DEE9;
+  margin: 0;
+}
+
+.exercise-description {
+  background: #3B4252;
+  border: 1px solid #434C5E;
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-size: 0.9em;
+  color: #D8DEE9;
+  line-height: 1.6;
+}
+
+.exercise-description p {
+  margin: 0;
+}
+
+.user-badge {
+  font-size: 0.8em;
+  color: #4C566A;
 }
 
 .submit-btn {
   padding: 12px 24px;
   background: #BF616A;
-  color: #2E3440;
+  color: #ECEFF4;
   border: none;
   border-radius: 4px;
   font-size: 1em;
@@ -92,9 +120,4 @@
   .app-header h1 {
     font-size: 2em;
   }
-
-  .metadata {
-    flex-direction: column;
-  }
 }
-

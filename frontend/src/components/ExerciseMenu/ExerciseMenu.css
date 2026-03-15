@@ -1,0 +1,86 @@
+.menu-container {
+  padding: 10px 0;
+}
+
+.menu-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.menu-title {
+  font-size: 1.6em;
+  color: #88C0D0;
+}
+
+.menu-user {
+  font-size: 0.85em;
+  color: #81A1C1;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.menu-card {
+  background: #3B4252;
+  border: 1px solid #434C5E;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+
+.menu-card:hover {
+  border-color: #88C0D0;
+}
+
+.menu-card-title {
+  font-size: 1.1em;
+  color: #D8DEE9;
+  margin: 0;
+}
+
+.menu-card-desc {
+  font-size: 0.875em;
+  color: #81A1C1;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.menu-card-meta {
+  display: flex;
+  gap: 8px;
+}
+
+.menu-card-cases {
+  font-size: 0.78em;
+  color: #4C566A;
+  background: #2E3440;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.menu-card-btn {
+  padding: 9px 16px;
+  background: #88C0D0;
+  color: #2E3440;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.menu-card-btn:hover {
+  background: #81A1C1;
+}

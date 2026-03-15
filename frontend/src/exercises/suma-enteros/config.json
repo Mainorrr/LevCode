@@ -1,0 +1,7 @@
+{
+  "id": "suma-enteros",
+  "title": "Suma de Enteros",
+  "description": "Lee dos números enteros separados por un espacio en la misma línea e imprime su suma.\n\nEjemplo de entrada:\n2 3\n\nEjemplo de salida:\n5",
+  "showTestCases": false,
+  "starterCode": "import java.util.Scanner;\n\npublic class Solution {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Tu código aquí\n    }\n}"
+}

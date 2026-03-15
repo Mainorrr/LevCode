@@ -10,9 +10,10 @@ class JavaExecutor {
   /**
    * Execute Java code
    * @param {string} code - Java source code
+   * @param {string} input - Stdin input for the Java program (test case input)
    * @returns {Promise<{success: boolean, output: string, error: string, executionTime: number}>}
    */
-  async execute(code) {
+  async execute(code, input = "") {
     // Validate input code
     const validation = validators.validateJavaCode(code);
     if (!validation.valid) {
@@ -28,6 +29,7 @@ class JavaExecutor {
     const startTime = Date.now();
     const result = await dockerManager.executeInDocker(
       code,
+      input,
       dockerConfig.LIMITS.timeout,
     );
     const executionTime = Date.now() - startTime;

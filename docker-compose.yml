@@ -1,25 +1,25 @@
 services:
-  # Java Sandbox Container - ejecuta código Java con límites de recurso
-  java-sandbox:
-    build:
-      context: ./docker/java
-      dockerfile: Dockerfile
-    image: levcode-java:latest
-    container_name: levcode-java-sandbox
-    # No necesita estar "siempre corriendo" - se crea bajo demanda
-    command: sleep infinity
+  # PostgreSQL - base de datos para sesiones de investigación
+  postgres:
+    image: postgres:16-alpine
+    container_name: levcode-postgres
+    environment:
+      POSTGRES_DB: levcode
+      POSTGRES_USER: levcode
+      POSTGRES_PASSWORD: levcode
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - levcode-network
-    # Límites de recursos para Mac Silicon
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U levcode"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Backend API Server - Node.js + Express
-  # Se comunica con java-sandbox via Docker API
   backend:
     build:
       context: ./backend
@@ -35,24 +35,25 @@ services:
       - JAVA_TIMEOUT=5000
       - JAVA_MEMORY=128m
       - JAVA_OUTPUT_MAX=10485760
-      - DATABASE_URL=postgresql://localhost:5432/levcode
+      - DATABASE_URL=postgresql://levcode:levcode@postgres:5432/levcode
       - FRONTEND_URL=http://localhost:5173
-      # ↑ Frontend corre en 5173 (Vite), no en 3000
     depends_on:
-      - java-sandbox
+      postgres:
+        condition: service_healthy
     volumes:
-      # Permite al Backend ejecutar docker commands
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - levcode-network
-    # Healthcheck para backend
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
 networks:
   levcode-network:
     driver: bridge
+
+volumes:
+  postgres-data:

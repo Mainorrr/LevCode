@@ -1,0 +1,92 @@
+.userform-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.userform-card {
+  background: #3B4252;
+  border: 1px solid #434C5E;
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.userform-title {
+  font-size: 1.5em;
+  color: #88C0D0;
+  margin-bottom: 10px;
+}
+
+.userform-subtitle {
+  font-size: 0.9em;
+  color: #81A1C1;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.userform-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.userform-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.userform-field label {
+  font-size: 0.85em;
+  color: #D8DEE9;
+  font-weight: 600;
+}
+
+.userform-input {
+  padding: 10px 12px;
+  border: 1px solid #4C566A;
+  border-radius: 4px;
+  background: #2E3440;
+  color: #D8DEE9;
+  font-size: 0.95em;
+  transition: border-color 0.2s;
+}
+
+.userform-input:focus {
+  outline: none;
+  border-color: #88C0D0;
+}
+
+.userform-input::placeholder {
+  color: #4C566A;
+}
+
+.userform-error {
+  color: #BF616A;
+  font-size: 0.875em;
+  padding: 8px 12px;
+  background: rgba(191, 97, 106, 0.1);
+  border: 1px solid rgba(191, 97, 106, 0.3);
+  border-radius: 4px;
+}
+
+.userform-btn {
+  padding: 12px;
+  background: #88C0D0;
+  color: #2E3440;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.userform-btn:hover {
+  background: #81A1C1;
+}

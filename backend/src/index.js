@@ -1,8 +1,16 @@
 const app = require("./server");
 const env = require("./config/env");
 const logger = require("./utils/logger");
+const migrate = require("./db/migrate");
 
 const PORT = env.PORT;
+
+// Ejecutar migraciones antes de aceptar tráfico
+migrate().then(() => {
+  logger.info("Database ready");
+}).catch(() => {
+  logger.warn("Database unavailable — sessions endpoint will return errors");
+});
 
 const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`, {

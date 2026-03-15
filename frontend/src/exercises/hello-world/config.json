@@ -1,0 +1,7 @@
+{
+  "id": "hello-world",
+  "title": "Hola Mundo",
+  "description": "Escribe un programa que imprima exactamente el siguiente texto en la consola:\n\nHello World\n\nNo imprimas nada más, ni espacios adicionales ni saltos de línea extra.",
+  "showTestCases": true,
+  "starterCode": "public class Solution {\n    public static void main(String[] args) {\n        // Tu código aquí\n    }\n}"
+}

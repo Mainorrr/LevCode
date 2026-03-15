@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-An **online judge for beginner Java programming** built for academic research purposes, developed by a solo developer.
+An **online judge for beginner Java programming** built for academic research purposes.
 
 ---
 
@@ -12,7 +12,7 @@ An **online judge for beginner Java programming** built for academic research pu
 online-judge/
 ├── frontend/     → React app (deployed on Vercel)
 ├── backend/      → Node.js + Express (deployed on Railway with Docker)
-└── docker/       → Java sandbox container (openjdk:17-slim)
+└── docker/       → Java sandbox container
 ```
 
 ---
@@ -32,12 +32,12 @@ online-judge/
 
 ## Tech Stack
 
-| Layer | Technology | Hosting |
-|---|---|---|
-| Frontend | React + Monaco Editor or CodeMirror | Vercel |
-| Backend | Node.js + Express | Railway |
+| Layer          | Technology                                 | Hosting                           |
+| -------------- | ------------------------------------------ | --------------------------------- |
+| Frontend       | React + Monaco Editor or CodeMirror        | Vercel                            |
+| Backend        | Node.js + Express                          | Railway                           |
 | Java Execution | Docker (openjdk:17-slim) via child_process | Railway (built-in Docker support) |
-| Database | PostgreSQL | Railway or Supabase |
+| Database       | PostgreSQL                                 | Railway or Supabase               |
 
 > **No authentication** — users identify themselves with basic form fields on entry.  
 > **Max load:** ~60 simultaneous users.

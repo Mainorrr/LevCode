@@ -13,13 +13,13 @@ class DockerManager {
   /**
    * Executes Java code inside Docker container
    * @param {string} javaCode - The Java source code to execute
+   * @param {string} input - Stdin input for the Java program (test case input)
    * @param {number} timeout - Timeout in milliseconds
    * @returns {Promise<{success: boolean, output: string, error: string, exitCode: number}>}
    */
-  async executeInDocker(javaCode, timeout = dockerConfig.LIMITS.timeout) {
+  async executeInDocker(javaCode, input = "", timeout = dockerConfig.LIMITS.timeout) {
     try {
-      // Execute Docker container with code via stdin
-      const result = await this._runDockerContainer(javaCode, timeout);
+      const result = await this._runDockerContainer(javaCode, input, timeout);
       return result;
     } catch (error) {
       logger.error("Docker execution failed", { error: error.message });
@@ -33,11 +33,17 @@ class DockerManager {
   }
 
   /**
-   * Runs Docker container and compiles/executes Java code
+   * Runs Docker container and compiles/executes Java code.
+   * Java source is base64-encoded in the bash command; test input is piped via stdin.
    * @private
    */
-  async _runDockerContainer(javaCode, timeout) {
+  async _runDockerContainer(javaCode, input, timeout) {
     return new Promise((resolve) => {
+      // Base64-encode the Java source so it can be embedded safely in the bash
+      // command. This frees stdin to carry the test-case input for the program.
+      const encodedCode = Buffer.from(javaCode).toString("base64");
+      const bashCmd = `echo '${encodedCode}' | base64 -d > Solution.java && javac Solution.java && java Solution`;
+
       const dockerCmd = [
         "run",
         "--rm",
@@ -47,7 +53,7 @@ class DockerManager {
         config.DOCKER_IMAGE,
         "bash",
         "-c",
-        "cat > Solution.java && javac Solution.java && java Solution",
+        bashCmd,
       ];
 
       logger.debug("Running Docker command", { dockerCmd });
@@ -58,8 +64,10 @@ class DockerManager {
       let stderr = "";
       let timedOut = false;
 
-      // Write Java code to stdin
-      process.stdin.write(javaCode);
+      // Pipe test-case input to the Java program's stdin
+      if (input) {
+        process.stdin.write(input);
+      }
       process.stdin.end();
 
       // Set timeout

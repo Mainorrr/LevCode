@@ -1,130 +1,80 @@
-# LevCode Frontend - React Editor
+# LevCode — Frontend
 
-UI minimalista para el Online Judge LevCode usando **React + Vite + CodeMirror**.
+React + Vite + CodeMirror. Carga ejercicios desde archivos de configuración locales, ejecuta los casos de prueba contra el backend y muestra los resultados.
 
-## 🚀 Quick Start
+## Correr en desarrollo
 
-### Instalar dependencias
 ```bash
 cd frontend
 npm install
-```
-
-### Ejecutar en desarrollo
-```bash
 npm run dev
 ```
 
-Frontend estará disponible en: **http://localhost:3001**
+Disponible en http://localhost:3001. Requiere el backend corriendo en http://localhost:3000.
 
-### Compilar para producción
+## Estructura
+
+```
+src/
+├── components/
+│   ├── App/              Componente principal, maneja flujo de vistas
+│   ├── UserForm/         Formulario inicial: carnet, grupo, semestre
+│   ├── ExerciseMenu/     Menu de seleccion de ejercicios
+│   ├── CodeEditor/       Editor CodeMirror con soporte Java
+│   └── ResultDisplay/    Muestra veredicto y casos fallidos
+└── exercises/
+    ├── index.js                  Registro central de ejercicios
+    ├── hello-world/
+    │   ├── config.json
+    │   └── testcases.json
+    └── suma-enteros/
+        ├── config.json
+        └── testcases.json
+```
+
+## Agregar un ejercicio
+
+1. Crear una carpeta en `src/exercises/nombre-ejercicio/`
+
+2. Crear `config.json`:
+```json
+{
+  "id": "nombre-ejercicio",
+  "title": "Título visible",
+  "description": "Descripción del problema...",
+  "showTestCases": true,
+  "starterCode": "public class Solution {\n    public static void main(String[] args) {\n    }\n}"
+}
+```
+
+`showTestCases: true` muestra al estudiante los casos de prueba que falló.
+`showTestCases: false` solo muestra el puntaje (X / N casos correctos).
+
+3. Crear `testcases.json`:
+```json
+[
+  { "input": "2 3", "expectedOutput": "5" },
+  { "input": "0 0", "expectedOutput": "0" }
+]
+```
+
+Para ejercicios sin stdin, usar `"input": ""`.
+
+4. Registrar en `src/exercises/index.js`:
+```js
+import miEjercicioConfig    from './nombre-ejercicio/config.json'
+import miEjercicioTestcases from './nombre-ejercicio/testcases.json'
+
+export const exercises = [
+  // ... ejercicios existentes ...
+  { config: miEjercicioConfig, testcases: miEjercicioTestcases },
+]
+```
+
+## Build para producción
+
 ```bash
 npm run build
-npm run preview
 ```
 
----
-
-## 📁 Estructura
-
-```
-frontend/
-├── src/
-│   ├── main.jsx              ← Entry point
-│   ├── App.jsx               ← Componente principal
-│   ├── App.css               ← Estilos
-│   ├── index.css             ← Estilos globales
-│   └── components/
-│       ├── CodeEditor.jsx    ← Editor CodeMirror
-│       └── ResultDisplay.jsx ← Muestra resultados
-├── index.html                ← HTML template
-├── vite.config.js            ← Configuración Vite
-└── package.json
-```
-
----
-
-## ⚙️ Configuración
-
-**Proxy API** (en `vite.config.js`):
-```javascript
-proxy: {
-  '/api': {
-    target: 'http://localhost:3000',  // Backend URL
-    changeOrigin: true,
-  }
-}
-```
-
-Esto permite que `fetch('/api/submissions')` auto-redirija al backend.
-
----
-
-## 🎨 Features
-
-✅ **Editor de código** — Syntax highlighting para Java  
-✅ **Ejecución** — Envía a backend vía POST  
-✅ **Resultados** — Output, errores, tiempo de ejecución  
-✅ **Metadatos** — Usuario ID y Problema ID (opcionales)  
-✅ **Responsive** — Desktop + Mobile  
-✅ **Minimalista** — Sin dependencias pesadas  
-
----
-
-## 🔧 Tecnologías
-
-| Dependencia | Versión | Propósito |
-|---|---|---|
-| **React** | 18.2.0 | UI framework |
-| **Vite** | 5.0.8 | Build tool (rápido) |
-| **CodeMirror** | 6.0.1 | Editor minimalista |
-| **@codemirror/lang-java** | 6.4.5 | Java syntax |
-
----
-
-## 📡 API Integration
-
-El frontend espera que el backend esté en `http://localhost:3000`.
-
-**Request:**
-```json
-POST /api/submissions
-{
-  "code": "public class Solution { ... }",
-  "userId": "user123",
-  "problemId": "problem_001"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "output": "...",
-  "error": "",
-  "executionTime": 250,
-  "limits": {...}
-}
-```
-
----
-
-## 💡 Development Tips
-
-- **Cambiar puerto frontend**: Edita `vite.config.js`, línea `port: 3001`
-- **Cambiar URL backend**: Edita `vite.config.js`, línea `target: 'http://localhost:3000'`
-- **Agregar temas CodeMirror**: Instala `@codemirror/theme-*` y aplica en `CodeEditor.jsx`
-- **Debugging**: Abre DevTools (F12) en Chrome para logs del cliente
-
----
-
-## 🚢 Deploy a Vercel
-
-1. **Conecta repo a Vercel**
-2. **Root directory**: `frontend/`
-3. **Build command**: `npm run build`
-4. **Output directory**: `dist`
-5. **Environment variables**: 
-   - `VITE_API_URL=https://your-railway-backend.com`
-
-Luego actualiza `vite.config.js` para usar esta variable en producción.
+El output queda en `dist/`. Deployar en Vercel apuntando a esta carpeta.

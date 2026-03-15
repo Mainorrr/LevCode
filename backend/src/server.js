@@ -3,6 +3,8 @@ const cors = require("cors");
 const logger = require("./utils/logger");
 const env = require("./config/env");
 const submissionsRouter = require("./routes/submissions");
+const sessionsRouter = require("./routes/sessions");
+const exportRouter = require("./routes/export");
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/submissions", submissionsRouter);
+app.use("/api/sessions", sessionsRouter);
+app.use("/api/export", exportRouter);
 
 // Health check (public, no auth required)
 app.get("/health", (req, res) => {

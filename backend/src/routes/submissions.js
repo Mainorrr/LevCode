@@ -12,7 +12,7 @@ const env = require("../config/env");
  */
 router.post("/", async (req, res) => {
   try {
-    const { code, userId, problemId } = req.body;
+    const { code, userId, problemId, input = "" } = req.body;
 
     // Validate request
     const validation = validators.validateSubmissionRequest(req.body);
@@ -25,8 +25,8 @@ router.post("/", async (req, res) => {
 
     logger.info("Submission received", { userId, problemId });
 
-    // Execute Java code
-    const result = await javaExecutor.execute(code);
+    // Execute Java code with optional stdin input
+    const result = await javaExecutor.execute(code, input);
 
     logger.info("Submission executed", {
       userId,
