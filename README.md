@@ -1,6 +1,6 @@
 # LevCode
 
-Juez en línea para investigación académica sobre programación introductoria en Java. Permite a estudiantes resolver ejercicios y registra sus intentos en una base de datos para análisis estadístico.
+Juez en línea para investigación académica sobre programación introductoria en Python. Permite a estudiantes resolver ejercicios y registra sus intentos en una base de datos para análisis estadístico.
 
 ## Requisitos
 
@@ -11,10 +11,10 @@ Juez en línea para investigación académica sobre programación introductoria 
 
 Se necesitan tres terminales. Docker corre PostgreSQL; el backend y el frontend corren directamente con Node.
 
-La imagen del sandbox Java se construye una sola vez (no levanta ningún contenedor permanente):
+La imagen del sandbox Python se construye una sola vez (no levanta ningún contenedor permanente):
 
 ```bash
-docker build -t levcode-java:latest ./docker/java
+docker build -t levcode-python:latest ./docker/python
 ```
 
 **Terminal 1 — base de datos** (desde la raíz del proyecto)
@@ -56,10 +56,10 @@ LevCode/
 ├── backend/                Node.js + Express
 │   └── src/
 │       ├── routes/         submissions, sessions, export
-│       ├── services/       javaExecutor, dockerManager
+│       ├── services/       pythonExecutor, dockerManager
 │       ├── config/         env, docker, db
 │       └── db/             migrate.js
-├── docker/java/            Dockerfile del sandbox OpenJDK 17
+├── docker/python/          Dockerfile del sandbox Python 3.11
 ├── docker-compose.yml      PostgreSQL (desarrollo local)
 └── Dockerfile              Imagen del backend para producción
 ```

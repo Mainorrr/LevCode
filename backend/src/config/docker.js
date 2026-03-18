@@ -3,9 +3,9 @@ const env = require("./env");
 module.exports = {
   // Docker container limits
   LIMITS: {
-    timeout: env.JAVA_TIMEOUT, // 5000ms
-    memory: env.JAVA_MEMORY, // 128m
-    maxOutput: env.JAVA_OUTPUT_MAX, // 10MB
+    timeout: env.PYTHON_TIMEOUT, // 5000ms
+    memory: env.PYTHON_MEMORY, // 128m
+    maxOutput: env.PYTHON_OUTPUT_MAX, // 10MB
   },
 
   // Docker run options
@@ -18,9 +18,9 @@ module.exports = {
     Cmd: ["bash"],
   },
 
-  // Java compilation & execution
-  JAVA: {
-    className: "Solution",
-    timeout: env.JAVA_TIMEOUT,
+  // Python execution
+  PYTHON: {
+    filename: "solution.py",
+    timeout: env.PYTHON_TIMEOUT,
   },
 };

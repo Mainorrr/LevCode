@@ -11,11 +11,11 @@ module.exports = {
   // Security
   API_PASSWORD: process.env.API_PASSWORD || "levcode123",
 
-  // Docker & Java Execution
-  DOCKER_IMAGE: process.env.DOCKER_IMAGE || "levcode-java:latest",
-  JAVA_TIMEOUT: parseInt(process.env.JAVA_TIMEOUT || "5000", 10),
-  JAVA_MEMORY: process.env.JAVA_MEMORY || "128m",
-  JAVA_OUTPUT_MAX: parseInt(process.env.JAVA_OUTPUT_MAX || "10485760", 10),
+  // Docker & Python Execution
+  DOCKER_IMAGE: process.env.DOCKER_IMAGE || "levcode-python:latest",
+  PYTHON_TIMEOUT: parseInt(process.env.PYTHON_TIMEOUT || "5000", 10),
+  PYTHON_MEMORY: process.env.PYTHON_MEMORY || "128m",
+  PYTHON_OUTPUT_MAX: parseInt(process.env.PYTHON_OUTPUT_MAX || "10485760", 10),
 
   // Database
   DATABASE_URL:

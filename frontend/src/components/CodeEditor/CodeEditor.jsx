@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
-import { java } from '@codemirror/lang-java'
+import { python, globalCompletion } from '@codemirror/lang-python'
 import { nord } from '@fsegurai/codemirror-theme-nord'
 import './CodeEditor.css'
 
@@ -24,7 +24,8 @@ export default function CodeEditor({ code, onChange }) {
       doc: code,
       extensions: [
         basicSetup,
-        java(),
+        python(),
+        globalCompletion,
         nord,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -48,7 +49,7 @@ export default function CodeEditor({ code, onChange }) {
 
   return (
     <div className="editor-container">
-      <label className="editor-label">Código Java</label>
+      <label className="editor-label">Código Python</label>
       <div ref={editorRef} className="editor-content" />
     </div>
   )
