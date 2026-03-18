@@ -7,19 +7,19 @@ const config = require("../config/env");
 const dockerConfig = require("../config/docker");
 
 /**
- * Manages Docker container execution for Java code
+ * Manages Docker container execution for Python code
  */
 class DockerManager {
   /**
-   * Executes Java code inside Docker container
-   * @param {string} javaCode - The Java source code to execute
-   * @param {string} input - Stdin input for the Java program (test case input)
+   * Executes Python code inside Docker container
+   * @param {string} pythonCode - The Python source code to execute
+   * @param {string} input - Stdin input for the Python program (test case input)
    * @param {number} timeout - Timeout in milliseconds
    * @returns {Promise<{success: boolean, output: string, error: string, exitCode: number}>}
    */
-  async executeInDocker(javaCode, input = "", timeout = dockerConfig.LIMITS.timeout) {
+  async executeInDocker(pythonCode, input = "", timeout = dockerConfig.LIMITS.timeout) {
     try {
-      const result = await this._runDockerContainer(javaCode, input, timeout);
+      const result = await this._runDockerContainer(pythonCode, input, timeout);
       return result;
     } catch (error) {
       logger.error("Docker execution failed", { error: error.message });
@@ -33,16 +33,16 @@ class DockerManager {
   }
 
   /**
-   * Runs Docker container and compiles/executes Java code.
-   * Java source is base64-encoded in the bash command; test input is piped via stdin.
+   * Runs Docker container and executes Python code.
+   * Python source is base64-encoded in the bash command; test input is piped via stdin.
    * @private
    */
-  async _runDockerContainer(javaCode, input, timeout) {
+  async _runDockerContainer(pythonCode, input, timeout) {
     return new Promise((resolve) => {
-      // Base64-encode the Java source so it can be embedded safely in the bash
+      // Base64-encode the Python source so it can be embedded safely in the bash
       // command. This frees stdin to carry the test-case input for the program.
-      const encodedCode = Buffer.from(javaCode).toString("base64");
-      const bashCmd = `echo '${encodedCode}' | base64 -d > Solution.java && javac Solution.java && java Solution`;
+      const encodedCode = Buffer.from(pythonCode).toString("base64");
+      const bashCmd = `echo '${encodedCode}' | base64 -d > solution.py && python3 solution.py`;
 
       const dockerCmd = [
         "run",

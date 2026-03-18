@@ -1,9 +1,9 @@
 const logger = require("./logger");
 
 /**
- * Validates Java source code before compilation
+ * Validates Python source code before execution
  */
-const validateJavaCode = (code) => {
+const validatePythonCode = (code) => {
   // Check if code is empty
   if (!code || typeof code !== "string" || code.trim().length === 0) {
     return {
@@ -12,13 +12,32 @@ const validateJavaCode = (code) => {
     };
   }
 
+  // Reject Java code
+  const javaPatterns = [
+    /public\s+class\s+\w+/,
+    /public\s+static\s+void\s+main/,
+    /System\.out\.print/,
+    /import\s+java\./,
+  ];
+
+  for (const pattern of javaPatterns) {
+    if (pattern.test(code)) {
+      return {
+        valid: false,
+        error: "Solo se acepta código Python",
+      };
+    }
+  }
+
   // Check for suspicious patterns (basic security check)
   const dangerousPatterns = [
-    /Runtime\.getRuntime\(\)\.exec/gi,
-    /ProcessBuilder/gi,
-    /Files\.readAllBytes/gi,
-    /new FileInputStream/gi,
-    /System\.setSecurityManager/gi,
+    /import\s+subprocess/gi,
+    /subprocess\./gi,
+    /os\.system\s*\(/gi,
+    /os\.popen\s*\(/gi,
+    /os\.execv\s*\(/gi,
+    /os\.execve\s*\(/gi,
+    /__import__\s*\(/gi,
   ];
 
   for (const pattern of dangerousPatterns) {
@@ -53,7 +72,7 @@ const validateSubmissionRequest = (body) => {
     return { valid: false, error: "Code is required" };
   }
 
-  const codeValidation = validateJavaCode(code);
+  const codeValidation = validatePythonCode(code);
   if (!codeValidation.valid) {
     return codeValidation;
   }
@@ -62,6 +81,6 @@ const validateSubmissionRequest = (body) => {
 };
 
 module.exports = {
-  validateJavaCode,
+  validatePythonCode,
   validateSubmissionRequest,
 };

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const javaExecutor = require("../services/javaExecutor");
+const pythonExecutor = require("../services/pythonExecutor");
 const validators = require("../utils/validators");
 const logger = require("../utils/logger");
 const env = require("../config/env");
 
 /**
  * POST /api/submissions
- * Submit Java code for execution
+ * Submit Python code for execution
  * Requires: password header
  */
 router.post("/", async (req, res) => {
@@ -25,8 +25,8 @@ router.post("/", async (req, res) => {
 
     logger.info("Submission received", { userId, problemId });
 
-    // Execute Java code with optional stdin input
-    const result = await javaExecutor.execute(code, input);
+    // Execute Python code with optional stdin input
+    const result = await pythonExecutor.execute(code, input);
 
     logger.info("Submission executed", {
       userId,
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
       output: result.output,
       error: result.error,
       executionTime: result.executionTime,
-      limits: javaExecutor.getLimits(),
+      limits: pythonExecutor.getLimits(),
     });
   } catch (error) {
     logger.error("Submission endpoint error", { error: error.message });
@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
  */
 router.get("/limits", (req, res) => {
   res.json({
-    limits: javaExecutor.getLimits(),
+    limits: pythonExecutor.getLimits(),
   });
 });
 
