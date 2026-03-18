@@ -64,7 +64,7 @@ class DockerManager {
       let stderr = "";
       let timedOut = false;
 
-      // Pipe test-case input to the Java program's stdin
+      // Pipe test-case input to the Python program's stdin
       if (input) {
         process.stdin.write(input);
       }

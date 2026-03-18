@@ -20,7 +20,7 @@ src/
 │   ├── App/              Componente principal, maneja flujo de vistas
 │   ├── UserForm/         Formulario inicial: carnet, grupo, semestre
 │   ├── ExerciseMenu/     Menu de seleccion de ejercicios
-│   ├── CodeEditor/       Editor CodeMirror con soporte Java
+│   ├── CodeEditor/       Editor CodeMirror con soporte Python 3
 │   └── ResultDisplay/    Muestra veredicto y casos fallidos
 └── exercises/
     ├── index.js                  Registro central de ejercicios
@@ -43,7 +43,7 @@ src/
   "title": "Título visible",
   "description": "Descripción del problema...",
   "showTestCases": true,
-  "starterCode": "public class Solution {\n    public static void main(String[] args) {\n    }\n}"
+  "starterCode": "# Tu código aquí\n"
 }
 ```
 

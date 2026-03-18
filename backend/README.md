@@ -1,6 +1,6 @@
 # LevCode — Backend
 
-Node.js + Express. Ejecuta código Java en un sandbox Docker, guarda sesiones en PostgreSQL y expone un endpoint para exportar datos de investigación.
+Node.js + Express. Ejecuta código Python 3 en un sandbox Docker, guarda sesiones en PostgreSQL y expone un endpoint para exportar datos de investigación.
 
 ## Variables de entorno
 
@@ -11,10 +11,10 @@ PORT=3000
 NODE_ENV=development
 API_PASSWORD=levcode123
 
-DOCKER_IMAGE=levcode-java:latest
-JAVA_TIMEOUT=5000
-JAVA_MEMORY=128m
-JAVA_OUTPUT_MAX=10485760
+DOCKER_IMAGE=levcode-python:latest
+PYTHON_TIMEOUT=5000
+PYTHON_MEMORY=128m
+PYTHON_OUTPUT_MAX=10485760
 
 DATABASE_URL=postgresql://levcode:levcode@localhost:5432/levcode
 
@@ -26,7 +26,7 @@ FRONTEND_URL=http://localhost:3001
 ## Endpoints
 
 ### POST /api/submissions
-Ejecuta código Java y retorna el output. Llamado por el frontend por cada caso de prueba.
+Ejecuta código Python 3 y retorna el output. Llamado por el frontend por cada caso de prueba.
 
 ```json
 // Request
@@ -132,9 +132,9 @@ La migración corre automáticamente al iniciar el backend.
 ```
 NODE_ENV=production
 API_PASSWORD=password_segura_aqui
-DOCKER_IMAGE=levcode-java:latest
-JAVA_TIMEOUT=5000
-JAVA_MEMORY=128m
+DOCKER_IMAGE=levcode-python:latest
+PYTHON_TIMEOUT=5000
+PYTHON_MEMORY=128m
 FRONTEND_URL=https://tu-frontend.vercel.app
 ```
 

@@ -2,7 +2,7 @@
 
 ## Propósito del Proyecto
 
-LevCode es un **juez en línea de investigación** para estudiantes principiantes de programación en Java. Su objetivo es estudiar qué configuraciones reducen el comportamiento de prueba y error (trial-and-error) en los estudiantes. NO es una plataforma de producción general — es una herramienta de investigación académica.
+LevCode es un **juez en línea de investigación** para estudiantes principiantes de programación en Python 3. Su objetivo es estudiar qué configuraciones reducen el comportamiento de prueba y error (trial-and-error) en los estudiantes. NO es una plataforma de producción general — es una herramienta de investigación académica.
 
 ---
 
@@ -27,14 +27,14 @@ Comparar el efecto de distintos **métodos de retroalimentación** sobre la cond
 LevCode/ (monorepo)
 ├── frontend/        → React + Vite + CodeMirror (lógica de ejercicios vive aquí)
 ├── backend/         → Node.js + Express (solo ejecuta código y guarda datos)
-├── docker/          → Sandbox Java (OpenJDK 17)
+├── docker/          → Sandbox Python 3 (Python 3.11)
 ├── docker-compose.yml
 └── Dockerfile       (backend container)
 ```
 
 **Principio de separación de responsabilidades:**
 - **Frontend:** Carga ejercicios desde archivos de configuración locales, muestra/oculta casos de prueba según config del ejercicio, maneja el menú de ejercicios
-- **Backend:** Ejecuta código Java en Docker, guarda submissions en DB, retorna resultados. Lo más simple posible.
+- **Backend:** Ejecuta código Python 3 en Docker, guarda submissions en DB, retorna resultados. Lo más simple posible.
 
 ---
 
@@ -44,7 +44,7 @@ LevCode/ (monorepo)
 |------|-----------|
 | Frontend | React 18 + Vite + CodeMirror 6 + tema Nord |
 | Backend | Node.js 20 + Express 4 |
-| Ejecución Java | Docker (eclipse-temurin:17-jdk) vía `child_process` |
+| Ejecución Python 3 | Docker (python:3.11-slim) vía `child_process` |
 | Base de datos | PostgreSQL (aún no implementada) |
 | Hosting (plan) | Frontend: Vercel / Backend + Docker: Railway |
 
@@ -78,7 +78,7 @@ frontend/src/exercises/
   "description": "Imprime 'Hello World' en la consola.",
   "showTestCases": true,
   "penalizeFailures": false,
-  "starterCode": "public class Solution {\n    public static void main(String[] args) {\n        // Tu código aquí\n    }\n}"
+  "starterCode": "# Tu código aquí\nprint('Hello World')"
 }
 ```
 
@@ -99,7 +99,7 @@ frontend/src/exercises/
 
 1. Usuario selecciona un ejercicio del menú (frontend carga el config.json correspondiente)
 2. Usuario ingresa datos personales: carnet, grupo, semestre
-3. Usuario escribe código Java y hace submit
+3. Usuario escribe código Python 3 y hace submit
 4. Frontend envía al backend: `{ code, userId, problemId, group, semester }`
 5. Backend ejecuta en Docker, retorna resultado
 6. Frontend valida output contra `testcases.json` localmente
@@ -157,14 +157,16 @@ Estos datos se almacenan con cada submission para análisis estadístico.
 
 ---
 
-## Seguridad — Patrones Java Bloqueados
+## Seguridad — Patrones Python Bloqueados
 
 El backend bloquea código que contiene:
-- `Runtime.getRuntime().exec()`
-- `ProcessBuilder`
-- `Files.readAllBytes`
-- `FileInputStream`
-- `System.setSecurityManager()`
+- `import os`
+- `import subprocess`
+- `import sys`
+- `open(`
+- `__import__`
+- `exec(`
+- `eval(`
 
 ---
 
@@ -179,7 +181,7 @@ El backend bloquea código que contiene:
 
 1. **La lógica de ejercicios va en el frontend.** El backend no sabe qué ejercicio se está resolviendo, solo ejecuta código y guarda datos.
 2. **El backend es minimalista.** No agregar features al backend que puedan vivir en el frontend.
-3. **Guardar TODO en la base de datos.** Incluso submissions fallidas, incompletas o con errores de compilación — son datos de investigación.
+3. **Guardar TODO en la base de datos.** Incluso submissions fallidas, incompletas o con errores de sintaxis — son datos de investigación.
 4. **No implementar rankings ni cálculos de nota.** Solo persistir datos crudos.
 5. **`showTestCases`** es el único parámetro de configuración de investigación actualmente activo. Configurado por ejercicio en `config.json`.
 6. **No agregar autenticación.** Es una herramienta de investigación deliberadamente simple.
@@ -199,7 +201,7 @@ El backend bloquea código que contiene:
 
 ```json
 {
-  "code": "<java source code>",
+  "code": "<python 3 source code>",
   "userId": "A12345",
   "problemId": "hello-world"
 }
@@ -213,7 +215,7 @@ El backend bloquea código que contiene:
 
 | Componente | Estado |
 |-----------|--------|
-| Ejecución Docker Java | ✅ Funcionando |
+| Ejecución Docker Python 3 | ✅ Funcionando |
 | Frontend React + CodeMirror | ✅ Funcionando |
 | API REST básica | ✅ Funcionando |
 | Sistema de ejercicios | ⬜ Por implementar |

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
-import { python, globalCompletion } from '@codemirror/lang-python'
+import { python } from '@codemirror/lang-python'
 import { nord } from '@fsegurai/codemirror-theme-nord'
 import './CodeEditor.css'
 
@@ -25,7 +25,6 @@ export default function CodeEditor({ code, onChange }) {
       extensions: [
         basicSetup,
         python(),
-        globalCompletion,
         nord,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {

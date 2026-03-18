@@ -1,7 +1,7 @@
 {
   "name": "levcode",
   "version": "1.0.0",
-  "description": "Online Judge for beginner Java programming",
+  "description": "Online Judge for beginner Python 3 programming",
   "main": "backend/src/index.js",
   "scripts": {
     "dev": "node backend/src/index.js",
