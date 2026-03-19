@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
 import UserForm from '../UserForm/UserForm'
@@ -22,6 +22,26 @@ export default function App() {
   const [testResults, setTestResults] = useState(null)
   const [compilationError, setCompilationError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const timerRef = useRef(null)
+
+  // Start/reset timer when entering an exercise
+  useEffect(() => {
+    if (view !== 'exercise') return
+    setElapsedSeconds(0)
+    timerRef.current = setInterval(() => {
+      setElapsedSeconds((s) => s + 1)
+    }, 1000)
+    return () => clearInterval(timerRef.current)
+  }, [view, selectedExercise])
+
+  const formatTime = (secs) => {
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    const s = secs % 60
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
 
   // ── View: form ────────────────────────────────────────────────────────────
   const handleUserFormSubmit = (info) => {
@@ -154,6 +174,7 @@ export default function App() {
                 ← Ejercicios
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
+              <span className="exercise-timer">{formatTime(elapsedSeconds)}</span>
             </div>
 
             <div className="exercise-description">

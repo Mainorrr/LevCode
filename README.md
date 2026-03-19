@@ -42,7 +42,7 @@ npm run dev
 | Servicio   | URL                      |
 | ---------- | ------------------------ |
 | Frontend   | http://localhost:3001    |
-| Backend    | http://localhost:3000    |
+| Backend    | w    |
 | PostgreSQL | localhost:5432 (interno) |
 
 ## Estructura
