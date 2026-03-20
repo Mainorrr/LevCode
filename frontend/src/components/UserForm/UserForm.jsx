@@ -1,21 +1,38 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './UserForm.css'
 
 /**
  * Formulario inicial para capturar datos del estudiante.
- * Esta información se almacena con cada submission para análisis estadístico.
+ * Curso y grupo se seleccionan desde la base de datos.
  *
  * Props:
  *   - onSubmit: function({ carnet, grupo, semestre, curso }) - callback al confirmar datos
  */
 export default function UserForm({ onSubmit }) {
   const [carnet, setCarnet] = useState('')
-  const [grupo, setGrupo] = useState('')
   const [semestre, setSemestre] = useState('')
-  const [curso, setCurso] = useState('')
+  const [selectedCourseId, setSelectedCourseId] = useState('')
+  const [selectedGrupo, setSelectedGrupo] = useState('')
+  const [courses, setCourses] = useState([])
+  const [loadingCourses, setLoadingCourses] = useState(true)
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    fetch('/api/courses')
+      .then((r) => r.json())
+      .then((data) => setCourses(data))
+      .catch(() => setError('No se pudieron cargar los cursos. Verifica tu conexión.'))
+      .finally(() => setLoadingCourses(false))
+  }, [])
+
   const validateCarnet = (value) => /^[A-Za-z]\d{5}$/.test(value)
+
+  const selectedCourse = courses.find((c) => String(c.id) === selectedCourseId)
+
+  const handleCourseChange = (e) => {
+    setSelectedCourseId(e.target.value)
+    setSelectedGrupo('')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -29,20 +46,25 @@ export default function UserForm({ onSubmit }) {
       setError('Formato de carnet inválido. Debe ser 1 letra seguida de 5 dígitos (ej: A12345).')
       return
     }
-    if (!grupo.trim()) {
-      setError('El grupo es requerido.')
+    if (!selectedCourseId) {
+      setError('Debes seleccionar un curso.')
+      return
+    }
+    if (!selectedGrupo) {
+      setError('Debes seleccionar un grupo.')
       return
     }
     if (!semestre || semestre < 1 || semestre > 8) {
       setError('El semestre debe ser un número entre 1 y 8.')
       return
     }
-    if (!curso.trim()) {
-      setError('El curso es requerido.')
-      return
-    }
 
-    onSubmit({ carnet: carnet.toUpperCase(), grupo: grupo.trim(), semestre: Number(semestre), curso: curso.trim() })
+    onSubmit({
+      carnet: carnet.toUpperCase(),
+      grupo: selectedGrupo,
+      semestre: Number(semestre),
+      curso: selectedCourse.name,
+    })
   }
 
   return (
@@ -69,27 +91,36 @@ export default function UserForm({ onSubmit }) {
 
           <div className="userform-field">
             <label htmlFor="curso">Curso</label>
-            <input
+            <select
               id="curso"
-              type="text"
-              placeholder="ej: Programación I"
-              value={curso}
-              onChange={(e) => setCurso(e.target.value)}
-              maxLength={255}
+              value={selectedCourseId}
+              onChange={handleCourseChange}
               className="userform-input"
-            />
+              disabled={loadingCourses}
+            >
+              <option value="">{loadingCourses ? 'Cargando cursos...' : 'Selecciona un curso'}</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="userform-field">
             <label htmlFor="grupo">Grupo</label>
-            <input
+            <select
               id="grupo"
-              type="text"
-              placeholder="ej: 01"
-              value={grupo}
-              onChange={(e) => setGrupo(e.target.value)}
+              value={selectedGrupo}
+              onChange={(e) => setSelectedGrupo(e.target.value)}
               className="userform-input"
-            />
+              disabled={!selectedCourse}
+            >
+              <option value="">
+                {!selectedCourse ? 'Selecciona un curso primero' : 'Selecciona un grupo'}
+              </option>
+              {selectedCourse?.groups?.map((g) => (
+                <option key={g} value={g}>Grupo {g}</option>
+              ))}
+            </select>
           </div>
 
           <div className="userform-field">
