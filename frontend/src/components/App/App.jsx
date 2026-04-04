@@ -3,6 +3,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
 import UserForm from '../UserForm/UserForm'
 import ExerciseMenu from '../ExerciseMenu/ExerciseMenu'
+import AdminPanel from '../AdminPanel/AdminPanel'
 import { exercises } from '../../exercises/index'
 import './App.css'
 
@@ -10,20 +11,43 @@ import './App.css'
  * Componente principal de LevCode.
  *
  * Flujo de vistas:
- *   'form'     → El estudiante ingresa carnet, grupo y semestre
+ *   'form'     → El estudiante ingresa carnet, grupo y curso
  *   'menu'     → Selecciona un ejercicio de la lista
  *   'exercise' → Editor + resultados para el ejercicio seleccionado
  */
 export default function App() {
-  const [view, setView] = useState('form')
-  const [userInfo, setUserInfo] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#/admin')
+  const savedUser = localStorage.getItem('levcode_user')
+  const [view, setView] = useState(savedUser ? 'menu' : 'form')
+  const [userInfo, setUserInfo] = useState(savedUser ? JSON.parse(savedUser) : null)
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [code, setCode] = useState('')
   const [testResults, setTestResults] = useState(null)
   const [compilationError, setCompilationError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [solvedExercises, setSolvedExercises] = useState(new Set())
+  const [inProgressExercises, setInProgressExercises] = useState(new Set())
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const timerRef = useRef(null)
+
+  // Cargar estado de ejercicios si hay usuario guardado
+  useEffect(() => {
+    if (!userInfo) return
+    fetch(`/api/sessions/status/${userInfo.carnet}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.solved) setSolvedExercises(new Set(data.solved))
+        if (data.inProgress) setInProgressExercises(new Set(data.inProgress))
+      })
+      .catch(() => {})
+  }, [userInfo?.carnet])
+
+  // Detectar ruta /admin por hash
+  useEffect(() => {
+    const onHash = () => setIsAdmin(window.location.hash === '#/admin')
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
 
   // Start/reset timer when entering an exercise
   useEffect(() => {
@@ -45,8 +69,16 @@ export default function App() {
 
   // ── View: form ────────────────────────────────────────────────────────────
   const handleUserFormSubmit = (info) => {
+    localStorage.setItem('levcode_user', JSON.stringify(info))
     setUserInfo(info)
     setView('menu')
+  }
+
+  const handleChangeUser = () => {
+    localStorage.removeItem('levcode_user')
+    setSolvedExercises(new Set())
+    setInProgressExercises(new Set())
+    setView('form')
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
@@ -56,6 +88,22 @@ export default function App() {
     setTestResults(null)
     setCompilationError(null)
     setView('exercise')
+
+    // Registrar intento 0 (apertura) si no está resuelto ni en progreso
+    if (!solvedExercises.has(exercise.config.id) && !inProgressExercises.has(exercise.config.id)) {
+      setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
+      fetch('/api/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          carnet: userInfo.carnet,
+          grupo: userInfo.grupo,
+          curso: userInfo.curso,
+          problemId: exercise.config.id,
+          solved: false,
+        }),
+      }).catch(() => {})
+    }
   }
 
   // ── View: exercise ────────────────────────────────────────────────────────
@@ -119,6 +167,15 @@ export default function App() {
     const allPassed = results.length > 0 && results.every((r) => r.passed)
     recordSession(allPassed)
 
+    if (allPassed) {
+      setSolvedExercises((prev) => new Set(prev).add(selectedExercise.config.id))
+      setInProgressExercises((prev) => {
+        const next = new Set(prev)
+        next.delete(selectedExercise.config.id)
+        return next
+      })
+    }
+
     setLoading(false)
   }
 
@@ -133,7 +190,6 @@ export default function App() {
       body: JSON.stringify({
         carnet: userInfo.carnet,
         grupo: userInfo.grupo,
-        semestre: userInfo.semestre,
         curso: userInfo.curso,
         problemId: selectedExercise.config.id,
         solved,
@@ -144,6 +200,18 @@ export default function App() {
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
+  if (isAdmin) {
+    return (
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Lev Code</h1>
+          <p>Escuela de Ciencias de la Computación e Informática</p>
+        </header>
+        <AdminPanel />
+      </div>
+    )
+  }
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -152,7 +220,7 @@ export default function App() {
       </header>
 
       {view === 'form' && (
-        <UserForm onSubmit={handleUserFormSubmit} />
+        <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} />
       )}
 
       {view === 'menu' && (
@@ -161,6 +229,9 @@ export default function App() {
             exercises={exercises}
             onSelect={handleExerciseSelect}
             userInfo={userInfo}
+            solvedExercises={solvedExercises}
+            inProgressExercises={inProgressExercises}
+            onChangeUser={handleChangeUser}
           />
         </div>
       )}
@@ -184,7 +255,7 @@ export default function App() {
             </div>
 
             <div className="user-badge">
-              {userInfo.carnet} &nbsp;·&nbsp; {userInfo.curso} &nbsp;·&nbsp; Grupo {userInfo.grupo} &nbsp;·&nbsp; Semestre {userInfo.semestre}
+              {userInfo.carnet} &nbsp;·&nbsp; {userInfo.curso} &nbsp;·&nbsp; Grupo {userInfo.grupo}
             </div>
 
             {/* key={id} hace que CodeMirror se reinicie al cambiar de ejercicio */}
@@ -196,10 +267,12 @@ export default function App() {
 
             <button
               onClick={handleSubmit}
-              disabled={loading}
-              className="submit-btn"
+              disabled={loading || solvedExercises.has(selectedExercise.config.id)}
+              className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}`}
             >
-              {loading ? 'Ejecutando...' : 'Ejecutar Código'}
+              {solvedExercises.has(selectedExercise.config.id)
+                ? 'Ejercicio completado'
+                : loading ? 'Ejecutando...' : 'Ejecutar Código'}
             </button>
           </div>
 

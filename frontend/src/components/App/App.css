@@ -125,6 +125,15 @@
   cursor: not-allowed;
 }
 
+.submit-btn-solved {
+  background: #A3BE8C;
+  opacity: 1;
+}
+
+.submit-btn-solved:hover {
+  background: #A3BE8C;
+}
+
 @media (max-width: 1024px) {
   .app-content {
     grid-template-columns: 1fr;

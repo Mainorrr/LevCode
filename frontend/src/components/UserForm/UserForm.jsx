@@ -1,36 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { courses } from '../../courses'
 import './UserForm.css'
 
 /**
  * Formulario inicial para capturar datos del estudiante.
- * Curso y grupo se seleccionan desde la base de datos.
+ * Cursos y grupos se cargan desde un archivo de configuración local.
  *
  * Props:
- *   - onSubmit: function({ carnet, grupo, semestre, curso }) - callback al confirmar datos
+ *   - onSubmit: function({ carnet, grupo, curso }) - callback al confirmar datos
  */
-export default function UserForm({ onSubmit }) {
-  const [carnet, setCarnet] = useState('')
-  const [semestre, setSemestre] = useState('')
-  const [selectedCourseId, setSelectedCourseId] = useState('')
-  const [selectedGrupo, setSelectedGrupo] = useState('')
-  const [courses, setCourses] = useState([])
-  const [loadingCourses, setLoadingCourses] = useState(true)
-  const [error, setError] = useState('')
+export default function UserForm({ onSubmit, initialData }) {
+  const initCourseIdx = initialData
+    ? String(courses.findIndex((c) => c.name === initialData.curso))
+    : ''
 
-  useEffect(() => {
-    fetch('/api/courses')
-      .then((r) => r.json())
-      .then((data) => setCourses(data))
-      .catch(() => setError('No se pudieron cargar los cursos. Verifica tu conexión.'))
-      .finally(() => setLoadingCourses(false))
-  }, [])
+  const [carnet, setCarnet] = useState(initialData?.carnet || '')
+  const [selectedCourseIdx, setSelectedCourseIdx] = useState(initCourseIdx !== '-1' ? initCourseIdx : '')
+  const [selectedGrupo, setSelectedGrupo] = useState(initialData?.grupo || '')
+  const [error, setError] = useState('')
 
   const validateCarnet = (value) => /^[A-Za-z]\d{5}$/.test(value)
 
-  const selectedCourse = courses.find((c) => String(c.id) === selectedCourseId)
+  const selectedCourse = selectedCourseIdx !== '' ? courses[selectedCourseIdx] : null
 
   const handleCourseChange = (e) => {
-    setSelectedCourseId(e.target.value)
+    setSelectedCourseIdx(e.target.value)
     setSelectedGrupo('')
   }
 
@@ -46,7 +40,7 @@ export default function UserForm({ onSubmit }) {
       setError('Formato de carnet inválido. Debe ser 1 letra seguida de 5 dígitos (ej: A12345).')
       return
     }
-    if (!selectedCourseId) {
+    if (selectedCourseIdx === '') {
       setError('Debes seleccionar un curso.')
       return
     }
@@ -54,15 +48,10 @@ export default function UserForm({ onSubmit }) {
       setError('Debes seleccionar un grupo.')
       return
     }
-    if (!semestre || semestre < 1 || semestre > 8) {
-      setError('El semestre debe ser un número entre 1 y 8.')
-      return
-    }
 
     onSubmit({
       carnet: carnet.toUpperCase(),
       grupo: selectedGrupo,
-      semestre: Number(semestre),
       curso: selectedCourse.name,
     })
   }
@@ -93,14 +82,13 @@ export default function UserForm({ onSubmit }) {
             <label htmlFor="curso">Curso</label>
             <select
               id="curso"
-              value={selectedCourseId}
+              value={selectedCourseIdx}
               onChange={handleCourseChange}
               className="userform-input"
-              disabled={loadingCourses}
             >
-              <option value="">{loadingCourses ? 'Cargando cursos...' : 'Selecciona un curso'}</option>
-              {courses.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+              <option value="">Selecciona un curso</option>
+              {courses.map((c, i) => (
+                <option key={c.name} value={i}>{c.name}</option>
               ))}
             </select>
           </div>
@@ -121,28 +109,6 @@ export default function UserForm({ onSubmit }) {
                 <option key={g} value={g}>Grupo {g}</option>
               ))}
             </select>
-          </div>
-
-          <div className="userform-field">
-            <label htmlFor="semestre">
-              Semestre de la carrera
-              <span className="userform-tooltip">
-                i
-                <span className="userform-tooltip-text">
-                  Indica el semestre en el que llevas la mayoría de tus cursos actualmente.
-                </span>
-              </span>
-            </label>
-            <input
-              id="semestre"
-              type="number"
-              placeholder="ej: 3"
-              value={semestre}
-              onChange={(e) => setSemestre(e.target.value)}
-              min={1}
-              max={8}
-              className="userform-input"
-            />
           </div>
 
           {error && <p className="userform-error">{error}</p>}

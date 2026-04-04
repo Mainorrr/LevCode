@@ -16,9 +16,29 @@
   color: #88C0D0;
 }
 
+.menu-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .menu-user {
   font-size: 0.85em;
   color: #81A1C1;
+}
+
+.menu-change-btn {
+  padding: 5px 12px;
+  background: #434C5E;
+  color: #D8DEE9;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8em;
+  cursor: pointer;
+}
+
+.menu-change-btn:hover {
+  background: #4C566A;
 }
 
 .menu-grid {
@@ -83,4 +103,22 @@
 
 .menu-card-btn:hover {
   background: #81A1C1;
+}
+
+.menu-card-btn-solved {
+  background: #A3BE8C;
+  cursor: pointer;
+}
+
+.menu-card-btn-solved:hover {
+  background: #A3BE8C;
+}
+
+.menu-card-btn-progress {
+  background: #D08770;
+  cursor: pointer;
+}
+
+.menu-card-btn-progress:hover {
+  background: #D08770;
 }

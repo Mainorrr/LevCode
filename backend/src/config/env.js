@@ -10,6 +10,7 @@ module.exports = {
 
   // Security
   API_PASSWORD: process.env.API_PASSWORD || "levcode123",
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "",
 
   // Docker & Python Execution
   DOCKER_IMAGE: process.env.DOCKER_IMAGE || "levcode-python:latest",
