@@ -42,3 +42,6 @@ docker-compose.override.yml
 # OS
 *.pdb
 ehthumbs.db
+
+# AI
+.claude/
