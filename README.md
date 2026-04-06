@@ -9,29 +9,20 @@ Juez en línea para investigación académica sobre programación introductoria 
 
 ## Correr en local
 
-Se necesitan tres terminales. Docker corre PostgreSQL; el backend y el frontend corren directamente con Node.
+Se necesitan dos terminales. Docker levanta PostgreSQL, el backend y el sandbox Python con un solo comando.
 
-La imagen del sandbox Python se construye una sola vez (no levanta ningún contenedor permanente):
-
-```bash
-docker build -t levcode-python:latest ./docker/python
-```
-
-**Terminal 1 — base de datos** (desde la raíz del proyecto)
+**Terminal 1 — backend + base de datos + sandbox** (desde la raíz del proyecto)
 
 ```bash
-docker-compose up postgres
+docker-compose up --build
 ```
 
-**Terminal 2 — backend** (desde `backend/`)
+Esto levanta en orden:
+1. **python-sandbox** — construye la imagen `levcode-python:latest` y sale
+2. **postgres** — base de datos PostgreSQL
+3. **backend** — API Node.js + Express (espera a que postgres esté listo y la imagen Python esté construida)
 
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-**Terminal 3 — frontend** (desde `frontend/`)
+**Terminal 2 — frontend** (desde `frontend/`)
 
 ```bash
 cd frontend
@@ -42,7 +33,7 @@ npm run dev
 | Servicio   | URL                      |
 | ---------- | ------------------------ |
 | Frontend   | http://localhost:3001    |
-| Backend    | w    |
+| Backend    | http://localhost:3000    |
 | PostgreSQL | localhost:5432 (interno) |
 
 ## Estructura
@@ -60,7 +51,7 @@ LevCode/
 │       ├── config/         env, docker, db
 │       └── db/             migrate.js
 ├── docker/python/          Dockerfile del sandbox Python 3.11
-├── docker-compose.yml      PostgreSQL (desarrollo local)
+├── docker-compose.yml      PostgreSQL + Backend + Python sandbox
 └── Dockerfile              Imagen del backend para producción
 ```
 

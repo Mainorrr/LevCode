@@ -29,6 +29,44 @@
   flex: 1;
 }
 
+/* ── Access gate ── */
+.access-gate {
+  max-width: 360px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.access-gate h2 {
+  color: #88C0D0;
+  margin-bottom: 8px;
+}
+
+.access-gate p {
+  color: #81A1C1;
+  font-size: 0.9em;
+  margin-bottom: 20px;
+}
+
+.access-gate form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Session loading / error ── */
+.session-loading,
+.session-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #81A1C1;
+  font-size: 1.1em;
+}
+
+.session-error p {
+  color: #BF616A;
+  margin-bottom: 16px;
+}
+
 /* ── Exercise view ── */
 .app-content {
   display: grid;

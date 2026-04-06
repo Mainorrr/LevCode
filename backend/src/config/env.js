@@ -9,7 +9,7 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV || "development",
 
   // Security
-  API_PASSWORD: process.env.API_PASSWORD || "levcode123",
+  API_PASSWORD: process.env.API_PASSWORD || "",
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "",
 
   // Docker & Python Execution

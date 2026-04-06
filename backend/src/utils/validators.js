@@ -12,23 +12,6 @@ const validatePythonCode = (code) => {
     };
   }
 
-  // Reject Java code
-  const javaPatterns = [
-    /public\s+class\s+\w+/,
-    /public\s+static\s+void\s+main/,
-    /System\.out\.print/,
-    /import\s+java\./,
-  ];
-
-  for (const pattern of javaPatterns) {
-    if (pattern.test(code)) {
-      return {
-        valid: false,
-        error: "Solo se acepta código Python",
-      };
-    }
-  }
-
   // Check for suspicious patterns (basic security check)
   const dangerousPatterns = [
     /import\s+subprocess/gi,

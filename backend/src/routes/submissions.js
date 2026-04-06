@@ -54,6 +54,48 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * POST /api/submissions/batch
+ * Submit Python code for execution against multiple test case inputs in a single container
+ */
+router.post("/batch", async (req, res) => {
+  try {
+    const { code, userId, problemId, inputs = [] } = req.body;
+
+    if (!code || !userId || !problemId || !Array.isArray(inputs) || inputs.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing required fields: code, userId, problemId, inputs (array)",
+      });
+    }
+
+    logger.info("Batch submission received", { userId, problemId, testCases: inputs.length });
+
+    const result = await pythonExecutor.executeBatch(code, inputs);
+
+    logger.info("Batch submission executed", {
+      userId,
+      problemId,
+      success: result.success,
+      executionTime: result.executionTime,
+    });
+
+    res.json({
+      success: result.success,
+      results: result.results,
+      error: result.error,
+      executionTime: result.executionTime,
+    });
+  } catch (error) {
+    logger.error("Batch submission endpoint error", { error: error.message });
+
+    res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+});
+
+/**
  * GET /api/submissions/limits
  * Get execution limits
  */

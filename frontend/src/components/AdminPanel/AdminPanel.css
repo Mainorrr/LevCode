@@ -88,6 +88,21 @@
   font-size: 0.9em;
 }
 
+.admin-btn-export {
+  padding: 6px 14px;
+  background: #A3BE8C;
+  color: #2E3440;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-btn-export:hover {
+  background: #8FAF78;
+}
+
 .admin-btn-refresh {
   padding: 6px 14px;
   background: #5E81AC;
@@ -206,4 +221,36 @@
   text-align: center;
   color: #4C566A;
   padding: 32px 12px !important;
+}
+
+/* Access passwords section */
+.admin-access-section {
+  margin-top: 32px;
+  border-top: 1px solid #434C5E;
+  padding-top: 24px;
+}
+
+.admin-access-section h3 {
+  color: #88C0D0;
+  margin-bottom: 12px;
+}
+
+.admin-access-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-btn-delete {
+  padding: 4px 10px;
+  background: #BF616A;
+  color: #ECEFF4;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8em;
+  cursor: pointer;
+}
+
+.admin-btn-delete:hover {
+  background: #D08770;
 }

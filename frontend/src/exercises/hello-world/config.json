@@ -2,6 +2,5 @@
   "id": "hello-world",
   "title": "Ejercicio #1",
   "description": "Escribe un programa que imprima exactamente el siguiente texto en la consola:\n\nHello World\n\nNo imprimas nada más, ni espacios adicionales ni saltos de línea extra.",
-  "showTestCases": true,
   "starterCode": "# Tu código aquí\n"
 }

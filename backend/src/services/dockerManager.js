@@ -136,6 +136,106 @@ class DockerManager {
   }
 
   /**
+   * Executes Python code against multiple inputs in a single Docker container.
+   * Uses runner.py to run the code once per input and return JSON results.
+   * @param {string} pythonCode - The Python source code
+   * @param {string[]} inputs - Array of stdin inputs (one per test case)
+   * @param {number} timeout - Timeout in milliseconds for the entire container
+   * @returns {Promise<{success: boolean, results: Array, error: string}>}
+   */
+  async executeBatch(pythonCode, inputs, timeout = dockerConfig.LIMITS.timeout) {
+    return new Promise((resolve) => {
+      const encodedCode = Buffer.from(pythonCode).toString("base64");
+      const encodedInputs = Buffer.from(JSON.stringify(inputs)).toString("base64");
+      const perCaseTimeout = Math.floor(timeout / 1000);
+
+      // Total container timeout: per-case timeout * number of cases + 5s buffer
+      const containerTimeout = timeout * inputs.length + 5000;
+
+      const dockerCmd = [
+        "run",
+        "--rm",
+        `--memory=${dockerConfig.LIMITS.memory}`,
+        "--network=none",
+        config.DOCKER_IMAGE,
+        "python3",
+        "/usr/local/bin/runner.py",
+        encodedCode,
+        encodedInputs,
+        String(perCaseTimeout),
+      ];
+
+      logger.debug("Running Docker batch command", { testCases: inputs.length });
+
+      const proc = spawn("docker", dockerCmd);
+
+      let stdout = "";
+      let stderr = "";
+      let timedOut = false;
+
+      const timeoutHandle = setTimeout(() => {
+        timedOut = true;
+        proc.kill();
+        logger.warn("Docker batch execution timeout", { containerTimeout });
+      }, containerTimeout);
+
+      proc.stdout.on("data", (data) => {
+        const chunk = data.toString();
+        if (stdout.length + chunk.length <= dockerConfig.LIMITS.maxOutput) {
+          stdout += chunk;
+        }
+      });
+
+      proc.stderr.on("data", (data) => {
+        const chunk = data.toString();
+        if (stderr.length + chunk.length <= dockerConfig.LIMITS.maxOutput) {
+          stderr += chunk;
+        }
+      });
+
+      proc.on("close", (code) => {
+        clearTimeout(timeoutHandle);
+
+        if (timedOut) {
+          return resolve({
+            success: false,
+            results: [],
+            error: `Container timeout after ${containerTimeout}ms`,
+          });
+        }
+
+        if (code === 137) {
+          return resolve({
+            success: false,
+            results: [],
+            error: "Tu código usó demasiada memoria y fue detenido.",
+          });
+        }
+
+        try {
+          const results = JSON.parse(stderr);
+          resolve({ success: true, results, error: "" });
+        } catch {
+          resolve({
+            success: false,
+            results: [],
+            error: stderr || `Runner exited with code ${code}`,
+          });
+        }
+      });
+
+      proc.on("error", (err) => {
+        clearTimeout(timeoutHandle);
+        resolve({
+          success: false,
+          results: [],
+          error: `Docker error: ${err.message}`,
+        });
+      });
+    });
+  }
+
+  /**
    * Check if Docker image exists locally
    */
   async checkImageExists() {

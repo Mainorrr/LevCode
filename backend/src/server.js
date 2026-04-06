@@ -6,6 +6,8 @@ const submissionsRouter = require("./routes/submissions");
 const sessionsRouter = require("./routes/sessions");
 const exportRouter = require("./routes/export");
 const adminRouter = require("./routes/admin");
+const accessPasswordsRouter = require("./routes/accessPasswords");
+const accessAuth = require("./middleware/accessAuth");
 
 const app = express();
 
@@ -13,7 +15,7 @@ const app = express();
 app.use(
   cors({
     origin: env.FRONTEND_URL,
-    methods: ["GET", "POST", "OPTIONS"],
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
     credentials: false,
   }),
 );
@@ -27,10 +29,11 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/api/submissions", submissionsRouter);
-app.use("/api/sessions", sessionsRouter);
+app.use("/api/submissions", accessAuth, submissionsRouter);
+app.use("/api/sessions", accessAuth, sessionsRouter);
 app.use("/api/export", exportRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/access", accessPasswordsRouter);
 
 // Health check (public, no auth required)
 app.get("/health", (req, res) => {

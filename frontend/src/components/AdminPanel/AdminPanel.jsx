@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import './AdminPanel.css'
 
 export default function AdminPanel() {
@@ -13,6 +13,11 @@ export default function AdminPanel() {
   const [filterGrupo, setFilterGrupo] = useState('')
   const [filterProblem, setFilterProblem] = useState('')
   const [filterSolved, setFilterSolved] = useState('')
+
+  // Contraseñas de acceso
+  const [accessPasswords, setAccessPasswords] = useState([])
+  const [newAccessPw, setNewAccessPw] = useState('')
+  const [accessPwError, setAccessPwError] = useState('')
 
   const fetchSessions = async () => {
     setError('')
@@ -72,12 +77,82 @@ export default function AdminPanel() {
     return d.toLocaleString('es-CR', { dateStyle: 'short', timeStyle: 'medium' })
   }
 
+  const exportCSV = async () => {
+    try {
+      const res = await fetch('/api/export/csv', {
+        headers: { 'X-API-Password': password },
+      })
+      if (!res.ok) {
+        setError('Error al exportar CSV')
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `levcode_sessions_${new Date().toISOString().slice(0, 10)}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setError('Error de conexión al exportar')
+    }
+  }
+
   const clearFilters = () => {
     setFilterCarnet('')
     setFilterCurso('')
     setFilterGrupo('')
     setFilterProblem('')
     setFilterSolved('')
+  }
+
+  // ── Contraseñas de acceso ─────────────────────────────────────────────────
+  const fetchAccessPasswords = async () => {
+    try {
+      const res = await fetch('/api/access/passwords', {
+        headers: { 'X-Admin-Password': password },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setAccessPasswords(data.passwords)
+      }
+    } catch { /* silencioso */ }
+  }
+
+  useEffect(() => {
+    if (sessions) fetchAccessPasswords()
+  }, [sessions])
+
+  const handleAddAccessPw = async (e) => {
+    e.preventDefault()
+    setAccessPwError('')
+    if (!newAccessPw.trim()) return
+    try {
+      const res = await fetch('/api/access/passwords', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminPassword: password, newPassword: newAccessPw.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setAccessPwError(data.error)
+        return
+      }
+      setNewAccessPw('')
+      fetchAccessPasswords()
+    } catch {
+      setAccessPwError('Error de conexión')
+    }
+  }
+
+  const handleDeleteAccessPw = async (id) => {
+    try {
+      await fetch(`/api/access/passwords/${id}`, {
+        method: 'DELETE',
+        headers: { 'X-Admin-Password': password },
+      })
+      fetchAccessPasswords()
+    } catch { /* silencioso */ }
   }
 
   // Pantalla de login
@@ -112,6 +187,9 @@ export default function AdminPanel() {
         <h2>Panel de Administración</h2>
         <div className="admin-header-right">
           <span className="admin-count">{filtered.length} de {sessions.length} registros</span>
+          <button onClick={exportCSV} className="admin-btn-export">
+            Exportar CSV
+          </button>
           <button onClick={fetchSessions} disabled={loading} className="admin-btn-refresh">
             {loading ? 'Cargando...' : 'Actualizar datos'}
           </button>
@@ -206,6 +284,54 @@ export default function AdminPanel() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* ── Contraseñas de acceso ── */}
+      <div className="admin-access-section">
+        <h3>Contraseñas de acceso</h3>
+        <form className="admin-access-form" onSubmit={handleAddAccessPw}>
+          <input
+            type="text"
+            placeholder="Nueva contraseña..."
+            value={newAccessPw}
+            onChange={(e) => setNewAccessPw(e.target.value)}
+            className="admin-filter-input"
+          />
+          <button type="submit" className="admin-btn-export">Agregar</button>
+        </form>
+        {accessPwError && <p className="admin-error">{accessPwError}</p>}
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Fecha de creación</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {accessPasswords.map((pw) => (
+                <tr key={pw.id}>
+                  <td>{pw.id}</td>
+                  <td>{formatDate(pw.created_at)}</td>
+                  <td>
+                    <button
+                      className="admin-btn-delete"
+                      onClick={() => handleDeleteAccessPw(pw.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {accessPasswords.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="admin-empty">No hay contraseñas configuradas</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

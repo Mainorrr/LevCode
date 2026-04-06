@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
+import { keymap } from '@codemirror/view'
+import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
 import { nord } from '@fsegurai/codemirror-theme-nord'
 import './CodeEditor.css'
 
 /**
  * Componente CodeEditor
- * Integra CodeMirror con soporte para Java y captura de cambios
+ * Integra CodeMirror con soporte para Python y captura de cambios
  * 
  * Props:
  *   - code: string - Código actual en el editor
@@ -24,6 +26,7 @@ export default function CodeEditor({ code, onChange }) {
       doc: code,
       extensions: [
         basicSetup,
+        keymap.of([indentWithTab]),
         python(),
         nord,
         EditorView.updateListener.of((update) => {

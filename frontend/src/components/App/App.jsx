@@ -18,8 +18,12 @@ import './App.css'
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(window.location.hash === '#/admin')
   const savedUser = localStorage.getItem('levcode_user')
-  const [view, setView] = useState(savedUser ? 'menu' : 'form')
+  const savedAccessPw = sessionStorage.getItem('levcode_access_pw')
+  const [view, setView] = useState(savedUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
   const [userInfo, setUserInfo] = useState(savedUser ? JSON.parse(savedUser) : null)
+  const [accessPassword, setAccessPassword] = useState(savedAccessPw || '')
+  const [accessError, setAccessError] = useState('')
+  const [accessLoading, setAccessLoading] = useState(false)
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [code, setCode] = useState('')
   const [testResults, setTestResults] = useState(null)
@@ -28,19 +32,36 @@ export default function App() {
   const [solvedExercises, setSolvedExercises] = useState(new Set())
   const [inProgressExercises, setInProgressExercises] = useState(new Set())
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [sessionLoading, setSessionLoading] = useState(!!savedUser && !!savedAccessPw)
+  const [sessionError, setSessionError] = useState(false)
   const timerRef = useRef(null)
 
-  // Cargar estado de ejercicios si hay usuario guardado
-  useEffect(() => {
-    if (!userInfo) return
-    fetch(`/api/sessions/status/${userInfo.carnet}`)
+  // Cargar estado de ejercicios si hay usuario guardado y contraseña de acceso
+  const fetchSessionStatus = (carnet, pw) => {
+    setSessionLoading(true)
+    setSessionError(false)
+    fetch(`/api/sessions/status/${carnet}`, {
+      headers: { 'X-Access-Password': pw },
+    })
       .then((r) => r.json())
       .then((data) => {
         if (data.solved) setSolvedExercises(new Set(data.solved))
         if (data.inProgress) setInProgressExercises(new Set(data.inProgress))
+        setSessionLoading(false)
       })
-      .catch(() => {})
-  }, [userInfo?.carnet])
+      .catch(() => {
+        setSessionError(true)
+        setSessionLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    if (!userInfo || !accessPassword) {
+      setSessionLoading(false)
+      return
+    }
+    fetchSessionStatus(userInfo.carnet, accessPassword)
+  }, [userInfo?.carnet, accessPassword])
 
   // Detectar ruta /admin por hash
   useEffect(() => {
@@ -67,7 +88,34 @@ export default function App() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   }
 
-  // ── View: form ────────────────────────────────────────────────────────────
+  // ── View: access (primer paso) ─────────────────────────────────────────────
+  const handleAccessSubmit = async (e) => {
+    e.preventDefault()
+    setAccessError('')
+    setAccessLoading(true)
+    try {
+      const res = await fetch('/api/access/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: accessPassword }),
+      })
+      const data = await res.json()
+      if (!data.valid) {
+        setAccessError('Contraseña incorrecta')
+        setAccessLoading(false)
+        return
+      }
+      sessionStorage.setItem('levcode_access_pw', accessPassword)
+      setAccessLoading(false)
+      // Si ya hay usuario guardado, ir directo al menú; sino pedir datos
+      setView(userInfo ? 'menu' : 'form')
+    } catch {
+      setAccessError('Error de conexión con el servidor')
+      setAccessLoading(false)
+    }
+  }
+
+  // ── View: form (segundo paso) ─────────────────────────────────────────────
   const handleUserFormSubmit = (info) => {
     localStorage.setItem('levcode_user', JSON.stringify(info))
     setUserInfo(info)
@@ -76,9 +124,11 @@ export default function App() {
 
   const handleChangeUser = () => {
     localStorage.removeItem('levcode_user')
+    sessionStorage.removeItem('levcode_access_pw')
+    setAccessPassword('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
-    setView('form')
+    setView('access')
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
@@ -94,7 +144,7 @@ export default function App() {
       setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
       fetch('/api/sessions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
         body: JSON.stringify({
           carnet: userInfo.carnet,
           grupo: userInfo.grupo,
@@ -109,10 +159,8 @@ export default function App() {
   // ── View: exercise ────────────────────────────────────────────────────────
 
   /**
-   * Ejecuta el código contra todos los casos de prueba del ejercicio.
-   * El frontend itera los casos y llama al backend una vez por caso,
-   * luego compara el output con el esperado localmente.
-   * Si hay un error de compilación en el primer intento, se detiene.
+   * Ejecuta el código contra todos los casos de prueba en un solo contenedor.
+   * Envía todos los inputs al backend en una sola llamada batch.
    */
   const handleSubmit = async () => {
     setLoading(true)
@@ -120,63 +168,69 @@ export default function App() {
     setCompilationError(null)
 
     const { config, testcases } = selectedExercise
-    const results = []
 
-    for (const tc of testcases) {
-      try {
-        const response = await fetch('/api/submissions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code,
-            userId: userInfo.carnet,
-            problemId: config.id,
-            input: tc.input,
-          }),
-        })
+    try {
+      const response = await fetch('/api/submissions/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
+        body: JSON.stringify({
+          code,
+          userId: userInfo.carnet,
+          problemId: config.id,
+          inputs: testcases.map((tc) => tc.input),
+        }),
+      })
 
-        const data = await response.json()
+      const data = await response.json()
 
-        // Error de compilación o de ejecución interna: detener inmediatamente
-        if (!data.success) {
-          setCompilationError(data.error)
-          recordSession(false)
-          setLoading(false)
-          return
-        }
-
-        const passed = data.output?.trim() === tc.expectedOutput.trim()
-        results.push({
-          input: tc.input,
-          expectedOutput: tc.expectedOutput,
-          actualOutput: data.output ?? '',
-          passed,
-          executionTime: data.executionTime,
-        })
-      } catch (err) {
-        setCompilationError(`Error de conexión: ${err.message}`)
+      // Error global (código bloqueado, error de Docker, etc.)
+      if (!data.success) {
+        setCompilationError(data.error)
+        recordSession(false)
         setLoading(false)
         return
       }
-    }
 
-    setTestResults(results)
+      // Buscar el primer caso con error de ejecución/compilación/timeout
+      const firstError = data.results.find((r) => r.exitCode !== 0)
+      if (firstError) {
+        setCompilationError(firstError.error)
+        recordSession(false)
+        setLoading(false)
+        return
+      }
 
-    // Registrar el intento en la base de datos.
-    // solved = true solo si TODOS los casos pasaron.
-    const allPassed = results.length > 0 && results.every((r) => r.passed)
-    recordSession(allPassed)
-
-    if (allPassed) {
-      setSolvedExercises((prev) => new Set(prev).add(selectedExercise.config.id))
-      setInProgressExercises((prev) => {
-        const next = new Set(prev)
-        next.delete(selectedExercise.config.id)
-        return next
+      const results = data.results.map((r, i) => {
+        const tc = testcases[i]
+        return {
+          input: tc.input,
+          expectedOutput: tc.expectedOutput,
+          actualOutput: r.output ?? '',
+          passed: r.output?.trim() === tc.expectedOutput.trim(),
+          executionTime: Math.round(data.executionTime / testcases.length),
+          showInfo: tc.showInfo !== false,
+        }
       })
-    }
 
-    setLoading(false)
+      setTestResults(results)
+
+      const allPassed = results.length > 0 && results.every((r) => r.passed)
+      recordSession(allPassed)
+
+      if (allPassed) {
+        setSolvedExercises((prev) => new Set(prev).add(selectedExercise.config.id))
+        setInProgressExercises((prev) => {
+          const next = new Set(prev)
+          next.delete(selectedExercise.config.id)
+          return next
+        })
+      }
+
+      setLoading(false)
+    } catch (err) {
+      setCompilationError(`Error de conexión: ${err.message}`)
+      setLoading(false)
+    }
   }
 
   /**
@@ -186,7 +240,7 @@ export default function App() {
   const recordSession = (solved) => {
     fetch('/api/sessions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
       body: JSON.stringify({
         carnet: userInfo.carnet,
         grupo: userInfo.grupo,
@@ -223,7 +277,47 @@ export default function App() {
         <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} />
       )}
 
-      {view === 'menu' && (
+      {view === 'access' && (
+        <div className="access-gate">
+          <h2>Contraseña de acceso</h2>
+          <p>Ingresa la contraseña proporcionada por tu profesor.</p>
+          <form onSubmit={handleAccessSubmit}>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={accessPassword}
+              onChange={(e) => setAccessPassword(e.target.value)}
+              className="admin-input"
+              autoFocus
+            />
+            {accessError && <p className="admin-error">{accessError}</p>}
+            <button type="submit" className="admin-btn" disabled={accessLoading}>
+              {accessLoading ? 'Verificando...' : 'Ingresar'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {view === 'menu' && sessionLoading && (
+        <div className="app-body">
+          <div className="session-loading">
+            <p>Conectando con el servidor...</p>
+          </div>
+        </div>
+      )}
+
+      {view === 'menu' && !sessionLoading && sessionError && (
+        <div className="app-body">
+          <div className="session-error">
+            <p>No se pudo conectar con el servidor.</p>
+            <button className="submit-btn" onClick={() => fetchSessionStatus(userInfo.carnet, accessPassword)}>
+              Reintentar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {view === 'menu' && !sessionLoading && !sessionError && (
         <div className="app-body">
           <ExerciseMenu
             exercises={exercises}
@@ -280,7 +374,6 @@ export default function App() {
           <ResultDisplay
             testResults={testResults}
             compilationError={compilationError}
-            showTestCases={selectedExercise.config.showTestCases}
             loading={loading}
           />
         </div>

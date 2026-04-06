@@ -28,6 +28,15 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS curso VARCHAR(255) NOT NULL DEFAULT '';
     `);
 
+    // Tabla de contraseñas de acceso para estudiantes
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS access_passwords (
+        id           SERIAL PRIMARY KEY,
+        password_hash VARCHAR(64) NOT NULL,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+
     logger.info("Database migration completed");
   } catch (err) {
     // No fatal: el servidor arranca igual; los endpoints de sesión

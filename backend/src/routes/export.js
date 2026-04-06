@@ -16,7 +16,7 @@ const logger = require("../utils/logger");
 router.get("/csv", async (req, res) => {
   const password = req.headers["x-api-password"];
 
-  if (!password || password !== env.API_PASSWORD) {
+  if (!password || (password !== env.API_PASSWORD && password !== env.ADMIN_PASSWORD)) {
     return res.status(401).json({ error: "No autorizado" });
   }
 
@@ -25,6 +25,7 @@ router.get("/csv", async (req, res) => {
       `SELECT
          id,
          carnet,
+         curso,
          grupo,
          problem_id,
          attempts,
@@ -38,6 +39,7 @@ router.get("/csv", async (req, res) => {
     const columns = [
       "id",
       "carnet",
+      "curso",
       "grupo",
       "problem_id",
       "attempts",

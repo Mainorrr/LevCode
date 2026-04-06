@@ -7,7 +7,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install Docker CLI (necesario para ejecutar java-sandbox)
+# Install Docker CLI (necesario para ejecutar python-sandbox)
 RUN apk add --no-cache docker-cli curl
 
 # Copy package files (desde backend/)

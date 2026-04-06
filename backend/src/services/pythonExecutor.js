@@ -49,6 +49,45 @@ class PythonExecutor {
   }
 
   /**
+   * Execute Python code against multiple inputs in a single container
+   * @param {string} code - Python source code
+   * @param {string[]} inputs - Array of stdin inputs
+   * @returns {Promise<{success: boolean, results: Array, error: string, executionTime: number}>}
+   */
+  async executeBatch(code, inputs) {
+    const validation = validators.validatePythonCode(code);
+    if (!validation.valid) {
+      return {
+        success: false,
+        results: [],
+        error: validation.error,
+        executionTime: 0,
+      };
+    }
+
+    const startTime = Date.now();
+    const result = await dockerManager.executeBatch(
+      code,
+      inputs,
+      dockerConfig.LIMITS.timeout,
+    );
+    const executionTime = Date.now() - startTime;
+
+    logger.info("Python batch executed", {
+      success: result.success,
+      testCases: inputs.length,
+      executionTime,
+    });
+
+    return {
+      success: result.success,
+      results: result.results,
+      error: result.error,
+      executionTime,
+    };
+  }
+
+  /**
    * Get execution limits
    */
   getLimits() {
