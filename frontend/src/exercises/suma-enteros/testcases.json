@@ -1,12 +1,12 @@
 [
-  { "input": "2 3",       "expectedOutput": "5",       "showInfo": true },
-  { "input": "10 -4",     "expectedOutput": "6",       "showInfo": true },
-  { "input": "0 0",       "expectedOutput": "0",       "showInfo": true },
-  { "input": "-7 -3",     "expectedOutput": "-10",     "showInfo": true },
-  { "input": "100 200",   "expectedOutput": "300",     "showInfo": true },
-  { "input": "-50 50",    "expectedOutput": "0",       "showInfo": true },
-  { "input": "999 1",     "expectedOutput": "1000",    "showInfo": true },
-  { "input": "1 -1",      "expectedOutput": "0",       "showInfo": true },
-  { "input": "-100 -200", "expectedOutput": "-300",    "showInfo": true },
-  { "input": "42 58",     "expectedOutput": "100",     "showInfo": true }
+  { "input": "2 3",       "expectedOutput": "5",       "showInfo": true,  "showInfoHidden": true },
+  { "input": "10 -4",     "expectedOutput": "6",       "showInfo": true,  "showInfoHidden": false },
+  { "input": "0 0",       "expectedOutput": "0",       "showInfo": true,  "showInfoHidden": false },
+  { "input": "-7 -3",     "expectedOutput": "-10",     "showInfo": true,  "showInfoHidden": false },
+  { "input": "100 200",   "expectedOutput": "300",     "showInfo": true,  "showInfoHidden": false },
+  { "input": "-50 50",    "expectedOutput": "0",       "showInfo": false, "showInfoHidden": false },
+  { "input": "999 1",     "expectedOutput": "1000",    "showInfo": false, "showInfoHidden": false },
+  { "input": "1 -1",      "expectedOutput": "0",       "showInfo": false, "showInfoHidden": false },
+  { "input": "-100 -200", "expectedOutput": "-300",    "showInfo": false, "showInfoHidden": false },
+  { "input": "42 58",     "expectedOutput": "100",     "showInfo": false, "showInfoHidden": false }
 ]

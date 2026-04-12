@@ -21,7 +21,7 @@ router.post("/sessions", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, carnet, grupo, curso, problem_id, attempts, solved, created_at, updated_at
+      `SELECT id, carnet, grupo, curso, problem_id, attempts, solved, show_tests, show_tries, try_timer, created_at, updated_at
        FROM exercise_sessions
        ORDER BY created_at DESC`,
     );

@@ -19,7 +19,7 @@ export default function UserForm({ onSubmit, initialData }) {
   const [selectedGrupo, setSelectedGrupo] = useState(initialData?.grupo || '')
   const [error, setError] = useState('')
 
-  const validateCarnet = (value) => /^[A-Za-z]\d{5}$/.test(value)
+  const validateCarnet = (value) => /^[A-Za-z\d]{6}$/.test(value)
 
   const selectedCourse = selectedCourseIdx !== '' ? courses[selectedCourseIdx] : null
 

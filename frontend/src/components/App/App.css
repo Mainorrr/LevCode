@@ -172,6 +172,11 @@
   background: #A3BE8C;
 }
 
+.submit-btn-cooldown {
+  background: #BF616A;
+  opacity: 0.85;
+}
+
 @media (max-width: 1024px) {
   .app-content {
     grid-template-columns: 1fr;

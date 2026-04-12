@@ -16,7 +16,7 @@ import './App.css'
  *   'exercise' → Editor + resultados para el ejercicio seleccionado
  */
 export default function App() {
-  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#/admin')
+  const [isAdmin, setIsAdmin] = useState(window.location.pathname === '/admin')
   const savedUser = localStorage.getItem('levcode_user')
   const savedAccessPw = sessionStorage.getItem('levcode_access_pw')
   const [view, setView] = useState(savedUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
@@ -31,10 +31,14 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [solvedExercises, setSolvedExercises] = useState(new Set())
   const [inProgressExercises, setInProgressExercises] = useState(new Set())
-  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [attempts, setAttempts] = useState(0)
+  const [showTries, setShowTries] = useState(false)
+  const [showTests, setShowTests] = useState(true)
+  const [tryTimer, setTryTimer] = useState(false)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
   const [sessionLoading, setSessionLoading] = useState(!!savedUser && !!savedAccessPw)
   const [sessionError, setSessionError] = useState(false)
-  const timerRef = useRef(null)
+  const cooldownRef = useRef(null)
 
   // Cargar estado de ejercicios si hay usuario guardado y contraseña de acceso
   const fetchSessionStatus = (carnet, pw) => {
@@ -63,29 +67,63 @@ export default function App() {
     fetchSessionStatus(userInfo.carnet, accessPassword)
   }, [userInfo?.carnet, accessPassword])
 
-  // Detectar ruta /admin por hash
+  // Detectar ruta /admin por pathname
   useEffect(() => {
-    const onHash = () => setIsAdmin(window.location.hash === '#/admin')
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
+    const onPopState = () => setIsAdmin(window.location.pathname === '/admin')
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
-  // Start/reset timer when entering an exercise
-  useEffect(() => {
-    if (view !== 'exercise') return
-    setElapsedSeconds(0)
-    timerRef.current = setInterval(() => {
-      setElapsedSeconds((s) => s + 1)
-    }, 1000)
-    return () => clearInterval(timerRef.current)
-  }, [view, selectedExercise])
+  // ── Cooldown global (try_timer) ─────────────────────────────────────────────
+  const getCooldownKey = (carnet) => `levcode_cooldown_${carnet}`
 
-  const formatTime = (secs) => {
-    const h = Math.floor(secs / 3600)
-    const m = Math.floor((secs % 3600) / 60)
-    const s = secs % 60
-    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  const startCooldown = () => {
+    const key = getCooldownKey(userInfo.carnet)
+    const expiresAt = Date.now() + 30000
+    localStorage.setItem(key, String(expiresAt))
+    tickCooldown(expiresAt)
+  }
+
+  const tickCooldown = (expiresAt) => {
+    clearInterval(cooldownRef.current)
+    const update = () => {
+      const remaining = Math.ceil((expiresAt - Date.now()) / 1000)
+      if (remaining <= 0) {
+        setCooldownRemaining(0)
+        clearInterval(cooldownRef.current)
+      } else {
+        setCooldownRemaining(remaining)
+      }
+    }
+    update()
+    cooldownRef.current = setInterval(update, 1000)
+  }
+
+  const loadGlobalCooldown = () => {
+    if (!userInfo) return
+    const key = getCooldownKey(userInfo.carnet)
+    const expiresAt = Number(localStorage.getItem(key))
+    if (expiresAt && expiresAt > Date.now()) {
+      tickCooldown(expiresAt)
+    } else {
+      setCooldownRemaining(0)
+      clearInterval(cooldownRef.current)
+    }
+  }
+
+  // Cargar cooldown global al montar y limpiar al desmontar
+  useEffect(() => {
+    loadGlobalCooldown()
+    return () => clearInterval(cooldownRef.current)
+  }, [userInfo?.carnet])
+
+  /** Interpola de verde (#A3BE8C) a rojo (#BF616A) según intentos (0–5). */
+  const getAttemptsColor = (n) => {
+    const t = Math.min(n / 5, 1)
+    const r = Math.round(163 + t * (191 - 163))
+    const g = Math.round(190 + t * (97 - 190))
+    const b = Math.round(140 + t * (106 - 140))
+    return `rgb(${r}, ${g}, ${b})`
   }
 
   // ── View: access (primer paso) ─────────────────────────────────────────────
@@ -125,6 +163,7 @@ export default function App() {
   const handleChangeUser = () => {
     localStorage.removeItem('levcode_user')
     sessionStorage.removeItem('levcode_access_pw')
+    setUserInfo(null)
     setAccessPassword('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
@@ -137,10 +176,17 @@ export default function App() {
     setCode(exercise.config.starterCode)
     setTestResults(null)
     setCompilationError(null)
+    setAttempts(0)
+    setShowTries(false)
+    setShowTests(true)
+    setTryTimer(false)
+    loadGlobalCooldown()
     setView('exercise')
 
-    // Registrar intento 0 (apertura) si no está resuelto ni en progreso
-    if (!solvedExercises.has(exercise.config.id) && !inProgressExercises.has(exercise.config.id)) {
+    const isNew = !solvedExercises.has(exercise.config.id) && !inProgressExercises.has(exercise.config.id)
+
+    if (isNew) {
+      // Primera vez: crear registro en DB (attempts = 0)
       setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
       fetch('/api/sessions', {
         method: 'POST',
@@ -152,7 +198,34 @@ export default function App() {
           problemId: exercise.config.id,
           solved: false,
         }),
-      }).catch(() => {})
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success) {
+            setAttempts(data.attempts)
+            setShowTries(!!data.showTries)
+            setShowTests(data.showTests !== false)
+            setTryTimer(!!data.tryTimer)
+            if (data.tryTimer) loadGlobalCooldown()
+          }
+        })
+        .catch(() => {})
+    } else {
+      // Ya existe: solo leer datos sin incrementar
+      fetch(`/api/sessions/${userInfo.carnet}/${exercise.config.id}`, {
+        headers: { 'X-Access-Password': accessPassword },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success) {
+            setAttempts(data.attempts)
+            setShowTries(!!data.showTries)
+            setShowTests(data.showTests !== false)
+            setTryTimer(!!data.tryTimer)
+            if (data.tryTimer) loadGlobalCooldown()
+          }
+        })
+        .catch(() => {})
     }
   }
 
@@ -187,6 +260,7 @@ export default function App() {
       if (!data.success) {
         setCompilationError(data.error)
         recordSession(false)
+        if (tryTimer) startCooldown()
         setLoading(false)
         return
       }
@@ -196,6 +270,7 @@ export default function App() {
       if (firstError) {
         setCompilationError(firstError.error)
         recordSession(false)
+        if (tryTimer) startCooldown()
         setLoading(false)
         return
       }
@@ -208,7 +283,7 @@ export default function App() {
           actualOutput: r.output ?? '',
           passed: r.output?.trim() === tc.expectedOutput.trim(),
           executionTime: Math.round(data.executionTime / testcases.length),
-          showInfo: tc.showInfo !== false,
+          showInfo: showTests ? tc.showInfo !== false : !!tc.showInfoHidden,
         }
       })
 
@@ -224,6 +299,8 @@ export default function App() {
           next.delete(selectedExercise.config.id)
           return next
         })
+      } else if (tryTimer) {
+        startCooldown()
       }
 
       setLoading(false)
@@ -248,9 +325,14 @@ export default function App() {
         problemId: selectedExercise.config.id,
         solved,
       }),
-    }).catch(() => {
-      // Silencioso: no interrumpir la experiencia del estudiante
     })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) setAttempts(data.attempts)
+      })
+      .catch(() => {
+        // Silencioso: no interrumpir la experiencia del estudiante
+      })
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -259,7 +341,7 @@ export default function App() {
       <div className="app-container">
         <header className="app-header">
           <h1>Lev Code</h1>
-          <p>Escuela de Ciencias de la Computación e Informática</p>
+          <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
         </header>
         <AdminPanel />
       </div>
@@ -270,7 +352,7 @@ export default function App() {
     <div className="app-container">
       <header className="app-header">
         <h1>Lev Code</h1>
-        <p>Escuela de Ciencias de la Computación e Informática</p>
+        <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
       </header>
 
       {view === 'form' && (
@@ -280,7 +362,6 @@ export default function App() {
       {view === 'access' && (
         <div className="access-gate">
           <h2>Contraseña de acceso</h2>
-          <p>Ingresa la contraseña proporcionada por tu profesor.</p>
           <form onSubmit={handleAccessSubmit}>
             <input
               type="password"
@@ -339,7 +420,14 @@ export default function App() {
                 ← Ejercicios
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
-              <span className="exercise-timer">{formatTime(elapsedSeconds)}</span>
+              {showTries && (
+                <span
+                  className="exercise-timer"
+                  style={{ color: getAttemptsColor(attempts), borderColor: getAttemptsColor(attempts) }}
+                >
+                  Intentos: {attempts}
+                </span>
+              )}
             </div>
 
             <div className="exercise-description">
@@ -361,12 +449,14 @@ export default function App() {
 
             <button
               onClick={handleSubmit}
-              disabled={loading || solvedExercises.has(selectedExercise.config.id)}
-              className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}`}
+              disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
+              className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
             >
               {solvedExercises.has(selectedExercise.config.id)
                 ? 'Ejercicio completado'
-                : loading ? 'Ejecutando...' : 'Ejecutar Código'}
+                : cooldownRemaining > 0
+                  ? `Espera ${cooldownRemaining}s`
+                  : loading ? 'Ejecutando...' : 'Ejecutar Código'}
             </button>
           </div>
 

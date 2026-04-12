@@ -28,6 +28,14 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS curso VARCHAR(255) NOT NULL DEFAULT '';
     `);
 
+    // Agregar columnas de tratamiento a exercise_sessions (idempotente)
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        ADD COLUMN IF NOT EXISTS show_tests BOOLEAN,
+        ADD COLUMN IF NOT EXISTS show_tries BOOLEAN,
+        ADD COLUMN IF NOT EXISTS try_timer  BOOLEAN;
+    `);
+
     // Tabla de contraseñas de acceso para estudiantes
     await pool.query(`
       CREATE TABLE IF NOT EXISTS access_passwords (

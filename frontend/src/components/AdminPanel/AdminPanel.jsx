@@ -257,6 +257,9 @@ export default function AdminPanel() {
               <th>Ejercicio</th>
               <th>Intentos</th>
               <th>Resuelto</th>
+              <th>show_tests</th>
+              <th>show_tries</th>
+              <th>try_timer</th>
               <th>Inicio</th>
               <th>Último intento</th>
             </tr>
@@ -273,13 +276,22 @@ export default function AdminPanel() {
                 <td className={s.solved ? 'admin-solved' : 'admin-unsolved'}>
                   {s.solved ? 'Sí' : 'No'}
                 </td>
+                <td className={s.show_tests ? 'admin-solved' : 'admin-unsolved'}>
+                  {s.show_tests == null ? '—' : s.show_tests ? 'Sí' : 'No'}
+                </td>
+                <td className={s.show_tries ? 'admin-solved' : 'admin-unsolved'}>
+                  {s.show_tries == null ? '—' : s.show_tries ? 'Sí' : 'No'}
+                </td>
+                <td className={s.try_timer ? 'admin-solved' : 'admin-unsolved'}>
+                  {s.try_timer == null ? '—' : s.try_timer ? 'Sí' : 'No'}
+                </td>
                 <td>{formatDate(s.created_at)}</td>
                 <td>{formatDate(s.updated_at)}</td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan="9" className="admin-empty">No hay registros que coincidan con los filtros</td>
+                <td colSpan="12" className="admin-empty">No hay registros que coincidan con los filtros</td>
               </tr>
             )}
           </tbody>

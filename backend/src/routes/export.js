@@ -30,6 +30,9 @@ router.get("/csv", async (req, res) => {
          problem_id,
          attempts,
          solved,
+         show_tests,
+         show_tries,
+         try_timer,
          created_at,
          updated_at
        FROM exercise_sessions
@@ -46,6 +49,9 @@ router.get("/csv", async (req, res) => {
       "solved",
       "created_at",
       "updated_at",
+      "show_tests",
+      "show_tries",
+      "try_timer",
     ];
 
     const header = columns.join(",");

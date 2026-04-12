@@ -35,8 +35,8 @@ router.post("/", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO exercise_sessions (carnet, grupo, curso, problem_id, attempts, solved)
-       VALUES ($1, $2, $3, $4, 0, $5)
+      `INSERT INTO exercise_sessions (carnet, grupo, curso, problem_id, attempts, solved, show_tests, show_tries, try_timer)
+       VALUES ($1, $2, $3, $4, 0, $5, random() < 0.5, random() < 0.5, random() < 0.5)
        ON CONFLICT (carnet, problem_id) DO UPDATE
          SET attempts    = CASE
                              WHEN exercise_sessions.solved THEN exercise_sessions.attempts
@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
                              WHEN exercise_sessions.solved THEN exercise_sessions.updated_at
                              ELSE NOW()
                            END
-       RETURNING id, carnet, problem_id, attempts, solved`,
+       RETURNING id, carnet, problem_id, attempts, solved, show_tests, show_tries, try_timer`,
       [carnet, grupo, curso, problemId, solved],
     );
 
@@ -64,10 +64,78 @@ router.post("/", async (req, res) => {
       success: true,
       attempts: row.attempts,
       solved: row.solved,
+      showTests: row.show_tests,
+      showTries: row.show_tries,
+      tryTimer: row.try_timer,
     });
   } catch (err) {
     logger.error("Failed to record session", { error: err.message });
     res.status(500).json({ success: false, error: "Error al guardar la sesión" });
+  }
+});
+
+/**
+ * GET /api/sessions/:carnet/:problemId
+ *
+ * Retorna los datos de una sesión específica sin modificarla.
+ * Response: { success, attempts, solved, showTests, showTries, tryTimer } o 404.
+ */
+router.get("/:carnet/:problemId", async (req, res) => {
+  const { carnet, problemId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT attempts, solved, show_tests, show_tries, try_timer
+       FROM exercise_sessions WHERE carnet = $1 AND problem_id = $2`,
+      [carnet, problemId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: "Sesión no encontrada" });
+    }
+
+    const row = result.rows[0];
+    res.json({
+      success: true,
+      attempts: row.attempts,
+      solved: row.solved,
+      showTests: row.show_tests,
+      showTries: row.show_tries,
+      tryTimer: row.try_timer,
+    });
+  } catch (err) {
+    logger.error("Failed to fetch session", { error: err.message });
+    res.status(500).json({ success: false, error: "Error al consultar sesión" });
+  }
+});
+
+/**
+ * GET /api/sessions/treatments/:carnet
+ *
+ * Retorna los tratamientos asignados al estudiante por ejercicio.
+ * Response: { treatments: [{ problemId, showTests, showTries, tryTimer }, ...] }
+ */
+router.get("/treatments/:carnet", async (req, res) => {
+  const { carnet } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT problem_id, show_tests, show_tries, try_timer
+       FROM exercise_sessions WHERE carnet = $1`,
+      [carnet],
+    );
+
+    res.json({
+      treatments: result.rows.map((row) => ({
+        problemId: row.problem_id,
+        showTests: row.show_tests,
+        showTries: row.show_tries,
+        tryTimer: row.try_timer,
+      })),
+    });
+  } catch (err) {
+    logger.error("Failed to fetch treatments", { error: err.message });
+    res.status(500).json({ error: "Error al consultar tratamientos" });
   }
 });
 
