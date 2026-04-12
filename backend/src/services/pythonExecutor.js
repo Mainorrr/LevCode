@@ -1,37 +1,24 @@
-const dockerManager = require("./dockerManager");
+const pythonRunner = require("./pythonRunner");
 const validators = require("../utils/validators");
 const logger = require("../utils/logger");
-const dockerConfig = require("../config/docker");
+const env = require("../config/env");
 
 /**
- * Manages Python code execution
+ * Capa de alto nivel para ejecución de código Python.
+ * Valida el código y delega la ejecución a pythonRunner.
  */
 class PythonExecutor {
   /**
-   * Execute Python code
-   * @param {string} code - Python source code
-   * @param {string} input - Stdin input for the Python program (test case input)
-   * @returns {Promise<{success: boolean, output: string, error: string, executionTime: number}>}
+   * Ejecuta código Python con un solo input.
    */
   async execute(code, input = "") {
-    // Validate input code
     const validation = validators.validatePythonCode(code);
     if (!validation.valid) {
-      return {
-        success: false,
-        output: "",
-        error: validation.error,
-        executionTime: 0,
-      };
+      return { success: false, output: "", error: validation.error, executionTime: 0 };
     }
 
-    // Execute in Docker
     const startTime = Date.now();
-    const result = await dockerManager.executeInDocker(
-      code,
-      input,
-      dockerConfig.LIMITS.timeout,
-    );
+    const result = await pythonRunner.execute(code, input);
     const executionTime = Date.now() - startTime;
 
     logger.info("Python code executed", {
@@ -40,37 +27,20 @@ class PythonExecutor {
       exitCode: result.exitCode,
     });
 
-    return {
-      success: result.success,
-      output: result.output,
-      error: result.error,
-      executionTime,
-    };
+    return { success: result.success, output: result.output, error: result.error, executionTime };
   }
 
   /**
-   * Execute Python code against multiple inputs in a single container
-   * @param {string} code - Python source code
-   * @param {string[]} inputs - Array of stdin inputs
-   * @returns {Promise<{success: boolean, results: Array, error: string, executionTime: number}>}
+   * Ejecuta código Python contra múltiples inputs.
    */
   async executeBatch(code, inputs) {
     const validation = validators.validatePythonCode(code);
     if (!validation.valid) {
-      return {
-        success: false,
-        results: [],
-        error: validation.error,
-        executionTime: 0,
-      };
+      return { success: false, results: [], error: validation.error, executionTime: 0 };
     }
 
     const startTime = Date.now();
-    const result = await dockerManager.executeBatch(
-      code,
-      inputs,
-      dockerConfig.LIMITS.timeout,
-    );
+    const result = await pythonRunner.executeBatch(code, inputs);
     const executionTime = Date.now() - startTime;
 
     logger.info("Python batch executed", {
@@ -88,10 +58,13 @@ class PythonExecutor {
   }
 
   /**
-   * Get execution limits
+   * Retorna los límites de ejecución.
    */
   getLimits() {
-    return dockerConfig.LIMITS;
+    return {
+      timeout: parseInt(env.PYTHON_TIMEOUT || "5000", 10),
+      maxOutput: parseInt(env.PYTHON_OUTPUT_MAX || "10485760", 10),
+    };
   }
 }
 

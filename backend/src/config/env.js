@@ -12,10 +12,8 @@ module.exports = {
   API_PASSWORD: process.env.API_PASSWORD || "",
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "",
 
-  // Docker & Python Execution
-  DOCKER_IMAGE: process.env.DOCKER_IMAGE || "levcode-python:latest",
+  // Python Execution
   PYTHON_TIMEOUT: parseInt(process.env.PYTHON_TIMEOUT || "5000", 10),
-  PYTHON_MEMORY: process.env.PYTHON_MEMORY || "128m",
   PYTHON_OUTPUT_MAX: parseInt(process.env.PYTHON_OUTPUT_MAX || "10485760", 10),
 
   // Database

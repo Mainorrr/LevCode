@@ -1,23 +1,23 @@
-# CLAUDE.md — LevCode Online Judge
+# CLAUDE.md -- LevCode Online Judge
 
-## Propósito del Proyecto
+## Proposito del Proyecto
 
-LevCode es un **juez en línea de investigación** para estudiantes principiantes de programación en Python 3. Su objetivo es estudiar qué configuraciones reducen el comportamiento de prueba y error (trial-and-error) en los estudiantes. NO es una plataforma de producción general — es una herramienta de investigación académica.
+LevCode es un **juez en linea de investigacion** para estudiantes principiantes de programacion en Python 3. Su objetivo es estudiar que configuraciones reducen el comportamiento de prueba y error (trial-and-error) en los estudiantes. NO es una plataforma de produccion general -- es una herramienta de investigacion academica.
 
 ---
 
-## Objetivo de Investigación
+## Objetivo de Investigacion
 
-Comparar el efecto de distintos **métodos de retroalimentación** sobre la conducta de prueba y error de los estudiantes:
+Comparar el efecto de distintos **metodos de retroalimentacion** sobre la conducta de prueba y error de los estudiantes:
 
-| Tipo | Método | Descripción |
+| Tipo | Metodo | Descripcion |
 |------|--------|-------------|
-| Positivo | Mostrar casos de prueba fallidos | El estudiante ve qué entradas/salidas esperadas falló, para que analice en lugar de adivinar |
-| Negativo | Ocultar casos de prueba | El estudiante no sabe qué falló, mayor presión para pensar |
-| Positivo (futuro) | Ranking / puntos extra | Top 3 reciben bonificación en la nota |
-| Negativo (futuro) | Penalización por intento fallido | Cada intento fallido descuenta puntos del resultado final |
+| Positivo | Mostrar casos de prueba fallidos | El estudiante ve que entradas/salidas esperadas fallo, para que analice en lugar de adivinar |
+| Negativo | Ocultar casos de prueba | El estudiante no sabe que fallo, mayor presion para pensar |
+| Positivo (futuro) | Ranking / puntos extra | Top 3 reciben bonificacion en la nota |
+| Negativo (futuro) | Penalizacion por intento fallido | Cada intento fallido descuenta puntos del resultado final |
 
-> **IMPORTANTE:** El sistema NO implementa rankings ni cálculos de puntos. Solo registra los datos en la base de datos para que el investigador los analice externamente con pruebas estadísticas (Tukey, ANOVA, etc.).
+> **IMPORTANTE:** El sistema NO implementa rankings ni calculos de puntos. Solo registra los datos en la base de datos para que el investigador los analice externamente con pruebas estadisticas (Tukey, ANOVA, etc.).
 
 ---
 
@@ -25,189 +25,206 @@ Comparar el efecto de distintos **métodos de retroalimentación** sobre la cond
 
 ```
 LevCode/ (monorepo)
-├── frontend/        → React + Vite + CodeMirror (lógica de ejercicios vive aquí)
-├── backend/         → Node.js + Express (solo ejecuta código y guarda datos)
-├── docker/          → Sandbox Python 3 (Python 3.11)
-├── docker-compose.yml
-└── Dockerfile       (backend container)
+├── frontend/        -> React + Vite + CodeMirror (logica de ejercicios vive aqui)
+├── backend/         -> Node.js + Express (ejecuta codigo Python y guarda datos)
+├── docker-compose.yml   (PostgreSQL + Backend)
+└── Dockerfile           (Backend: Node.js + Python 3)
 ```
 
-**Principio de separación de responsabilidades:**
-- **Frontend:** Carga ejercicios desde archivos de configuración locales, muestra/oculta casos de prueba según config del ejercicio, maneja el menú de ejercicios
-- **Backend:** Ejecuta código Python 3 en Docker, guarda submissions en DB, retorna resultados. Lo más simple posible.
+**Principio de separacion de responsabilidades:**
+- **Frontend:** Carga ejercicios desde archivos de configuracion locales, muestra/oculta casos de prueba segun tratamientos, maneja el menu de ejercicios
+- **Backend:** Ejecuta codigo Python 3 via child_process, guarda sessions en DB, retorna resultados. Lo mas simple posible.
 
 ---
 
-## Stack Tecnológico
+## Stack Tecnologico
 
-| Capa | Tecnología |
+| Capa | Tecnologia |
 |------|-----------|
 | Frontend | React 18 + Vite + CodeMirror 6 + tema Nord |
 | Backend | Node.js 20 + Express 4 |
-| Ejecución Python 3 | Docker (python:3.11-slim) vía `child_process` |
-| Base de datos | PostgreSQL (aún no implementada) |
-| Hosting (plan) | Frontend: Vercel / Backend + Docker: Railway |
+| Ejecucion Python 3 | `child_process` (spawn python3 directamente) |
+| Base de datos | PostgreSQL 16 |
+| Hosting | Frontend: Vercel / Backend: Railway / DB: Railway PostgreSQL |
 
 ---
 
 ## Sistema de Ejercicios (Frontend)
 
-Los ejercicios se almacenan como **archivos de configuración en el frontend** (no en el backend). El backend no conoce nada sobre los ejercicios.
+Los ejercicios se almacenan como **archivos de configuracion en el frontend** (no en el backend). El backend no conoce nada sobre los ejercicios.
 
 ### Estructura de un ejercicio
-
-Cada ejercicio tendrá su propia carpeta dentro de `frontend/src/exercises/`:
 
 ```
 frontend/src/exercises/
 ├── hello-world/
-│   ├── config.json       ← configuración del ejercicio
-│   └── testcases.json    ← casos de prueba (input/output esperado)
-├── suma-dos-numeros/
 │   ├── config.json
 │   └── testcases.json
-└── ...
+├── suma-enteros/
+│   ├── config.json
+│   └── testcases.json
+└── index.js            <- exporta todos los ejercicios
 ```
 
-### config.json de un ejercicio
+### config.json
 
 ```json
 {
   "id": "hello-world",
   "title": "Hola Mundo",
   "description": "Imprime 'Hello World' en la consola.",
-  "showTestCases": true,
-  "penalizeFailures": false,
-  "starterCode": "# Tu código aquí\nprint('Hello World')"
+  "starterCode": "# Tu codigo aqui\nprint('Hello World')"
 }
 ```
 
-**Campo clave: `showTestCases`** — controla si se muestran los casos de prueba fallidos al estudiante. Este es el parámetro de investigación principal actualmente implementable.
-
-### testcases.json de un ejercicio
+### testcases.json
 
 ```json
 [
-  { "input": "", "expectedOutput": "Hello World" },
-  { "input": "2 3", "expectedOutput": "5" }
+  { "input": "", "expectedOutput": "Hello World", "showInfo": true, "showInfoHidden": false }
 ]
 ```
 
----
-
-## Flujo de Ejecución
-
-1. Usuario selecciona un ejercicio del menú (frontend carga el config.json correspondiente)
-2. Usuario ingresa datos personales: carnet, grupo, semestre
-3. Usuario escribe código Python 3 y hace submit
-4. Frontend envía al backend: `{ code, userId, problemId, group, semester }`
-5. Backend ejecuta en Docker, retorna resultado
-6. Frontend valida output contra `testcases.json` localmente
-7. Frontend muestra resultado y, si `showTestCases: true`, muestra los casos que fallaron
-8. Backend guarda la submission completa en PostgreSQL (incluyendo pass/fail por caso de prueba)
+- `showInfo`: si se muestra info del caso cuando `show_tests = true`
+- `showInfoHidden`: si se muestra info del caso cuando `show_tests = false`
 
 ---
 
-## Base de Datos (PostgreSQL — pendiente de implementar)
+## Sistema de Tratamientos (Investigacion)
 
-### Datos a guardar por submission
+Cada combinacion estudiante + ejercicio recibe 3 tratamientos booleanos aleatorios al crear el primer registro en la DB (`random() < 0.5` de PostgreSQL):
+
+| Tratamiento  | Efecto cuando `true` |
+| ------------ | -------------------- |
+| `show_tests` | Usa `showInfo` de testcases.json para decidir que info mostrar en casos fallidos |
+| `show_tries` | Muestra contador de intentos con escala de color verde (0) a rojo (5+) |
+| `try_timer`  | Cooldown global de 30 segundos entre intentos fallidos (persiste en localStorage) |
+
+Cuando `show_tests = false`, se usa `showInfoHidden` de testcases.json.
+
+---
+
+## Flujo de Ejecucion
+
+1. Usuario selecciona un ejercicio del menu (frontend carga config.json)
+2. Usuario ingresa datos: carnet, grupo, curso
+3. Frontend registra sesion via `POST /api/sessions` (crea registro con tratamientos aleatorios)
+4. Usuario escribe codigo Python 3 y hace submit
+5. Frontend envia al backend: `{ code, userId, problemId, inputs }`
+6. Backend ejecuta Python via `child_process`, retorna resultados por caso
+7. Frontend valida output contra `testcases.json` localmente
+8. Frontend muestra resultado segun tratamientos asignados
+9. `POST /api/sessions` incrementa `attempts` y registra si resolvio
+
+---
+
+## Base de Datos (PostgreSQL)
+
+### Tabla: exercise_sessions
 
 ```sql
--- tabla submissions
-id, user_id, carnet, grupo, semestre,
-problem_id, code, output, expected_output,
-passed (bool), failed_cases (json), execution_time_ms,
-attempt_number (por usuario+problema), created_at
+CREATE TABLE exercise_sessions (
+  id           SERIAL PRIMARY KEY,
+  carnet       VARCHAR(6)   NOT NULL,
+  grupo        VARCHAR(255) NOT NULL,
+  curso        VARCHAR(255) NOT NULL DEFAULT '',
+  problem_id   VARCHAR(100) NOT NULL,
+  attempts     INTEGER      NOT NULL DEFAULT 0,
+  solved       BOOLEAN      NOT NULL DEFAULT FALSE,
+  show_tests   BOOLEAN,
+  show_tries   BOOLEAN,
+  try_timer    BOOLEAN,
+  created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_carnet_problem UNIQUE (carnet, problem_id)
+);
 ```
 
-### Propósito de los datos
+### Tabla: access_passwords
 
-- Calcular número de intentos antes de pasar (trial-and-error score)
-- Agrupar por `grupo` o `semestre` para comparativas estadísticas
-- Pruebas de Tukey para comparar métodos positivos vs negativos
-- El investigador exporta los datos y hace el análisis externamente
+```sql
+CREATE TABLE access_passwords (
+  id            SERIAL PRIMARY KEY,
+  password_hash VARCHAR(64) NOT NULL,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
 
-> **NUNCA implementar:** rankings visibles para el usuario, cálculos de nota, ni dashboards estadísticos. Solo registrar datos crudos.
+### Proposito de los datos
+
+- Calcular numero de intentos antes de pasar (trial-and-error score)
+- Agrupar por `grupo` o `curso` para comparativas estadisticas
+- Comparar tratamientos (show_tests, show_tries, try_timer) con pruebas estadisticas
+- El investigador exporta los datos via CSV y hace el analisis externamente
+
+> **NUNCA implementar:** rankings visibles para el usuario, calculos de nota, ni dashboards estadisticos. Solo registrar datos crudos.
 
 ---
 
-## Información del Usuario
+## Informacion del Usuario
 
-Sin autenticación. El usuario provee al inicio:
+Sin autenticacion. El usuario provee al inicio:
 
-| Campo | Descripción | Validación |
+| Campo | Descripcion | Validacion |
 |-------|-------------|-----------|
-| `carnet` | ID estudiantil (1 letra + 5 dígitos) | `/^[A-Za-z\d]{6}$/` |
-| `grupo` | Número de grupo del curso | Texto libre |
-| `semestre` | Semestre en el que está de la carrera | Número entero |
+| `carnet` | ID estudiantil | `/^[A-Za-z\d]{6}$/` |
+| `grupo` | Numero de grupo del curso | Seleccion de lista |
+| `curso` | Nombre del curso | Seleccion de lista |
 
-Estos datos se almacenan con cada submission para análisis estadístico.
+Estos datos se almacenan con cada session para analisis estadistico.
 
 ---
 
-## Límites de Ejecución Docker
+## Limites de Ejecucion
 
-| Límite | Valor |
+| Limite | Valor |
 |--------|-------|
-| Timeout | 5 segundos |
-| Memoria | 128MB |
-| Red | Deshabilitada (`--network=none`) |
-| Output máximo | 10MB |
-| Usuarios simultáneos máx. | ~60 |
+| Timeout | 5 segundos por caso |
+| Output maximo | 10 MB |
+| Usuarios simultaneos max. | ~60 |
 
 ---
 
-## Seguridad — Patrones Python Bloqueados
+## Seguridad -- Patrones Python Bloqueados
 
-El backend bloquea código que contiene:
-- `import os`
+El backend bloquea codigo que contiene:
 - `import subprocess`
-- `import sys`
-- `open(`
-- `__import__`
-- `exec(`
-- `eval(`
-
----
-
-## Inconsistencias Conocidas
-
-- **Puerto Vite:** `vite.config.js` configura puerto 3001, pero `.env.development` usa `FRONTEND_URL=http://localhost:5173`. El puerto correcto activo es el que Vite use al iniciar.
-- **Auth middleware:** `backend/src/middleware/auth.js` existe pero NO está aplicado a las rutas. Ignorar por ahora.
+- `subprocess.`
+- `os.system(`, `os.popen(`, `os.execv(`, `os.execve(`
+- `__import__(`
 
 ---
 
 ## Reglas de Desarrollo
 
-1. **La lógica de ejercicios va en el frontend.** El backend no sabe qué ejercicio se está resolviendo, solo ejecuta código y guarda datos.
+1. **La logica de ejercicios va en el frontend.** El backend no sabe que ejercicio se esta resolviendo.
 2. **El backend es minimalista.** No agregar features al backend que puedan vivir en el frontend.
-3. **Guardar TODO en la base de datos.** Incluso submissions fallidas, incompletas o con errores de sintaxis — son datos de investigación.
-4. **No implementar rankings ni cálculos de nota.** Solo persistir datos crudos.
-5. **`showTestCases`** es el único parámetro de configuración de investigación actualmente activo. Configurado por ejercicio en `config.json`.
-6. **No agregar autenticación.** Es una herramienta de investigación deliberadamente simple.
-7. **Monorepo:** Respetar separación `frontend/`, `backend/`, `docker/`.
+3. **Guardar TODO en la base de datos.** Incluso submissions fallidas -- son datos de investigacion.
+4. **No implementar rankings ni calculos de nota.** Solo persistir datos crudos.
+5. **No agregar autenticacion.** Herramienta de investigacion simple.
+6. **Monorepo:** Respetar separacion `frontend/`, `backend/`.
+7. **Sin Docker-in-Docker:** Python se ejecuta via `child_process` directamente en el backend.
 
 ---
 
-## Endpoints API Actuales
+## Endpoints API
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| POST | `/api/submissions` | Enviar código para ejecución |
-| GET | `/api/submissions/limits` | Ver límites de ejecución |
-| GET | `/health` | Health check |
-
-### Request body de `/api/submissions`
-
-```json
-{
-  "code": "<python 3 source code>",
-  "userId": "A12345",
-  "problemId": "hello-world"
-}
-```
-
-> Próximamente agregar: `group`, `semester`, `passedCases`, `failedCases`, `attemptNumber`
+| Metodo | Ruta | Auth | Descripcion |
+|--------|------|------|-------------|
+| POST | `/api/submissions` | Access PW | Ejecutar codigo Python (un input) |
+| POST | `/api/submissions/batch` | Access PW | Ejecutar codigo contra multiples inputs |
+| GET | `/api/submissions/limits` | -- | Limites de ejecucion |
+| POST | `/api/sessions` | Access PW | Registrar/actualizar sesion de ejercicio |
+| GET | `/api/sessions/status/:carnet` | Access PW | Estado de ejercicios del estudiante |
+| GET | `/api/sessions/:carnet/:problemId` | Access PW | Datos de una sesion especifica |
+| GET | `/api/sessions/treatments/:carnet` | Access PW | Tratamientos por ejercicio |
+| POST | `/api/admin/sessions` | Admin PW | Todos los registros (panel admin) |
+| GET | `/api/export/csv` | API PW | Exportar datos como CSV |
+| POST | `/api/access/passwords` | Admin PW | Crear contrasena de acceso |
+| GET | `/api/access/passwords` | Admin PW | Listar contrasenas |
+| DELETE | `/api/access/passwords/:id` | Admin PW | Eliminar contrasena |
+| POST | `/api/access/validate` | -- | Validar contrasena de acceso |
+| GET | `/health` | -- | Health check |
 
 ---
 
@@ -215,13 +232,13 @@ El backend bloquea código que contiene:
 
 | Componente | Estado |
 |-----------|--------|
-| Ejecución Docker Python 3 | ✅ Funcionando |
-| Frontend React + CodeMirror | ✅ Funcionando |
-| API REST básica | ✅ Funcionando |
-| Sistema de ejercicios | ⬜ Por implementar |
-| Menú de ejercicios | ⬜ Por implementar |
-| Validación de casos de prueba (frontend) | ⬜ Por implementar |
-| `showTestCases` configurable | ⬜ Por implementar |
-| Base de datos PostgreSQL | ⬜ Por implementar |
-| Campos usuario (grupo, semestre) | ⬜ Por implementar |
-| Guardar submissions en DB | ⬜ Por implementar |
+| Ejecucion Python 3 (child_process) | Funcionando |
+| Frontend React + CodeMirror | Funcionando |
+| API REST | Funcionando |
+| Sistema de ejercicios (menu + config) | Funcionando |
+| Validacion de casos de prueba (frontend) | Funcionando |
+| Base de datos PostgreSQL | Funcionando |
+| Tratamientos aleatorios (show_tests, show_tries, try_timer) | Funcionando |
+| Panel de administracion (/admin) | Funcionando |
+| Contrasenas de acceso | Funcionando |
+| Export CSV | Funcionando |

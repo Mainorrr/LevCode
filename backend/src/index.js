@@ -15,7 +15,6 @@ migrate().then(() => {
 const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`, {
     environment: env.NODE_ENV,
-    dockerImage: env.DOCKER_IMAGE,
   });
 });
 
