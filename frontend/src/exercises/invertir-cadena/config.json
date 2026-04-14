@@ -1,0 +1,6 @@
+{
+  "id": "invertir-cadena",
+  "title": "Invertir Cadena",
+  "description": "Lee una cadena de texto e imprime la cadena invertida.\n\nEjemplo de entrada:\nhola\n\nEjemplo de salida:\naloh",
+  "starterCode": "texto = input()\n# Tu codigo aqui\n"
+}

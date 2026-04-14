@@ -1,0 +1,12 @@
+[
+  { "input": "hola",       "expectedOutput": "aloh",       "showInfo": true,  "showInfoHidden": true  },
+  { "input": "Python",     "expectedOutput": "nohtyP",     "showInfo": true,  "showInfoHidden": false },
+  { "input": "abcde",      "expectedOutput": "edcba",      "showInfo": true,  "showInfoHidden": false },
+  { "input": "a",          "expectedOutput": "a",          "showInfo": true,  "showInfoHidden": false },
+  { "input": "12345",      "expectedOutput": "54321",      "showInfo": true,  "showInfoHidden": false },
+  { "input": "Hola Mundo", "expectedOutput": "odnuM aloH", "showInfo": false, "showInfoHidden": false },
+  { "input": "racecar",    "expectedOutput": "racecar",    "showInfo": false, "showInfoHidden": false },
+  { "input": "AB",         "expectedOutput": "BA",         "showInfo": false, "showInfoHidden": false },
+  { "input": "oso",        "expectedOutput": "oso",        "showInfo": false, "showInfoHidden": false },
+  { "input": "programar",  "expectedOutput": "ramargorp",  "showInfo": false, "showInfoHidden": false }
+]

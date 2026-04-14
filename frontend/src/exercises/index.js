@@ -1,7 +1,15 @@
-import helloWorldConfig from './hello-world/config.json'
-import helloWorldTestcases from './hello-world/testcases.json'
 import sumaEnterosConfig from './suma-enteros/config.json'
 import sumaEnterosTestcases from './suma-enteros/testcases.json'
+import parOImparConfig from './par-o-impar/config.json'
+import parOImparTestcases from './par-o-impar/testcases.json'
+import mayorDeTresConfig from './mayor-de-tres/config.json'
+import mayorDeTresTestcases from './mayor-de-tres/testcases.json'
+import tablaMultiplicarConfig from './tabla-multiplicar/config.json'
+import tablaMultiplicarTestcases from './tabla-multiplicar/testcases.json'
+import contarVocalesConfig from './contar-vocales/config.json'
+import contarVocalesTestcases from './contar-vocales/testcases.json'
+import invertirCadenaConfig from './invertir-cadena/config.json'
+import invertirCadenaTestcases from './invertir-cadena/testcases.json'
 
 /**
  * Registro central de ejercicios.
@@ -10,11 +18,27 @@ import sumaEnterosTestcases from './suma-enteros/testcases.json'
  */
 export const exercises = [
   {
-    config: helloWorldConfig,
-    testcases: helloWorldTestcases,
-  },
-  {
     config: sumaEnterosConfig,
     testcases: sumaEnterosTestcases,
+  },
+  {
+    config: parOImparConfig,
+    testcases: parOImparTestcases,
+  },
+  {
+    config: mayorDeTresConfig,
+    testcases: mayorDeTresTestcases,
+  },
+  {
+    config: tablaMultiplicarConfig,
+    testcases: tablaMultiplicarTestcases,
+  },
+  {
+    config: contarVocalesConfig,
+    testcases: contarVocalesTestcases,
+  },
+  {
+    config: invertirCadenaConfig,
+    testcases: invertirCadenaTestcases,
   },
 ]

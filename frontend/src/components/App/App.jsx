@@ -5,13 +5,14 @@ import UserForm from '../UserForm/UserForm'
 import ExerciseMenu from '../ExerciseMenu/ExerciseMenu'
 import AdminPanel from '../AdminPanel/AdminPanel'
 import { exercises } from '../../exercises/index'
+import groupExercises from '../../groupExercises.json'
 import './App.css'
 
 /**
  * Componente principal de LevCode.
  *
  * Flujo de vistas:
- *   'form'     → El estudiante ingresa carnet, grupo y curso
+ *   'form'     → El estudiante ingresa carnet y grupo
  *   'menu'     → Selecciona un ejercicio de la lista
  *   'exercise' → Editor + resultados para el ejercicio seleccionado
  */
@@ -22,6 +23,7 @@ export default function App() {
   const [view, setView] = useState(savedUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
   const [userInfo, setUserInfo] = useState(savedUser ? JSON.parse(savedUser) : null)
   const [accessPassword, setAccessPassword] = useState(savedAccessPw || '')
+  const [accessPasswordInput, setAccessPasswordInput] = useState('')
   const [accessError, setAccessError] = useState('')
   const [accessLoading, setAccessLoading] = useState(false)
   const [selectedExercise, setSelectedExercise] = useState(null)
@@ -33,39 +35,56 @@ export default function App() {
   const [inProgressExercises, setInProgressExercises] = useState(new Set())
   const [attempts, setAttempts] = useState(0)
   const [showTries, setShowTries] = useState(false)
-  const [showTests, setShowTests] = useState(true)
+  const [hideTests, setHideTests] = useState(false)
   const [tryTimer, setTryTimer] = useState(false)
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
   const [sessionLoading, setSessionLoading] = useState(!!savedUser && !!savedAccessPw)
   const [sessionError, setSessionError] = useState(false)
   const cooldownRef = useRef(null)
 
-  // Cargar estado de ejercicios si hay usuario guardado y contraseña de acceso
+  // Cargar estado de ejercicios desde el backend
   const fetchSessionStatus = (carnet, pw) => {
     setSessionLoading(true)
     setSessionError(false)
     fetch(`/api/sessions/status/${carnet}`, {
       headers: { 'X-Access-Password': pw },
     })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (r.status === 401) {
+          sessionStorage.removeItem('levcode_access_pw')
+          setAccessPassword('')
+          setSessionLoading(false)
+          setView('access')
+          return null
+        }
+        if (!r.ok) {
+          const text = await r.text()
+          throw new Error(`Status ${r.status}: ${text}`)
+        }
+        return r.json()
+      })
       .then((data) => {
-        if (data.solved) setSolvedExercises(new Set(data.solved))
-        if (data.inProgress) setInProgressExercises(new Set(data.inProgress))
+        if (!data) return
+        setSolvedExercises(new Set(data.solved || []))
+        setInProgressExercises(new Set(data.inProgress || []))
         setSessionLoading(false)
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('fetchSessionStatus error:', err)
         setSessionError(true)
         setSessionLoading(false)
       })
   }
 
+  // Solo al montar: cargar estado si hay datos guardados
   useEffect(() => {
-    if (!userInfo || !accessPassword) {
+    if (savedUser && savedAccessPw) {
+      const user = JSON.parse(savedUser)
+      fetchSessionStatus(user.carnet, savedAccessPw)
+    } else {
       setSessionLoading(false)
-      return
     }
-    fetchSessionStatus(userInfo.carnet, accessPassword)
-  }, [userInfo?.carnet, accessPassword])
+  }, [])
 
   // Detectar ruta /admin por pathname
   useEffect(() => {
@@ -135,7 +154,7 @@ export default function App() {
       const res = await fetch('/api/access/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: accessPassword }),
+        body: JSON.stringify({ password: accessPasswordInput }),
       })
       const data = await res.json()
       if (!data.valid) {
@@ -143,10 +162,15 @@ export default function App() {
         setAccessLoading(false)
         return
       }
-      sessionStorage.setItem('levcode_access_pw', accessPassword)
+      sessionStorage.setItem('levcode_access_pw', accessPasswordInput)
+      setAccessPassword(accessPasswordInput)
       setAccessLoading(false)
-      // Si ya hay usuario guardado, ir directo al menú; sino pedir datos
-      setView(userInfo ? 'menu' : 'form')
+      if (userInfo) {
+        setView('menu')
+        fetchSessionStatus(userInfo.carnet, accessPasswordInput)
+      } else {
+        setView('form')
+      }
     } catch {
       setAccessError('Error de conexión con el servidor')
       setAccessLoading(false)
@@ -158,6 +182,7 @@ export default function App() {
     localStorage.setItem('levcode_user', JSON.stringify(info))
     setUserInfo(info)
     setView('menu')
+    fetchSessionStatus(info.carnet, accessPassword)
   }
 
   const handleChangeUser = () => {
@@ -165,6 +190,7 @@ export default function App() {
     sessionStorage.removeItem('levcode_access_pw')
     setUserInfo(null)
     setAccessPassword('')
+    setAccessPasswordInput('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
     setView('access')
@@ -178,7 +204,7 @@ export default function App() {
     setCompilationError(null)
     setAttempts(0)
     setShowTries(false)
-    setShowTests(true)
+    setHideTests(false)
     setTryTimer(false)
     loadGlobalCooldown()
     setView('exercise')
@@ -194,7 +220,6 @@ export default function App() {
         body: JSON.stringify({
           carnet: userInfo.carnet,
           grupo: userInfo.grupo,
-          curso: userInfo.curso,
           problemId: exercise.config.id,
           solved: false,
         }),
@@ -204,7 +229,7 @@ export default function App() {
           if (data.success) {
             setAttempts(data.attempts)
             setShowTries(!!data.showTries)
-            setShowTests(data.showTests !== false)
+            setHideTests(!!data.hideTests)
             setTryTimer(!!data.tryTimer)
             if (data.tryTimer) loadGlobalCooldown()
           }
@@ -220,7 +245,7 @@ export default function App() {
           if (data.success) {
             setAttempts(data.attempts)
             setShowTries(!!data.showTries)
-            setShowTests(data.showTests !== false)
+            setHideTests(!!data.hideTests)
             setTryTimer(!!data.tryTimer)
             if (data.tryTimer) loadGlobalCooldown()
           }
@@ -283,7 +308,7 @@ export default function App() {
           actualOutput: r.output ?? '',
           passed: r.output?.trim() === tc.expectedOutput.trim(),
           executionTime: Math.round(data.executionTime / testcases.length),
-          showInfo: showTests ? tc.showInfo !== false : !!tc.showInfoHidden,
+          showInfo: hideTests ? !!tc.showInfoHidden : tc.showInfo !== false,
         }
       })
 
@@ -321,7 +346,6 @@ export default function App() {
       body: JSON.stringify({
         carnet: userInfo.carnet,
         grupo: userInfo.grupo,
-        curso: userInfo.curso,
         problemId: selectedExercise.config.id,
         solved,
       }),
@@ -366,8 +390,8 @@ export default function App() {
             <input
               type="password"
               placeholder="Contraseña"
-              value={accessPassword}
-              onChange={(e) => setAccessPassword(e.target.value)}
+              value={accessPasswordInput}
+              onChange={(e) => setAccessPasswordInput(e.target.value)}
               className="admin-input"
               autoFocus
             />
@@ -401,7 +425,10 @@ export default function App() {
       {view === 'menu' && !sessionLoading && !sessionError && (
         <div className="app-body">
           <ExerciseMenu
-            exercises={exercises}
+            exercises={userInfo ? exercises.filter((ex) => {
+              const allowed = groupExercises[userInfo.grupo]
+              return !allowed || allowed.includes(ex.config.id)
+            }) : exercises}
             onSelect={handleExerciseSelect}
             userInfo={userInfo}
             solvedExercises={solvedExercises}
@@ -416,7 +443,7 @@ export default function App() {
           {/* Panel izquierdo: descripción + editor */}
           <div className="editor-section">
             <div className="exercise-header">
-              <button className="back-btn" onClick={() => setView('menu')}>
+              <button className="back-btn" onClick={() => { setView('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) }}>
                 ← Ejercicios
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
@@ -437,7 +464,7 @@ export default function App() {
             </div>
 
             <div className="user-badge">
-              {userInfo.carnet} &nbsp;·&nbsp; {userInfo.curso} &nbsp;·&nbsp; Grupo {userInfo.grupo}
+              {userInfo.carnet} &nbsp;·&nbsp; Grupo {userInfo.grupo}
             </div>
 
             {/* key={id} hace que CodeMirror se reinicie al cambiar de ejercicio */}

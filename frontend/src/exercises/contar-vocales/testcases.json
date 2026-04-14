@@ -1,0 +1,12 @@
+[
+  { "input": "Hola Mundo",              "expectedOutput": "4",  "showInfo": true,  "showInfoHidden": true  },
+  { "input": "Python",                  "expectedOutput": "1",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "aeiou",                   "expectedOutput": "5",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "AEIOU",                   "expectedOutput": "5",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "xyz",                     "expectedOutput": "0",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "Programacion es divertido", "expectedOutput": "10", "showInfo": false, "showInfoHidden": false },
+  { "input": "a",                       "expectedOutput": "1",  "showInfo": false, "showInfoHidden": false },
+  { "input": "bcd",                     "expectedOutput": "0",  "showInfo": false, "showInfoHidden": false },
+  { "input": "MuRcIeLaGo",             "expectedOutput": "5",  "showInfo": false, "showInfoHidden": false },
+  { "input": "Universidad de Costa Rica", "expectedOutput": "10", "showInfo": false, "showInfoHidden": false }
+]

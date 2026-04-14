@@ -1,0 +1,6 @@
+{
+  "id": "par-o-impar",
+  "title": "Par o Impar",
+  "description": "Lee un numero entero e imprime \"par\" si es par o \"impar\" si es impar.\n\nEjemplo de entrada:\n4\n\nEjemplo de salida:\npar",
+  "starterCode": "n = int(input())\n# Tu codigo aqui\n"
+}

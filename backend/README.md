@@ -51,7 +51,7 @@ Registra o actualiza la sesion de un estudiante en un ejercicio. Genera tratamie
 
 ```json
 // Request
-{ "carnet": "A12345", "grupo": "01", "curso": "Programacion", "problemId": "suma-enteros", "solved": false }
+{ "carnet": "A12345", "grupo": "01", "problemId": "suma-enteros", "solved": false }
 
 // Response
 { "success": true, "attempts": 3, "solved": false, "showTests": true, "showTries": false, "tryTimer": true }
@@ -84,7 +84,7 @@ curl -H "X-API-Password: levcode123" http://localhost:3000/api/export/csv -o dat
 curl -H "X-API-Password: tu_password" https://tu-backend.railway.app/api/export/csv -o datos.csv
 ```
 
-Columnas CSV: `id, carnet, curso, grupo, problem_id, attempts, solved, show_tests, show_tries, try_timer, created_at, updated_at`
+Columnas CSV: `id, carnet, grupo, problem_id, attempts, solved, hide_tests, show_tries, try_timer, created_at, updated_at`
 
 ## Schema de base de datos
 
@@ -93,11 +93,10 @@ CREATE TABLE exercise_sessions (
   id           SERIAL PRIMARY KEY,
   carnet       VARCHAR(6)   NOT NULL,
   grupo        VARCHAR(255) NOT NULL,
-  curso        VARCHAR(255) NOT NULL DEFAULT '',
   problem_id   VARCHAR(100) NOT NULL,
   attempts     INTEGER      NOT NULL DEFAULT 0,
   solved       BOOLEAN      NOT NULL DEFAULT FALSE,
-  show_tests   BOOLEAN,
+  hide_tests   BOOLEAN,
   show_tries   BOOLEAN,
   try_timer    BOOLEAN,
   created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),

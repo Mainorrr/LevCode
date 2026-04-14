@@ -13,7 +13,6 @@ async function migrate() {
         carnet       VARCHAR(6)   NOT NULL,
         grupo        VARCHAR(255) NOT NULL,
         problem_id   VARCHAR(100) NOT NULL,
-        curso        VARCHAR(255) NOT NULL DEFAULT '',
         attempts     INTEGER      NOT NULL DEFAULT 0,
         solved       BOOLEAN      NOT NULL DEFAULT FALSE,
         created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -22,18 +21,30 @@ async function migrate() {
       );
     `);
 
-    // Agregar columnas nuevas a tablas existentes (idempotente)
+    // Eliminar columna curso si existe (migración de limpieza)
     await pool.query(`
       ALTER TABLE exercise_sessions
-        ADD COLUMN IF NOT EXISTS curso VARCHAR(255) NOT NULL DEFAULT '';
+        DROP COLUMN IF EXISTS curso;
     `);
 
     // Agregar columnas de tratamiento a exercise_sessions (idempotente)
     await pool.query(`
       ALTER TABLE exercise_sessions
-        ADD COLUMN IF NOT EXISTS show_tests BOOLEAN,
+        ADD COLUMN IF NOT EXISTS hide_tests BOOLEAN,
         ADD COLUMN IF NOT EXISTS show_tries BOOLEAN,
         ADD COLUMN IF NOT EXISTS try_timer  BOOLEAN;
+    `);
+
+    // Renombrar show_tests -> hide_tests si existe (migración)
+    await pool.query(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_name = 'exercise_sessions' AND column_name = 'show_tests')
+        THEN
+          UPDATE exercise_sessions SET hide_tests = NOT show_tests WHERE hide_tests IS NULL AND show_tests IS NOT NULL;
+          ALTER TABLE exercise_sessions DROP COLUMN show_tests;
+        END IF;
+      END $$;
     `);
 
     // Tabla de contraseñas de acceso para estudiantes

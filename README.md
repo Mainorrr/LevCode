@@ -32,26 +32,6 @@ npm install
 npm run dev
 ```
 
-### Opcion 2: Sin Docker (todo local)
-
-Requiere PostgreSQL corriendo localmente.
-
-**Terminal 1 -- backend**
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-**Terminal 2 -- frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
 ### URLs
 
 | Servicio   | URL                      |

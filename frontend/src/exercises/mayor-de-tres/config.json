@@ -1,0 +1,6 @@
+{
+  "id": "mayor-de-tres",
+  "title": "Mayor de Tres",
+  "description": "Lee tres numeros enteros, cada uno en una linea separada, e imprime el mayor de los tres.\n\nEjemplo de entrada:\n5\n12\n3\n\nEjemplo de salida:\n12",
+  "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n# Tu codigo aqui\n"
+}

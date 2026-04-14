@@ -1,0 +1,6 @@
+{
+  "id": "contar-vocales",
+  "title": "Contar Vocales",
+  "description": "Lee una cadena de texto e imprime la cantidad de vocales (a, e, i, o, u) que contiene.\nConsidera tanto mayusculas como minusculas.\n\nEjemplo de entrada:\nHola Mundo\n\nEjemplo de salida:\n4",
+  "starterCode": "texto = input()\n# Tu codigo aqui\n"
+}

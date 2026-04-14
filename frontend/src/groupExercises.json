@@ -1,0 +1,12 @@
+{
+  "01": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "02": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "03": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "04": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "05": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "06": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "07": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "08": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "09": ["suma-enteros", "par-o-impar", "mayor-de-tres", "tabla-multiplicar", "contar-vocales", "invertir-cadena"],
+  "Test": ["suma-enteros"]
+}

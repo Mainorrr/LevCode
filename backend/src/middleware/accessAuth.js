@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const pool = require("../config/db");
+const logger = require("../utils/logger");
 
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -13,6 +14,7 @@ async function accessAuth(req, res, next) {
   const password = req.headers["x-access-password"];
 
   if (!password) {
+    logger.warn("Access auth: missing password header", { path: req.path });
     return res.status(401).json({ error: "Contraseña de acceso requerida" });
   }
 
@@ -24,11 +26,13 @@ async function accessAuth(req, res, next) {
     );
 
     if (result.rows.length === 0) {
+      logger.warn("Access auth: invalid password", { path: req.path });
       return res.status(401).json({ error: "Contraseña de acceso inválida" });
     }
 
     next();
-  } catch {
+  } catch (err) {
+    logger.error("Access auth: DB error", { path: req.path, error: err.message });
     return res.status(500).json({ error: "Error al validar acceso" });
   }
 }

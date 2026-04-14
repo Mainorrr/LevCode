@@ -9,7 +9,6 @@ export default function AdminPanel() {
 
   // Filtros
   const [filterCarnet, setFilterCarnet] = useState('')
-  const [filterCurso, setFilterCurso] = useState('')
   const [filterGrupo, setFilterGrupo] = useState('')
   const [filterProblem, setFilterProblem] = useState('')
   const [filterSolved, setFilterSolved] = useState('')
@@ -52,7 +51,6 @@ export default function AdminPanel() {
   const uniqueValues = useMemo(() => {
     if (!sessions) return {}
     return {
-      cursos: [...new Set(sessions.map((s) => s.curso))].sort(),
       grupos: [...new Set(sessions.map((s) => s.grupo))].sort(),
       problems: [...new Set(sessions.map((s) => s.problem_id))].sort(),
     }
@@ -63,14 +61,13 @@ export default function AdminPanel() {
     if (!sessions) return []
     return sessions.filter((s) => {
       if (filterCarnet && !s.carnet.toLowerCase().includes(filterCarnet.toLowerCase())) return false
-      if (filterCurso && s.curso !== filterCurso) return false
       if (filterGrupo && s.grupo !== filterGrupo) return false
       if (filterProblem && s.problem_id !== filterProblem) return false
       if (filterSolved === 'true' && !s.solved) return false
       if (filterSolved === 'false' && s.solved) return false
       return true
     })
-  }, [sessions, filterCarnet, filterCurso, filterGrupo, filterProblem, filterSolved])
+  }, [sessions, filterCarnet, filterGrupo, filterProblem, filterSolved])
 
   const formatDate = (iso) => {
     const d = new Date(iso)
@@ -100,7 +97,6 @@ export default function AdminPanel() {
 
   const clearFilters = () => {
     setFilterCarnet('')
-    setFilterCurso('')
     setFilterGrupo('')
     setFilterProblem('')
     setFilterSolved('')
@@ -205,16 +201,6 @@ export default function AdminPanel() {
           className="admin-filter-input"
         />
         <select
-          value={filterCurso}
-          onChange={(e) => setFilterCurso(e.target.value)}
-          className="admin-filter-select"
-        >
-          <option value="">Todos los cursos</option>
-          {uniqueValues.cursos?.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-        <select
           value={filterGrupo}
           onChange={(e) => setFilterGrupo(e.target.value)}
           className="admin-filter-select"
@@ -252,12 +238,11 @@ export default function AdminPanel() {
             <tr>
               <th>ID</th>
               <th>Carnet</th>
-              <th>Curso</th>
               <th>Grupo</th>
               <th>Ejercicio</th>
               <th>Intentos</th>
               <th>Resuelto</th>
-              <th>show_tests</th>
+              <th>hide_tests</th>
               <th>show_tries</th>
               <th>try_timer</th>
               <th>Inicio</th>
@@ -269,15 +254,14 @@ export default function AdminPanel() {
               <tr key={s.id}>
                 <td>{s.id}</td>
                 <td>{s.carnet}</td>
-                <td>{s.curso}</td>
                 <td>{s.grupo}</td>
                 <td>{s.problem_id}</td>
                 <td>{s.attempts}</td>
                 <td className={s.solved ? 'admin-solved' : 'admin-unsolved'}>
                   {s.solved ? 'Sí' : 'No'}
                 </td>
-                <td className={s.show_tests ? 'admin-solved' : 'admin-unsolved'}>
-                  {s.show_tests == null ? '—' : s.show_tests ? 'Sí' : 'No'}
+                <td className={s.hide_tests ? 'admin-unsolved' : 'admin-solved'}>
+                  {s.hide_tests == null ? '—' : s.hide_tests ? 'Sí' : 'No'}
                 </td>
                 <td className={s.show_tries ? 'admin-solved' : 'admin-unsolved'}>
                   {s.show_tries == null ? '—' : s.show_tries ? 'Sí' : 'No'}
@@ -291,7 +275,7 @@ export default function AdminPanel() {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan="12" className="admin-empty">No hay registros que coincidan con los filtros</td>
+                <td colSpan="11" className="admin-empty">No hay registros que coincidan con los filtros</td>
               </tr>
             )}
           </tbody>

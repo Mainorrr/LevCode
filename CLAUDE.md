@@ -85,8 +85,8 @@ frontend/src/exercises/
 ]
 ```
 
-- `showInfo`: si se muestra info del caso cuando `show_tests = true`
-- `showInfoHidden`: si se muestra info del caso cuando `show_tests = false`
+- `showInfo`: si se muestra info del caso cuando `hide_tests = false`
+- `showInfoHidden`: si se muestra info del caso cuando `hide_tests = true`
 
 ---
 
@@ -96,21 +96,22 @@ Cada combinacion estudiante + ejercicio recibe 3 tratamientos booleanos aleatori
 
 | Tratamiento  | Efecto cuando `true` |
 | ------------ | -------------------- |
-| `show_tests` | Usa `showInfo` de testcases.json para decidir que info mostrar en casos fallidos |
+| `hide_tests` | Oculta la informacion de los casos de prueba fallidos; usa `showInfoHidden` de testcases.json |
 | `show_tries` | Muestra contador de intentos con escala de color verde (0) a rojo (5+) |
 | `try_timer`  | Cooldown global de 30 segundos entre intentos fallidos (persiste en localStorage) |
 
-Cuando `show_tests = false`, se usa `showInfoHidden` de testcases.json.
+Cuando `hide_tests = false`, se usa `showInfo` de testcases.json (comportamiento por defecto, muestra info).
 
 ---
 
 ## Flujo de Ejecucion
 
 1. Usuario selecciona un ejercicio del menu (frontend carga config.json)
-2. Usuario ingresa datos: carnet, grupo, curso
+2. Usuario ingresa datos: carnet, grupo
 3. Frontend registra sesion via `POST /api/sessions` (crea registro con tratamientos aleatorios)
 4. Usuario escribe codigo Python 3 y hace submit
 5. Frontend envia al backend: `{ code, userId, problemId, inputs }`
+
 6. Backend ejecuta Python via `child_process`, retorna resultados por caso
 7. Frontend valida output contra `testcases.json` localmente
 8. Frontend muestra resultado segun tratamientos asignados
@@ -127,11 +128,10 @@ CREATE TABLE exercise_sessions (
   id           SERIAL PRIMARY KEY,
   carnet       VARCHAR(6)   NOT NULL,
   grupo        VARCHAR(255) NOT NULL,
-  curso        VARCHAR(255) NOT NULL DEFAULT '',
   problem_id   VARCHAR(100) NOT NULL,
   attempts     INTEGER      NOT NULL DEFAULT 0,
   solved       BOOLEAN      NOT NULL DEFAULT FALSE,
-  show_tests   BOOLEAN,
+  hide_tests   BOOLEAN,
   show_tries   BOOLEAN,
   try_timer    BOOLEAN,
   created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -153,8 +153,8 @@ CREATE TABLE access_passwords (
 ### Proposito de los datos
 
 - Calcular numero de intentos antes de pasar (trial-and-error score)
-- Agrupar por `grupo` o `curso` para comparativas estadisticas
-- Comparar tratamientos (show_tests, show_tries, try_timer) con pruebas estadisticas
+- Agrupar por `grupo` para comparativas estadisticas
+- Comparar tratamientos (hide_tests, show_tries, try_timer) con pruebas estadisticas
 - El investigador exporta los datos via CSV y hace el analisis externamente
 
 > **NUNCA implementar:** rankings visibles para el usuario, calculos de nota, ni dashboards estadisticos. Solo registrar datos crudos.
@@ -168,8 +168,7 @@ Sin autenticacion. El usuario provee al inicio:
 | Campo | Descripcion | Validacion |
 |-------|-------------|-----------|
 | `carnet` | ID estudiantil | `/^[A-Za-z\d]{6}$/` |
-| `grupo` | Numero de grupo del curso | Seleccion de lista |
-| `curso` | Nombre del curso | Seleccion de lista |
+| `grupo` | Numero de grupo | Seleccion de lista |
 
 Estos datos se almacenan con cada session para analisis estadistico.
 
@@ -238,7 +237,7 @@ El backend bloquea codigo que contiene:
 | Sistema de ejercicios (menu + config) | Funcionando |
 | Validacion de casos de prueba (frontend) | Funcionando |
 | Base de datos PostgreSQL | Funcionando |
-| Tratamientos aleatorios (show_tests, show_tries, try_timer) | Funcionando |
+| Tratamientos aleatorios (hide_tests, show_tries, try_timer) | Funcionando |
 | Panel de administracion (/admin) | Funcionando |
 | Contrasenas de acceso | Funcionando |
 | Export CSV | Funcionando |
