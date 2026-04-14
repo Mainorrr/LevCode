@@ -16,12 +16,22 @@ import './App.css'
  *   'menu'     → Selecciona un ejercicio de la lista
  *   'exercise' → Editor + resultados para el ejercicio seleccionado
  */
+function getSavedUser() {
+  try {
+    const raw = localStorage.getItem('levcode_user')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    localStorage.removeItem('levcode_user')
+    return null
+  }
+}
+
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(window.location.pathname === '/admin')
-  const savedUser = localStorage.getItem('levcode_user')
   const savedAccessPw = sessionStorage.getItem('levcode_access_pw')
-  const [view, setView] = useState(savedUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
-  const [userInfo, setUserInfo] = useState(savedUser ? JSON.parse(savedUser) : null)
+  const initialUser = getSavedUser()
+  const [view, setView] = useState(initialUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
+  const [userInfo, setUserInfo] = useState(initialUser)
   const [accessPassword, setAccessPassword] = useState(savedAccessPw || '')
   const [accessPasswordInput, setAccessPasswordInput] = useState('')
   const [accessError, setAccessError] = useState('')
@@ -38,7 +48,7 @@ export default function App() {
   const [hideTests, setHideTests] = useState(false)
   const [tryTimer, setTryTimer] = useState(false)
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
-  const [sessionLoading, setSessionLoading] = useState(!!savedUser && !!savedAccessPw)
+  const [sessionLoading, setSessionLoading] = useState(!!initialUser && !!savedAccessPw)
   const [sessionError, setSessionError] = useState(false)
   const cooldownRef = useRef(null)
 
@@ -78,9 +88,8 @@ export default function App() {
 
   // Solo al montar: cargar estado si hay datos guardados
   useEffect(() => {
-    if (savedUser && savedAccessPw) {
-      const user = JSON.parse(savedUser)
-      fetchSessionStatus(user.carnet, savedAccessPw)
+    if (initialUser && savedAccessPw) {
+      fetchSessionStatus(initialUser.carnet, savedAccessPw)
     } else {
       setSessionLoading(false)
     }
@@ -156,6 +165,11 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: accessPasswordInput }),
       })
+      if (!res.ok) {
+        setAccessError('Error del servidor. Intenta de nuevo.')
+        setAccessLoading(false)
+        return
+      }
       const data = await res.json()
       if (!data.valid) {
         setAccessError('Contraseña incorrecta')
@@ -211,6 +225,14 @@ export default function App() {
 
     const isNew = !solvedExercises.has(exercise.config.id) && !inProgressExercises.has(exercise.config.id)
 
+    const applyTreatments = (data) => {
+      setAttempts(data.attempts)
+      setShowTries(!!data.showTries)
+      setHideTests(!!data.hideTests)
+      setTryTimer(!!data.tryTimer)
+      if (data.tryTimer) loadGlobalCooldown()
+    }
+
     if (isNew) {
       // Primera vez: crear registro en DB (attempts = 0)
       setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
@@ -224,33 +246,17 @@ export default function App() {
           solved: false,
         }),
       })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
-            setAttempts(data.attempts)
-            setShowTries(!!data.showTries)
-            setHideTests(!!data.hideTests)
-            setTryTimer(!!data.tryTimer)
-            if (data.tryTimer) loadGlobalCooldown()
-          }
-        })
-        .catch(() => {})
+        .then((r) => r.ok ? r.json() : Promise.reject())
+        .then((data) => { if (data.success) applyTreatments(data) })
+        .catch(() => { setView('menu') })
     } else {
       // Ya existe: solo leer datos sin incrementar
       fetch(`/api/sessions/${userInfo.carnet}/${exercise.config.id}`, {
         headers: { 'X-Access-Password': accessPassword },
       })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
-            setAttempts(data.attempts)
-            setShowTries(!!data.showTries)
-            setHideTests(!!data.hideTests)
-            setTryTimer(!!data.tryTimer)
-            if (data.tryTimer) loadGlobalCooldown()
-          }
-        })
-        .catch(() => {})
+        .then((r) => r.ok ? r.json() : Promise.reject())
+        .then((data) => { if (data.success) applyTreatments(data) })
+        .catch(() => { setView('menu') })
     }
   }
 

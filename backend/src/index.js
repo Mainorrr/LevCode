@@ -44,4 +44,10 @@ process.on("uncaughtException", (error) => {
   process.exit(1);
 });
 
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled promise rejection", {
+    error: reason instanceof Error ? reason.message : String(reason),
+  });
+});
+
 module.exports = server;

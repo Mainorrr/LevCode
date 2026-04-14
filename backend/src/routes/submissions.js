@@ -68,6 +68,30 @@ router.post("/batch", async (req, res) => {
       });
     }
 
+    // Validate code security
+    const validation = validators.validateSubmissionRequest(req.body);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.error,
+      });
+    }
+
+    // Limit batch size and input sizes
+    if (inputs.length > 50) {
+      return res.status(400).json({
+        success: false,
+        error: "Too many test cases (max 50)",
+      });
+    }
+
+    if (inputs.some((inp) => typeof inp === "string" && inp.length > 100000)) {
+      return res.status(400).json({
+        success: false,
+        error: "Input too large (max 100KB per input)",
+      });
+    }
+
     logger.info("Batch submission received", { userId, problemId, testCases: inputs.length });
 
     const result = await pythonExecutor.executeBatch(code, inputs);
