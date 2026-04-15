@@ -478,6 +478,7 @@ export default function App() {
               key={selectedExercise.config.id}
               code={code}
               onChange={setCode}
+              starterCode={selectedExercise.config.starterCode}
             />
 
             <button

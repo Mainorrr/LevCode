@@ -27,6 +27,12 @@ async function migrate() {
         DROP COLUMN IF EXISTS curso;
     `);
 
+    // Eliminar columna semestre si existe (migración de limpieza)
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        DROP COLUMN IF EXISTS semestre;
+    `);
+
     // Agregar columnas de tratamiento a exercise_sessions (idempotente)
     await pool.query(`
       ALTER TABLE exercise_sessions

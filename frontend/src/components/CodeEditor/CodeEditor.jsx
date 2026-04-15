@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { keymap } from '@codemirror/view'
@@ -10,14 +10,16 @@ import './CodeEditor.css'
 /**
  * Componente CodeEditor
  * Integra CodeMirror con soporte para Python y captura de cambios
- * 
+ *
  * Props:
  *   - code: string - Código actual en el editor
  *   - onChange: function - Callback cuando cambia el código
+ *   - starterCode: string - Código inicial para el botón de revertir
  */
-export default function CodeEditor({ code, onChange }) {
+export default function CodeEditor({ code, onChange, starterCode }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
     if (!editorRef.current) return
@@ -49,10 +51,39 @@ export default function CodeEditor({ code, onChange }) {
     }
   }, [])
 
+  function confirmRevert() {
+    if (!viewRef.current || !starterCode) return
+    viewRef.current.dispatch({
+      changes: { from: 0, to: viewRef.current.state.doc.length, insert: starterCode },
+    })
+    onChange(starterCode)
+    setShowConfirm(false)
+  }
+
   return (
     <div className="editor-container">
-      <label className="editor-label">Código Python</label>
+      <div className="editor-label">
+        <span>Código Python</span>
+        {starterCode && (
+          <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Restaurar código inicial">
+            Iniciar de nuevo
+          </button>
+        )}
+      </div>
       <div ref={editorRef} className="editor-content" />
+
+      {showConfirm && (
+        <div className="revert-modal-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="revert-modal" onClick={e => e.stopPropagation()}>
+            <p className="revert-modal-title">¿Borrar tu código?</p>
+            <p className="revert-modal-body">Tu código actual será eliminado y reemplazado por el código inicial. Esta acción no se puede deshacer.</p>
+            <div className="revert-modal-actions">
+              <button className="revert-modal-cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
+              <button className="revert-modal-confirm" onClick={confirmRevert}>Sí, borrar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
