@@ -50,7 +50,15 @@ export default function App() {
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
   const [sessionLoading, setSessionLoading] = useState(!!initialUser && !!savedAccessPw)
   const [sessionError, setSessionError] = useState(false)
+  const [toast, setToast] = useState(null)
   const cooldownRef = useRef(null)
+  const toastRef = useRef(null)
+
+  const showToast = (message) => {
+    clearTimeout(toastRef.current)
+    setToast(message)
+    toastRef.current = setTimeout(() => setToast(null), 3000)
+  }
 
   // Cargar estado de ejercicios desde el backend
   const fetchSessionStatus = (carnet, pw) => {
@@ -223,6 +231,11 @@ export default function App() {
   const draftKey = (problemId) => `levcode_draft_${userInfo?.carnet}_${problemId}`
 
   const handleExerciseSelect = (exercise) => {
+    if (solvedExercises.has(exercise.config.id)) {
+      showToast('¡Ejercicio Completado!')
+      return
+    }
+
     setSelectedExercise(exercise)
     const saved = localStorage.getItem(draftKey(exercise.config.id))
     setCode(saved ?? exercise.config.starterCode)
@@ -405,6 +418,8 @@ export default function App() {
         <h1>Lev Code</h1>
         <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
       </header>
+
+      {toast && <div className="app-toast">{toast}</div>}
 
       {view === 'form' && (
         <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} />

@@ -177,6 +177,23 @@
   opacity: 0.85;
 }
 
+.app-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #A3BE8C;
+  color: #2E3440;
+  font-weight: 600;
+  font-size: 0.95em;
+  padding: 12px 28px;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px) {
   .app-content {
     grid-template-columns: 1fr;
