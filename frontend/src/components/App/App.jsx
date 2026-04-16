@@ -102,6 +102,15 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
+  // Guardar borrador del código en localStorage (debounced 500ms)
+  useEffect(() => {
+    if (!selectedExercise || !userInfo?.carnet) return
+    const timer = setTimeout(() => {
+      localStorage.setItem(draftKey(selectedExercise.config.id), code)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [code, selectedExercise])
+
   // ── Cooldown global (try_timer) ─────────────────────────────────────────────
   const getCooldownKey = (carnet) => `levcode_cooldown_${carnet}`
 
@@ -211,9 +220,12 @@ export default function App() {
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
+  const draftKey = (problemId) => `levcode_draft_${userInfo?.carnet}_${problemId}`
+
   const handleExerciseSelect = (exercise) => {
     setSelectedExercise(exercise)
-    setCode(exercise.config.starterCode)
+    const saved = localStorage.getItem(draftKey(exercise.config.id))
+    setCode(saved ?? exercise.config.starterCode)
     setTestResults(null)
     setCompilationError(null)
     setAttempts(0)
@@ -255,7 +267,14 @@ export default function App() {
         headers: { 'X-Access-Password': accessPassword },
       })
         .then((r) => r.ok ? r.json() : Promise.reject())
-        .then((data) => { if (data.success) applyTreatments(data) })
+        .then((data) => {
+          if (data.success) {
+            applyTreatments(data)
+            if (data.solved && data.solutionCode) {
+              setCode(data.solutionCode)
+            }
+          }
+        })
         .catch(() => { setView('menu') })
     }
   }
@@ -321,9 +340,10 @@ export default function App() {
       setTestResults(results)
 
       const allPassed = results.length > 0 && results.every((r) => r.passed)
-      recordSession(allPassed)
+      recordSession(allPassed, allPassed ? code : undefined)
 
       if (allPassed) {
+        localStorage.removeItem(draftKey(selectedExercise.config.id))
         setSolvedExercises((prev) => new Set(prev).add(selectedExercise.config.id))
         setInProgressExercises((prev) => {
           const next = new Set(prev)
@@ -345,7 +365,7 @@ export default function App() {
    * Envía los datos del intento al backend para persistirlos en la DB.
    * No bloquea la UI ni muestra error al usuario si falla.
    */
-  const recordSession = (solved) => {
+  const recordSession = (solved, solutionCode) => {
     fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
@@ -354,6 +374,7 @@ export default function App() {
         grupo: userInfo.grupo,
         problemId: selectedExercise.config.id,
         solved,
+        ...(solutionCode !== undefined && { solutionCode }),
       }),
     })
       .then((r) => r.json())
@@ -479,6 +500,7 @@ export default function App() {
               code={code}
               onChange={setCode}
               starterCode={selectedExercise.config.starterCode}
+              readOnly={solvedExercises.has(selectedExercise.config.id)}
             />
 
             <button

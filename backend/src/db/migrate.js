@@ -53,6 +53,12 @@ async function migrate() {
       END $$;
     `);
 
+    // Agregar columna solution_code para guardar el código que resolvió el ejercicio
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        ADD COLUMN IF NOT EXISTS solution_code TEXT;
+    `);
+
     // Tabla de contraseñas de acceso para estudiantes
     await pool.query(`
       CREATE TABLE IF NOT EXISTS access_passwords (

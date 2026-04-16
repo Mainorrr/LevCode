@@ -17,7 +17,7 @@ const logger = require("../utils/logger");
  *   - Si ya está solved: no incrementa attempts ni actualiza updated_at
  */
 router.post("/", async (req, res) => {
-  const { carnet, grupo, problemId, solved } = req.body;
+  const { carnet, grupo, problemId, solved, solutionCode } = req.body;
 
   if (!carnet || !grupo || !problemId) {
     return res.status(400).json({
@@ -58,17 +58,21 @@ router.post("/", async (req, res) => {
       `INSERT INTO exercise_sessions (carnet, grupo, problem_id, attempts, solved, hide_tests, show_tries, try_timer)
        VALUES ($1, $2, $3, 0, $4, $5, $6, $7)
        ON CONFLICT (carnet, problem_id) DO UPDATE
-         SET attempts    = CASE
-                             WHEN exercise_sessions.solved THEN exercise_sessions.attempts
-                             ELSE exercise_sessions.attempts + 1
-                           END,
-             solved      = exercise_sessions.solved OR EXCLUDED.solved,
-             updated_at  = CASE
-                             WHEN exercise_sessions.solved THEN exercise_sessions.updated_at
-                             ELSE NOW()
-                           END
+         SET attempts       = CASE
+                                WHEN exercise_sessions.solved THEN exercise_sessions.attempts
+                                ELSE exercise_sessions.attempts + 1
+                              END,
+             solved         = exercise_sessions.solved OR EXCLUDED.solved,
+             solution_code  = CASE
+                                WHEN NOT exercise_sessions.solved AND $8::TEXT IS NOT NULL THEN $8::TEXT
+                                ELSE exercise_sessions.solution_code
+                              END,
+             updated_at     = CASE
+                                WHEN exercise_sessions.solved THEN exercise_sessions.updated_at
+                                ELSE NOW()
+                              END
        RETURNING id, carnet, problem_id, attempts, solved, hide_tests, show_tries, try_timer`,
-      [carnet, grupo, problemId, solved, hideTests, showTries, tryTimer],
+      [carnet, grupo, problemId, solved, hideTests, showTries, tryTimer, solved ? (solutionCode ?? null) : null],
     );
 
     const row = result.rows[0];
@@ -168,7 +172,7 @@ router.get("/:carnet/:problemId", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT attempts, solved, hide_tests, show_tries, try_timer
+      `SELECT attempts, solved, hide_tests, show_tries, try_timer, solution_code
        FROM exercise_sessions WHERE carnet = $1 AND problem_id = $2`,
       [carnet, problemId],
     );
@@ -185,6 +189,7 @@ router.get("/:carnet/:problemId", async (req, res) => {
       hideTests: row.hide_tests,
       showTries: row.show_tries,
       tryTimer: row.try_timer,
+      solutionCode: row.solution_code ?? null,
     });
   } catch (err) {
     logger.error("Failed to fetch session", { error: err.message });
