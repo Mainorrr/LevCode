@@ -1,0 +1,12 @@
+[
+  { "input": "Ana",     "expectedOutput": "Hola, Ana!",     "showInfo": true,  "showInfoHidden": true  },
+  { "input": "Carlos",  "expectedOutput": "Hola, Carlos!",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "Maria",   "expectedOutput": "Hola, Maria!",   "showInfo": true,  "showInfoHidden": false },
+  { "input": "Juan",    "expectedOutput": "Hola, Juan!",    "showInfo": true,  "showInfoHidden": false },
+  { "input": "Luis",    "expectedOutput": "Hola, Luis!",    "showInfo": true,  "showInfoHidden": false },
+  { "input": "Sofia",   "expectedOutput": "Hola, Sofia!",   "showInfo": false, "showInfoHidden": false },
+  { "input": "Pedro",   "expectedOutput": "Hola, Pedro!",   "showInfo": false, "showInfoHidden": false },
+  { "input": "Elena",   "expectedOutput": "Hola, Elena!",   "showInfo": false, "showInfoHidden": false },
+  { "input": "Andrei",  "expectedOutput": "Hola, Andrei!",  "showInfo": false, "showInfoHidden": false },
+  { "input": "Roberto", "expectedOutput": "Hola, Roberto!", "showInfo": false, "showInfoHidden": false }
+]

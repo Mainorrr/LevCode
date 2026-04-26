@@ -1,0 +1,6 @@
+{
+  "id": "mayor-de-tres",
+  "title": "Mayor de Tres Numeros",
+  "description": "Lee tres numeros enteros (uno por linea) e imprime el mayor de ellos. Si hay empate, imprime ese mismo valor.\n\nEjemplo de entrada:\n5\n9\n3\n\nEjemplo de salida:\n9",
+  "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n# Tu codigo aqui\n"
+}

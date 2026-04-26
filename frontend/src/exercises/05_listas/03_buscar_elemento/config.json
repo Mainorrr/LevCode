@@ -1,0 +1,6 @@
+{
+  "id": "buscar-elemento",
+  "title": "Buscar un Elemento",
+  "description": "Lee un entero N en la primera linea, luego N enteros (uno por linea) y finalmente un entero X. Imprime la posicion (indice base 0) de la primera aparicion de X en la lista, o -1 si no se encuentra.\n\nEjemplo de entrada:\n5\n10\n20\n30\n40\n50\n30\n\nEjemplo de salida:\n2",
+  "starterCode": "n = int(input())\nlista = []\nfor _ in range(n):\n    lista.append(int(input()))\nx = int(input())\n# Tu codigo aqui\n"
+}

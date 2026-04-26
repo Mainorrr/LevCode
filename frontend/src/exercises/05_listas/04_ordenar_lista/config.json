@@ -1,0 +1,6 @@
+{
+  "id": "ordenar-lista",
+  "title": "Ordenar Lista Ascendente",
+  "description": "Lee un entero N en la primera linea y luego N enteros (uno por linea). Imprime los elementos ordenados de menor a mayor, separados por un espacio en una sola linea.\n\nEjemplo de entrada:\n5\n3\n1\n4\n1\n5\n\nEjemplo de salida:\n1 1 3 4 5",
+  "starterCode": "n = int(input())\nlista = []\nfor _ in range(n):\n    lista.append(int(input()))\n# Tu codigo aqui\n"
+}

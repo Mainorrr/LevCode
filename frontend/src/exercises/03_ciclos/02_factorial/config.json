@@ -1,0 +1,6 @@
+{
+  "id": "factorial",
+  "title": "Factorial de un Numero",
+  "description": "Lee un numero entero N (mayor o igual a 0) e imprime el factorial de N (N!). Recuerda que 0! = 1.\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n120",
+  "starterCode": "n = int(input())\n# Tu codigo aqui\n"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "suma-dos-numeros",
+  "title": "Suma de Dos Numeros",
+  "description": "Lee dos numeros enteros (uno por linea) e imprime su suma.\n\nEjemplo de entrada:\n5\n3\n\nEjemplo de salida:\n8",
+  "starterCode": "a = int(input())\nb = int(input())\n# Tu codigo aqui\n"
+}

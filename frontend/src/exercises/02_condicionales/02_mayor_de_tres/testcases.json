@@ -1,0 +1,12 @@
+[
+  { "input": "5\n9\n3",       "expectedOutput": "9",   "showInfo": true,  "showInfoHidden": true  },
+  { "input": "10\n10\n10",    "expectedOutput": "10",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "1\n2\n3",       "expectedOutput": "3",   "showInfo": true,  "showInfoHidden": false },
+  { "input": "100\n50\n75",   "expectedOutput": "100", "showInfo": true,  "showInfoHidden": false },
+  { "input": "-1\n-5\n-3",    "expectedOutput": "-1",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "0\n0\n1",       "expectedOutput": "1",   "showInfo": false, "showInfoHidden": false },
+  { "input": "7\n7\n5",       "expectedOutput": "7",   "showInfo": false, "showInfoHidden": false },
+  { "input": "999\n1\n500",   "expectedOutput": "999", "showInfo": false, "showInfoHidden": false },
+  { "input": "-10\n-10\n-20", "expectedOutput": "-10", "showInfo": false, "showInfoHidden": false },
+  { "input": "42\n42\n42",    "expectedOutput": "42",  "showInfo": false, "showInfoHidden": false }
+]

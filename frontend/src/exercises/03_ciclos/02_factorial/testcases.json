@@ -1,0 +1,12 @@
+[
+  { "input": "5",  "expectedOutput": "120",      "showInfo": true,  "showInfoHidden": true  },
+  { "input": "0",  "expectedOutput": "1",        "showInfo": true,  "showInfoHidden": false },
+  { "input": "1",  "expectedOutput": "1",        "showInfo": true,  "showInfoHidden": false },
+  { "input": "3",  "expectedOutput": "6",        "showInfo": true,  "showInfoHidden": false },
+  { "input": "10", "expectedOutput": "3628800",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "4",  "expectedOutput": "24",       "showInfo": false, "showInfoHidden": false },
+  { "input": "6",  "expectedOutput": "720",      "showInfo": false, "showInfoHidden": false },
+  { "input": "7",  "expectedOutput": "5040",     "showInfo": false, "showInfoHidden": false },
+  { "input": "8",  "expectedOutput": "40320",    "showInfo": false, "showInfoHidden": false },
+  { "input": "12", "expectedOutput": "479001600","showInfo": false, "showInfoHidden": false }
+]
