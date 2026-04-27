@@ -12,7 +12,7 @@
 }
 
 .admin-login h2 {
-  color: #88C0D0;
+  color: var(--accent);
   margin-bottom: 24px;
 }
 
@@ -24,37 +24,40 @@
 
 .admin-input {
   padding: 10px 14px;
-  background: #3B4252;
-  border: 1px solid #434C5E;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  color: #ECEFF4;
+  color: var(--text);
   font-size: 1em;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .admin-input:focus {
   outline: none;
-  border-color: #88C0D0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(121, 192, 255, 0.15);
 }
 
 .admin-error {
-  color: #BF616A;
+  color: var(--danger);
   font-size: 0.9em;
   margin: 0;
 }
 
 .admin-btn {
   padding: 10px 20px;
-  background: #88C0D0;
-  color: #2E3440;
+  background: var(--accent);
+  color: var(--bg);
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 700;
   font-size: 0.95em;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .admin-btn:hover {
-  background: #81A1C1;
+  background: var(--accent-hover);
 }
 
 .admin-btn:disabled {
@@ -73,7 +76,7 @@
 }
 
 .admin-header h2 {
-  color: #88C0D0;
+  color: var(--accent);
   margin: 0;
 }
 
@@ -84,38 +87,40 @@
 }
 
 .admin-count {
-  color: #81A1C1;
+  color: var(--text-muted);
   font-size: 0.9em;
 }
 
 .admin-btn-export {
   padding: 6px 14px;
-  background: #A3BE8C;
-  color: #2E3440;
+  background: var(--success);
+  color: var(--bg);
   border: none;
   border-radius: 4px;
   font-size: 0.85em;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .admin-btn-export:hover {
-  background: #8FAF78;
+  background: var(--success-hover);
 }
 
 .admin-btn-refresh {
   padding: 6px 14px;
-  background: #5E81AC;
-  color: #ECEFF4;
+  background: var(--accent);
+  color: var(--bg);
   border: none;
   border-radius: 4px;
   font-size: 0.85em;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .admin-btn-refresh:hover {
-  background: #81A1C1;
+  background: var(--accent-hover);
 }
 
 .admin-btn-refresh:disabled {
@@ -133,46 +138,51 @@
 
 .admin-filter-input {
   padding: 8px 12px;
-  background: #3B4252;
-  border: 1px solid #434C5E;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  color: #ECEFF4;
+  color: var(--text);
   font-size: 0.9em;
   min-width: 160px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .admin-filter-input:focus {
   outline: none;
-  border-color: #88C0D0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(121, 192, 255, 0.15);
 }
 
 .admin-filter-select {
   padding: 8px 12px;
-  background: #3B4252;
-  border: 1px solid #434C5E;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  color: #ECEFF4;
+  color: var(--text);
   font-size: 0.9em;
   cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .admin-filter-select:focus {
   outline: none;
-  border-color: #88C0D0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(121, 192, 255, 0.15);
 }
 
 .admin-btn-clear {
   padding: 8px 14px;
-  background: #434C5E;
-  color: #D8DEE9;
-  border: none;
+  background: var(--overlay);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 0.85em;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 .admin-btn-clear:hover {
-  background: #4C566A;
+  background: var(--border);
 }
 
 /* Table */
@@ -187,11 +197,11 @@
 }
 
 .admin-table th {
-  background: #3B4252;
-  color: #88C0D0;
+  background: var(--surface);
+  color: var(--accent);
   padding: 10px 12px;
   text-align: left;
-  border-bottom: 2px solid #434C5E;
+  border-bottom: 2px solid var(--border);
   white-space: nowrap;
   position: sticky;
   top: 0;
@@ -199,39 +209,43 @@
 
 .admin-table td {
   padding: 8px 12px;
-  border-bottom: 1px solid #3B4252;
-  color: #D8DEE9;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
   white-space: nowrap;
 }
 
 .admin-table tbody tr:hover {
-  background: #3B4252;
+  background: var(--surface);
 }
 
 .admin-solved {
-  color: #A3BE8C;
+  color: var(--success);
   font-weight: 600;
 }
 
 .admin-unsolved {
-  color: #BF616A;
+  color: var(--danger);
 }
 
 .admin-empty {
   text-align: center;
-  color: #4C566A;
+  color: var(--text-subtle);
   padding: 32px 12px !important;
+}
+
+.admin-empty-cell {
+  color: var(--text-subtle);
 }
 
 /* Access passwords section */
 .admin-access-section {
   margin-top: 32px;
-  border-top: 1px solid #434C5E;
+  border-top: 1px solid var(--border);
   padding-top: 24px;
 }
 
 .admin-access-section h3 {
-  color: #88C0D0;
+  color: var(--accent);
   margin-bottom: 12px;
 }
 
@@ -243,14 +257,15 @@
 
 .admin-btn-delete {
   padding: 4px 10px;
-  background: #BF616A;
-  color: #ECEFF4;
+  background: var(--danger);
+  color: var(--bg);
   border: none;
   border-radius: 4px;
   font-size: 0.8em;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 .admin-btn-delete:hover {
-  background: #D08770;
+  background: var(--danger-hover);
 }

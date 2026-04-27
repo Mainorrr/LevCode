@@ -16,6 +16,7 @@ export default function AdminPanel() {
   // Contraseñas de acceso
   const [accessPasswords, setAccessPasswords] = useState([])
   const [newAccessPw, setNewAccessPw] = useState('')
+  const [newAccessPwDesc, setNewAccessPwDesc] = useState('')
   const [accessPwError, setAccessPwError] = useState('')
 
   const fetchSessions = async () => {
@@ -127,7 +128,11 @@ export default function AdminPanel() {
       const res = await fetch('/api/access/passwords', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminPassword: password, newPassword: newAccessPw.trim() }),
+        body: JSON.stringify({
+          adminPassword: password,
+          newPassword: newAccessPw.trim(),
+          description: newAccessPwDesc.trim(),
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -135,6 +140,7 @@ export default function AdminPanel() {
         return
       }
       setNewAccessPw('')
+      setNewAccessPwDesc('')
       fetchAccessPasswords()
     } catch {
       setAccessPwError('Error de conexión')
@@ -293,6 +299,14 @@ export default function AdminPanel() {
             onChange={(e) => setNewAccessPw(e.target.value)}
             className="admin-filter-input"
           />
+          <input
+            type="text"
+            placeholder="Descripción (opcional)"
+            value={newAccessPwDesc}
+            onChange={(e) => setNewAccessPwDesc(e.target.value)}
+            maxLength={200}
+            className="admin-filter-input"
+          />
           <button type="submit" className="admin-btn-export">Agregar</button>
         </form>
         {accessPwError && <p className="admin-error">{accessPwError}</p>}
@@ -301,6 +315,7 @@ export default function AdminPanel() {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Descripción</th>
                 <th>Fecha de creación</th>
                 <th>Acción</th>
               </tr>
@@ -309,6 +324,7 @@ export default function AdminPanel() {
               {accessPasswords.map((pw) => (
                 <tr key={pw.id}>
                   <td>{pw.id}</td>
+                  <td>{pw.description || <span className="admin-empty-cell">—</span>}</td>
                   <td>{formatDate(pw.created_at)}</td>
                   <td>
                     <button
@@ -322,7 +338,7 @@ export default function AdminPanel() {
               ))}
               {accessPasswords.length === 0 && (
                 <tr>
-                  <td colSpan="3" className="admin-empty">No hay contraseñas configuradas</td>
+                  <td colSpan="4" className="admin-empty">No hay contraseñas configuradas</td>
                 </tr>
               )}
             </tbody>

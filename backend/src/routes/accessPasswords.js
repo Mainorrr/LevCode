@@ -53,7 +53,7 @@ router.get("/passwords", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, created_at FROM access_passwords ORDER BY created_at DESC",
+      "SELECT id, description, created_at FROM access_passwords ORDER BY created_at DESC",
     );
     res.json({ passwords: result.rows });
   } catch (err) {
@@ -68,7 +68,7 @@ router.get("/passwords", async (req, res) => {
  * Body: { adminPassword, newPassword }
  */
 router.post("/passwords", async (req, res) => {
-  const { adminPassword, newPassword } = req.body;
+  const { adminPassword, newPassword, description } = req.body;
 
   if (!adminPassword || adminPassword !== env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: "No autorizado" });
@@ -76,6 +76,11 @@ router.post("/passwords", async (req, res) => {
 
   if (!newPassword || newPassword.trim().length === 0) {
     return res.status(400).json({ error: "La contraseña no puede estar vacía" });
+  }
+
+  const cleanDescription = typeof description === "string" ? description.trim() : "";
+  if (cleanDescription.length > 200) {
+    return res.status(400).json({ error: "La descripción no puede exceder 200 caracteres" });
   }
 
   try {
@@ -91,8 +96,8 @@ router.post("/passwords", async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO access_passwords (password_hash) VALUES ($1) RETURNING id, created_at",
-      [hash],
+      "INSERT INTO access_passwords (password_hash, description) VALUES ($1, $2) RETURNING id, description, created_at",
+      [hash, cleanDescription || null],
     );
 
     logger.info("Access password created", { id: result.rows[0].id });

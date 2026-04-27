@@ -1,10 +1,11 @@
 .result-section {
-  background: #3B4252;
+  background: var(--surface);
   border-radius: 6px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid #434C5E;
+  border: 1px solid var(--border);
+  min-width: 0;
 }
 
 .result-placeholder {
@@ -12,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4C566A;
+  color: var(--text-subtle);
   font-size: 1em;
   min-height: 200px;
 }
@@ -20,45 +21,45 @@
 /* ── Header ── */
 .result-header {
   padding: 16px 20px;
-  border-bottom: 1px solid #434C5E;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .result-header.success {
-  background: rgba(163, 190, 140, 0.12);
-  border-bottom-color: rgba(163, 190, 140, 0.25);
+  background: rgba(126, 231, 135, 0.12);
+  border-bottom-color: rgba(126, 231, 135, 0.25);
 }
 
 .result-header.failure {
-  background: rgba(191, 97, 106, 0.12);
-  border-bottom-color: rgba(191, 97, 106, 0.25);
+  background: rgba(255, 123, 114, 0.12);
+  border-bottom-color: rgba(255, 123, 114, 0.25);
 }
 
 .result-header h2 {
   font-size: 1.1em;
-  color: #D8DEE9;
+  color: var(--text);
   margin: 0;
 }
 
 .result-header.success h2 {
-  color: #A3BE8C;
+  color: var(--success);
 }
 
 .result-header.failure h2 {
-  color: #BF616A;
+  color: var(--danger);
 }
 
 .verdict-score {
   font-size: 0.9em;
-  color: #81A1C1;
+  color: var(--text-muted);
 }
 
 /* ── Boxes ── */
 .result-box {
   padding: 16px 20px;
-  border-bottom: 1px solid #434C5E;
+  border-bottom: 1px solid var(--border);
 }
 
 .result-box:last-child {
@@ -67,7 +68,7 @@
 
 .cases-title {
   font-size: 0.85em;
-  color: #81A1C1;
+  color: var(--text-muted);
   margin: 0 0 12px 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -81,8 +82,8 @@
 }
 
 .case-item {
-  background: #2E3440;
-  border: 1px solid #434C5E;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 12px;
   display: flex;
@@ -99,38 +100,38 @@
 
 .case-label {
   font-size: 0.78em;
-  color: #4C566A;
+  color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   padding-top: 3px;
 }
 
 .case-value {
-  background: #3B4252;
+  background: var(--surface);
   padding: 6px 10px;
   border-radius: 3px;
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
-  color: #D8DEE9;
+  color: var(--text);
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
-  border: 1px solid #434C5E;
+  border: 1px solid var(--border);
 }
 
 .case-value.expected {
-  border-color: rgba(163, 190, 140, 0.3);
-  color: #A3BE8C;
+  border-color: rgba(126, 231, 135, 0.3);
+  color: var(--success);
 }
 
 .case-value.actual {
-  border-color: rgba(191, 97, 106, 0.3);
-  color: #BF616A;
+  border-color: rgba(255, 123, 114, 0.3);
+  color: var(--danger);
 }
 
 /* ── No cases message ── */
 .no-cases-msg {
-  color: #81A1C1;
+  color: var(--text-muted);
   font-size: 0.9em;
   margin: 0;
 }
@@ -144,17 +145,17 @@
 
 .meta-label {
   font-size: 0.8em;
-  color: #4C566A;
+  color: var(--text-muted);
 }
 
 .meta-value {
   font-size: 0.8em;
-  color: #81A1C1;
+  color: var(--text-muted);
 }
 
 /* ── Compilation error ── */
 .error-text {
-  color: #BF616A;
+  color: var(--danger);
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
   line-height: 1.6;

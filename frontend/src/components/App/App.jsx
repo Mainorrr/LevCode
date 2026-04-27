@@ -18,10 +18,10 @@ import './App.css'
  */
 function getSavedUser() {
   try {
-    const raw = localStorage.getItem('levcode_user')
+    const raw = sessionStorage.getItem('levcode_user')
     return raw ? JSON.parse(raw) : null
   } catch {
-    localStorage.removeItem('levcode_user')
+    sessionStorage.removeItem('levcode_user')
     return null
   }
 }
@@ -210,14 +210,14 @@ export default function App() {
 
   // ── View: form (segundo paso) ─────────────────────────────────────────────
   const handleUserFormSubmit = (info) => {
-    localStorage.setItem('levcode_user', JSON.stringify(info))
+    sessionStorage.setItem('levcode_user', JSON.stringify(info))
     setUserInfo(info)
     setView('menu')
     fetchSessionStatus(info.carnet, accessPassword)
   }
 
   const handleChangeUser = () => {
-    localStorage.removeItem('levcode_user')
+    sessionStorage.removeItem('levcode_user')
     sessionStorage.removeItem('levcode_access_pw')
     setUserInfo(null)
     setAccessPassword('')
@@ -516,19 +516,20 @@ export default function App() {
               onChange={setCode}
               starterCode={selectedExercise.config.starterCode}
               readOnly={solvedExercises.has(selectedExercise.config.id)}
+              actionSlot={
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
+                  className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
+                >
+                  {solvedExercises.has(selectedExercise.config.id)
+                    ? 'Ejercicio completado'
+                    : cooldownRemaining > 0
+                      ? `Espera ${cooldownRemaining}s`
+                      : loading ? 'Ejecutando...' : 'Ejecutar Código'}
+                </button>
+              }
             />
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
-              className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
-            >
-              {solvedExercises.has(selectedExercise.config.id)
-                ? 'Ejercicio completado'
-                : cooldownRemaining > 0
-                  ? `Espera ${cooldownRemaining}s`
-                  : loading ? 'Ejecutando...' : 'Ejecutar Código'}
-            </button>
           </div>
 
           {/* Panel derecho: resultados */}

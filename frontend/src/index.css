@@ -1,3 +1,28 @@
+:root {
+  /* Backgrounds — match editor exactly */
+  --bg:           #0d1117;   /* editor background */
+  --surface:      #161b22;   /* cards, panels, editor header */
+  --overlay:      #21262d;   /* hover, modals, elevated surfaces */
+
+  /* Borders */
+  --border:       #30363d;
+
+  /* Text — derived from editor's foreground & comment colors */
+  --text:         #c9d1d9;   /* matches editor foreground exactly */
+  --text-muted:   #8b949e;   /* matches editor comment color exactly */
+  --text-subtle:  #6e7681;   /* tertiary, placeholders */
+
+  /* Accent — matches editor's variable/number color (#79c0ff) */
+  --accent:       #79c0ff;   /* headers, links, focus, button background */
+  --accent-hover: #58a6ff;   /* button hover */
+
+  /* Feedback — derived from editor syntax palette */
+  --success:       #7ee787;   /* matches editor tag/name color */
+  --success-hover: #56d364;
+  --danger:        #ff7b72;   /* matches editor keyword color */
+  --danger-hover:  #f85149;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,13 +31,11 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: #2E3440;
-  color: #D8DEE9;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
 }
 
 #root {
   min-height: 100vh;
 }
-
-

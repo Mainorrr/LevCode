@@ -7,8 +7,8 @@
 }
 
 .userform-card {
-  background: #3B4252;
-  border: 1px solid #434C5E;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 40px;
   width: 100%;
@@ -17,13 +17,13 @@
 
 .userform-title {
   font-size: 1.5em;
-  color: #88C0D0;
+  color: var(--accent);
   margin-bottom: 6px;
 }
 
 .userform-subtitle {
   font-size: 0.9em;
-  color: #81A1C1;
+  color: var(--text-muted);
   margin-bottom: 20px;
   line-height: 1.5;
 }
@@ -42,32 +42,33 @@
 
 .userform-field label {
   font-size: 0.85em;
-  color: #D8DEE9;
+  color: var(--text);
   font-weight: 600;
 }
 
 .userform-input {
   padding: 10px 12px;
-  border: 1px solid #4C566A;
+  border: 1px solid var(--border);
   border-radius: 4px;
-  background: #2E3440;
-  color: #D8DEE9;
+  background: var(--bg);
+  color: var(--text);
   font-size: 0.95em;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .userform-input:focus {
   outline: none;
-  border-color: #88C0D0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(121, 192, 255, 0.15);
 }
 
 .userform-input::placeholder {
-  color: #4C566A;
+  color: var(--text-subtle);
 }
 
 select.userform-input {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2381A1C1' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
@@ -80,8 +81,8 @@ select.userform-input:disabled {
 }
 
 select.userform-input option {
-  background: #2E3440;
-  color: #D8DEE9;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .userform-tooltip {
@@ -91,8 +92,8 @@ select.userform-input option {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #4C566A;
-  color: #81A1C1;
+  background: var(--border);
+  color: var(--text-muted);
   font-size: 0.7em;
   font-style: italic;
   font-weight: 700;
@@ -108,9 +109,9 @@ select.userform-input option {
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  background: #2E3440;
-  border: 1px solid #434C5E;
-  color: #D8DEE9;
+  background: var(--overlay);
+  border: 1px solid var(--border);
+  color: var(--text);
   font-size: 1.05em;
   font-weight: 400;
   font-style: normal;
@@ -128,20 +129,20 @@ select.userform-input option {
 }
 
 .userform-error {
-  color: #BF616A;
+  color: var(--danger);
   font-size: 0.875em;
   padding: 8px 12px;
-  background: rgba(191, 97, 106, 0.1);
-  border: 1px solid rgba(191, 97, 106, 0.3);
+  background: rgba(255, 123, 114, 0.1);
+  border: 1px solid rgba(255, 123, 114, 0.3);
   border-radius: 4px;
 }
 
 .userform-btn {
   padding: 12px;
-  background: #88C0D0;
-  color: #2E3440;
+  background: var(--accent);
+  color: var(--bg);
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1em;
   font-weight: 700;
   cursor: pointer;
@@ -150,5 +151,5 @@ select.userform-input option {
 }
 
 .userform-btn:hover {
-  background: #81A1C1;
+  background: var(--accent-hover);
 }

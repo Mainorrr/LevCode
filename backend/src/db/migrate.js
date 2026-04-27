@@ -68,6 +68,12 @@ async function migrate() {
       );
     `);
 
+    // Agregar columna description (idempotente)
+    await pool.query(`
+      ALTER TABLE access_passwords
+        ADD COLUMN IF NOT EXISTS description VARCHAR(200);
+    `);
+
     logger.info("Database migration completed");
   } catch (err) {
     // No fatal: el servidor arranca igual; los endpoints de sesión

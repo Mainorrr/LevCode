@@ -4,7 +4,7 @@ import { EditorView, basicSetup } from 'codemirror'
 import { keymap } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
-import { nord } from '@fsegurai/codemirror-theme-nord'
+import { githubDark } from '@uiw/codemirror-theme-github'
 import './CodeEditor.css'
 
 /**
@@ -17,7 +17,7 @@ import './CodeEditor.css'
  *   - starterCode: string - Código inicial para el botón de revertir
  *   - readOnly: boolean - Si true, el editor no permite edición
  */
-export default function CodeEditor({ code, onChange, starterCode, readOnly = false }) {
+export default function CodeEditor({ code, onChange, starterCode, readOnly = false, actionSlot }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
   const readOnlyCompartment = useRef(new Compartment())
@@ -32,7 +32,13 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
         basicSetup,
         keymap.of([indentWithTab]),
         python(),
-        nord,
+        githubDark,
+        EditorView.theme({
+          "&": { height: "100%" },
+          ".cm-scroller": { overflow: "auto" },
+          ".cm-content": { minHeight: "260px" },
+          ".cm-gutter": { minHeight: "260px" },
+        }),
         readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly)),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -75,14 +81,17 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
     <div className="editor-container">
       <div className="editor-label">
         <span>Código Python</span>
-        {readOnly
-          ? <span className="editor-solved-badge">¡Ejercicio completado!</span>
-          : starterCode && (
-            <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Restaurar código inicial">
-              Iniciar de nuevo
-            </button>
-          )
-        }
+        <div className="editor-label-actions">
+          {readOnly
+            ? <span className="editor-solved-badge">¡Ejercicio completado!</span>
+            : starterCode && (
+              <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Restaurar código inicial">
+                Iniciar de nuevo
+              </button>
+            )
+          }
+          {actionSlot}
+        </div>
       </div>
       <div ref={editorRef} className="editor-content" />
 

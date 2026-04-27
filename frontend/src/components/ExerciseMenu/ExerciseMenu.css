@@ -13,7 +13,7 @@
 
 .menu-title {
   font-size: 1.6em;
-  color: #88C0D0;
+  color: var(--accent);
 }
 
 .menu-header-right {
@@ -24,21 +24,22 @@
 
 .menu-user {
   font-size: 0.85em;
-  color: #81A1C1;
+  color: var(--text-muted);
 }
 
 .menu-change-btn {
   padding: 5px 12px;
-  background: #434C5E;
-  color: #D8DEE9;
-  border: none;
+  background: var(--overlay);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 0.8em;
   cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .menu-change-btn:hover {
-  background: #4C566A;
+  background: var(--border);
 }
 
 .menu-grid {
@@ -48,29 +49,30 @@
 }
 
 .menu-card {
-  background: #3B4252;
-  border: 1px solid #434C5E;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .menu-card:hover {
-  border-color: #88C0D0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .menu-card-title {
   font-size: 1.1em;
-  color: #D8DEE9;
+  color: var(--text);
   margin: 0;
 }
 
 .menu-card-desc {
   font-size: 0.875em;
-  color: #81A1C1;
+  color: var(--text-muted);
   line-height: 1.5;
   flex: 1;
 }
@@ -82,18 +84,19 @@
 
 .menu-card-cases {
   font-size: 0.78em;
-  color: #4C566A;
-  background: #2E3440;
+  color: var(--text-muted);
+  background: var(--overlay);
   padding: 3px 8px;
   border-radius: 3px;
+  border: 1px solid var(--border);
 }
 
 .menu-card-btn {
   padding: 9px 16px;
-  background: #88C0D0;
-  color: #2E3440;
+  background: var(--accent);
+  color: var(--bg);
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.9em;
   font-weight: 700;
   cursor: pointer;
@@ -102,24 +105,25 @@
 }
 
 .menu-card-btn:hover {
-  background: #81A1C1;
+  background: var(--accent-hover);
 }
 
 .menu-card-btn-solved {
-  background: #A3BE8C;
+  background: var(--success);
+  color: var(--bg);
   cursor: pointer;
 }
 
 .menu-card-btn-solved:hover {
-  background: #A3BE8C;
+  background: var(--success-hover);
 }
 
 .menu-card-btn-progress {
-  background: #BF616A;
-  color: #ECEFF4;
+  background: var(--danger);
+  color: var(--bg);
   cursor: pointer;
 }
 
 .menu-card-btn-progress:hover {
-  background: #D08770;
+  background: var(--danger-hover);
 }
