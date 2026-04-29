@@ -23,6 +23,22 @@
   --danger-hover:  #f85149;
 }
 
+[data-theme="light"] {
+  --bg:           #ffffff;
+  --surface:      #f6f8fa;
+  --overlay:      #eaeef2;
+  --border:       #d0d7de;
+  --text:         #1f2328;
+  --text-muted:   #57606a;
+  --text-subtle:  #6e7781;
+  --accent:       #0969da;
+  --accent-hover: #0550ae;
+  --success:       #1a7f37;
+  --success-hover: #116329;
+  --danger:        #cf222e;
+  --danger-hover:  #a40e26;
+}
+
 * {
   margin: 0;
   padding: 0;

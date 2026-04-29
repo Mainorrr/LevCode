@@ -4,7 +4,7 @@ import { EditorView, basicSetup } from 'codemirror'
 import { keymap } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
-import { githubDark } from '@uiw/codemirror-theme-github'
+import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import './CodeEditor.css'
 
 /**
@@ -17,10 +17,11 @@ import './CodeEditor.css'
  *   - starterCode: string - Código inicial para el botón de revertir
  *   - readOnly: boolean - Si true, el editor no permite edición
  */
-export default function CodeEditor({ code, onChange, starterCode, readOnly = false, actionSlot }) {
+export default function CodeEditor({ code, onChange, starterCode, readOnly = false, actionSlot, isDark = true }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
   const readOnlyCompartment = useRef(new Compartment())
+  const themeCompartment = useRef(new Compartment())
   const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
         basicSetup,
         keymap.of([indentWithTab]),
         python(),
-        githubDark,
+        themeCompartment.current.of(isDark ? githubDark : githubLight),
         EditorView.theme({
           "&": { height: "100%" },
           ".cm-scroller": { overflow: "auto" },
@@ -67,6 +68,13 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
       effects: readOnlyCompartment.current.reconfigure(EditorState.readOnly.of(readOnly)),
     })
   }, [readOnly])
+
+  useEffect(() => {
+    if (!viewRef.current) return
+    viewRef.current.dispatch({
+      effects: themeCompartment.current.reconfigure(isDark ? githubDark : githubLight),
+    })
+  }, [isDark])
 
   function confirmRevert() {
     if (!viewRef.current || !starterCode) return

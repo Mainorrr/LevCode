@@ -181,6 +181,31 @@
   opacity: 0.85;
 }
 
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 1000;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--overlay);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .app-toast {
   position: fixed;
   bottom: 32px;
