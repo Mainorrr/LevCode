@@ -148,9 +148,10 @@ export default function App() {
   // ── Cooldown global (try_timer) ─────────────────────────────────────────────
   const getCooldownKey = (carnet) => `levcode_cooldown_${carnet}`
 
-  const startCooldown = () => {
+  const startCooldown = (attemptCount) => {
+    const duration = Math.min(attemptCount * 5, 60) * 1000
     const key = getCooldownKey(userInfo.carnet)
-    const expiresAt = Date.now() + 30000
+    const expiresAt = Date.now() + duration
     localStorage.setItem(key, String(expiresAt))
     tickCooldown(expiresAt)
   }
@@ -352,7 +353,7 @@ export default function App() {
       if (!data.success) {
         setCompilationError(data.error)
         recordSession(false)
-        if (tryTimer) startCooldown()
+        if (tryTimer) startCooldown(attempts + 1)
         setLoading(false)
         return
       }
@@ -362,7 +363,7 @@ export default function App() {
       if (firstError) {
         setCompilationError(firstError.error)
         recordSession(false)
-        if (tryTimer) startCooldown()
+        if (tryTimer) startCooldown(attempts + 1)
         setLoading(false)
         return
       }
@@ -393,7 +394,7 @@ export default function App() {
           return next
         })
       } else if (tryTimer) {
-        startCooldown()
+        startCooldown(attempts + 1)
       }
 
       setLoading(false)
