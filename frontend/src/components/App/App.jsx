@@ -188,13 +188,16 @@ export default function App() {
     return () => clearInterval(cooldownRef.current)
   }, [userInfo?.carnet])
 
-  /** Interpola de verde (#A3BE8C) a rojo (#BF616A) según intentos (0–5). */
   const getAttemptsColor = (n) => {
+    const style = getComputedStyle(document.documentElement)
+    const hexToRgb = (hex) => {
+      const h = hex.trim().replace('#', '')
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
+    }
+    const [sr, sg, sb] = hexToRgb(style.getPropertyValue('--success'))
+    const [dr, dg, db] = hexToRgb(style.getPropertyValue('--danger'))
     const t = Math.min(n / 5, 1)
-    const r = Math.round(163 + t * (191 - 163))
-    const g = Math.round(190 + t * (97 - 190))
-    const b = Math.round(140 + t * (106 - 140))
-    return `rgb(${r}, ${g}, ${b})`
+    return `rgb(${Math.round(sr + t * (dr - sr))}, ${Math.round(sg + t * (dg - sg))}, ${Math.round(sb + t * (db - sb))})`
   }
 
   // ── View: access (primer paso) ─────────────────────────────────────────────
@@ -526,7 +529,7 @@ export default function App() {
               {showTries && (
                 <span
                   className="exercise-timer"
-                  style={{ color: getAttemptsColor(attempts), borderColor: getAttemptsColor(attempts) }}
+                  style={{ background: getAttemptsColor(attempts) }}
                 >
                   Intentos: {attempts}
                 </span>
