@@ -53,10 +53,31 @@ async function migrate() {
       END $$;
     `);
 
-    // Agregar columna solution_code para guardar el código que resolvió el ejercicio
+    // Contador secuencial para asignar tratamientos de manera equitativa (0..7).
+    // Cada nuevo estudiante recibe nextval() % 8 y se decodifica como bits.
+    await pool.query(`
+      CREATE SEQUENCE IF NOT EXISTS treatment_counter MINVALUE 0 START WITH 0;
+    `);
+
+    // Eliminar solution_code (reemplazado por la tabla attempt_code)
     await pool.query(`
       ALTER TABLE exercise_sessions
-        ADD COLUMN IF NOT EXISTS solution_code TEXT;
+        DROP COLUMN IF EXISTS solution_code;
+    `);
+
+    // Tabla attempt_code: guarda el código enviado en cada intento
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS attempt_code (
+        id              SERIAL PRIMARY KEY,
+        session_id      INTEGER     NOT NULL REFERENCES exercise_sessions(id) ON DELETE CASCADE,
+        attempt_number  INTEGER     NOT NULL,
+        code            TEXT        NOT NULL,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        CONSTRAINT uq_session_attempt UNIQUE (session_id, attempt_number)
+      );
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_attempt_code_session ON attempt_code(session_id);
     `);
 
     // Tabla de contraseñas de acceso para estudiantes

@@ -210,7 +210,7 @@ export default function App() {
       const res = await fetch('/api/access/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: accessPasswordInput }),
+        body: JSON.stringify({ password: accessPasswordInput, carnet: userInfo?.carnet || '' }),
       })
       if (!res.ok) {
         setAccessError('Error del servidor. Intenta de nuevo.')
@@ -243,6 +243,12 @@ export default function App() {
     sessionStorage.setItem('levcode_user', JSON.stringify(info))
     setUserInfo(info)
     setView('menu')
+    // Revalidar para asociar el LOGIN_SUCCESS al carnet en el log del backend
+    fetch('/api/access/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: accessPassword, carnet: info.carnet }),
+    }).catch(() => {})
     fetchSessionStatus(info.carnet, accessPassword)
   }
 
@@ -383,7 +389,7 @@ export default function App() {
       setTestResults(results)
 
       const allPassed = results.length > 0 && results.every((r) => r.passed)
-      recordSession(allPassed, allPassed ? code : undefined)
+      recordSession(allPassed)
 
       if (allPassed) {
         localStorage.removeItem(draftKey(selectedExercise.config.id))
@@ -408,7 +414,7 @@ export default function App() {
    * Envía los datos del intento al backend para persistirlos en la DB.
    * No bloquea la UI ni muestra error al usuario si falla.
    */
-  const recordSession = (solved, solutionCode) => {
+  const recordSession = (solved) => {
     fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
@@ -417,7 +423,7 @@ export default function App() {
         grupo: userInfo.grupo,
         problemId: selectedExercise.config.id,
         solved,
-        ...(solutionCode !== undefined && { solutionCode }),
+        code,
       }),
     })
       .then((r) => r.json())

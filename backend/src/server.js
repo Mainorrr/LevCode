@@ -8,6 +8,7 @@ const exportRouter = require("./routes/export");
 const adminRouter = require("./routes/admin");
 const accessPasswordsRouter = require("./routes/accessPasswords");
 const accessAuth = require("./middleware/accessAuth");
+const requestTimer = require("./middleware/requestTimer");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use(express.json({ limit: "1mb" }));
+app.use(requestTimer);
 
 // Logging middleware
 app.use((req, res, next) => {

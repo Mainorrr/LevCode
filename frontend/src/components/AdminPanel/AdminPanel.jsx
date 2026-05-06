@@ -96,6 +96,27 @@ export default function AdminPanel() {
     }
   }
 
+  const exportAttemptsCSV = async () => {
+    try {
+      const res = await fetch('/api/export/attempts', {
+        headers: { 'X-API-Password': password },
+      })
+      if (!res.ok) {
+        setError('Error al exportar intentos')
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `levcode_attempts_${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setError('Error de conexión al exportar')
+    }
+  }
+
   const clearFilters = () => {
     setFilterCarnet('')
     setFilterGrupo('')
@@ -191,6 +212,9 @@ export default function AdminPanel() {
           <span className="admin-count">{filtered.length} de {sessions.length} registros</span>
           <button onClick={exportCSV} className="admin-btn-export">
             Exportar CSV
+          </button>
+          <button onClick={exportAttemptsCSV} className="admin-btn-export">
+            Exportar Intentos
           </button>
           <button onClick={fetchSessions} disabled={loading} className="admin-btn-refresh">
             {loading ? 'Cargando...' : 'Actualizar datos'}

@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require("../config/db");
 const env = require("../config/env");
 const logger = require("../utils/logger");
+const csvLogger = require("../utils/csvLogger");
 
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -15,10 +16,15 @@ function hashPassword(password) {
  * Body: { password }
  */
 router.post("/validate", async (req, res) => {
-  const { password } = req.body;
+  const { password, carnet } = req.body;
+  const carnetStr = typeof carnet === "string" ? carnet.trim() : "";
+
+  const carnetForFail = carnetStr || "NONE";
 
   if (!password) {
-    return res.status(400).json({ valid: false, error: "Contraseña requerida" });
+    res.status(400).json({ valid: false, error: "Contraseña requerida" });
+    csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
+    return;
   }
 
   try {
@@ -29,13 +35,17 @@ router.post("/validate", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.json({ valid: false });
+      res.json({ valid: false });
+      csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
+      return;
     }
 
     res.json({ valid: true });
+    csvLogger.logLogin("LOGIN_SUCCESS", { carnet: carnetStr });
   } catch (err) {
     logger.error("Access password validation failed", { error: err.message });
     res.status(500).json({ valid: false, error: "Error del servidor" });
+    csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
   }
 });
 

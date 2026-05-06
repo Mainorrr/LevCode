@@ -80,4 +80,38 @@ router.get("/csv", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/export/attempts
+ *
+ * Descarga toda la tabla attempt_code como JSON. Se usa JSON en vez de CSV
+ * porque el campo `code` contiene saltos de línea que rompen el formato CSV
+ * para análisis externo. Incluye session_id como FK a exercise_sessions(id).
+ * Requiere el header: X-API-Password: <API_PASSWORD>
+ */
+router.get("/attempts", async (req, res) => {
+  const password = req.headers["x-api-password"];
+
+  if (!password || (password !== env.API_PASSWORD && password !== env.ADMIN_PASSWORD)) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT id, session_id, attempt_number, code, created_at
+       FROM attempt_code
+       ORDER BY id ASC`,
+    );
+
+    const filename = `levcode_attempts_${new Date().toISOString().slice(0, 10)}.json`;
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    logger.info("Attempts JSON export requested", { rows: result.rows.length });
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    logger.error("Attempts JSON export failed", { error: err.message });
+    res.status(500).json({ error: "Error al exportar intentos" });
+  }
+});
+
 module.exports = router;
