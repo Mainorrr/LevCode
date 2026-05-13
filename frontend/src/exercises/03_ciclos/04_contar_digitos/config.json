@@ -2,5 +2,5 @@
   "id": "contar-digitos",
   "title": "Contar Digitos",
   "description": "Lee un numero entero positivo e imprime cuantos digitos tiene. Debes resolverlo usando un ciclo (no se permite usar len(str(n))).\n\nEjemplo de entrada:\n12345\n\nEjemplo de salida:\n5",
-  "starterCode": "n = int(input())\n# Tu codigo aqui\n"
+  "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

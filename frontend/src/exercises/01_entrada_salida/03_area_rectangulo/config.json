@@ -2,5 +2,5 @@
   "id": "area-rectangulo",
   "title": "Area de un Rectangulo",
   "description": "Lee la base y la altura de un rectangulo (numeros enteros, uno por linea) e imprime su area.\n\nEjemplo de entrada:\n4\n5\n\nEjemplo de salida:\n20",
-  "starterCode": "base = int(input())\naltura = int(input())\n# Tu codigo aqui\n"
+  "starterCode": "base = int(input())\naltura = int(input())\n\n# Tu codigo comienza aqui."
 }

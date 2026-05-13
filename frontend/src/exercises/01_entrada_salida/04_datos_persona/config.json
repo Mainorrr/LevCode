@@ -2,5 +2,5 @@
   "id": "datos-persona",
   "title": "Datos de Persona",
   "description": "Lee un nombre y una edad (uno por linea) e imprime el mensaje 'NOMBRE tiene EDAD anios'.\n\nEjemplo de entrada:\nAna\n25\n\nEjemplo de salida:\nAna tiene 25 anios",
-  "starterCode": "nombre = input()\nedad = int(input())\n# Tu codigo aqui\n"
+  "starterCode": "nombre = input()\nedad = int(input())\n\n# Tu codigo comienza aqui."
 }

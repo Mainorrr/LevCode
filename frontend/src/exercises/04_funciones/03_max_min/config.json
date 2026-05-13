@@ -2,5 +2,5 @@
   "id": "max-min",
   "title": "Maximo y Minimo",
   "description": "Escribe dos funciones: 'maximo(a, b)' que devuelva el mayor de dos numeros, y 'minimo(a, b)' que devuelva el menor. Luego lee dos numeros enteros (uno por linea) e imprime el maximo y el minimo separados por un espacio en una sola linea.\n\nEjemplo de entrada:\n7\n3\n\nEjemplo de salida:\n7 3",
-  "starterCode": "def maximo(a, b):\n    # Tu codigo aqui\n    pass\n\ndef minimo(a, b):\n    # Tu codigo aqui\n    pass\n\na = int(input())\nb = int(input())\n# Imprime el maximo y el minimo separados por un espacio\n"
+  "starterCode": "def maximo(a, b):\n    # Tu codigo aqui.\n    pass\n\ndef minimo(a, b):\n    # Tu codigo aqui.\n    pass\n\na = int(input())\nb = int(input())\n\n# Imprime el maximo y el minimo separados por un espacio."
 }

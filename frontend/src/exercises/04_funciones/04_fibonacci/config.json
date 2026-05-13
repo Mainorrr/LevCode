@@ -2,5 +2,5 @@
   "id": "fibonacci",
   "title": "N-esimo Numero de Fibonacci",
   "description": "Escribe una funcion 'fib(n)' que devuelva el n-esimo numero de la secuencia de Fibonacci, donde fib(0)=0, fib(1)=1 y fib(n) = fib(n-1) + fib(n-2). Lee N e imprime fib(N).\n\nEjemplo de entrada:\n7\n\nEjemplo de salida:\n13",
-  "starterCode": "def fib(n):\n    # Tu codigo aqui\n    pass\n\nn = int(input())\n# Llama a la funcion e imprime el resultado\n"
+  "starterCode": "def fib(n):\n    # Tu codigo aqui.\n    pass\n\nn = int(input())\n\n# Llama a la funcion e imprime el resultado."
 }

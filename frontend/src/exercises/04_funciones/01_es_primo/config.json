@@ -2,5 +2,5 @@
   "id": "es-primo",
   "title": "Es Primo",
   "description": "Escribe una funcion llamada 'es_primo' que reciba un numero entero y devuelva True si es primo o False en caso contrario. Luego, lee un numero entero, llama a la funcion e imprime 'si' si es primo o 'no' si no lo es.\n\nEjemplo de entrada:\n7\n\nEjemplo de salida:\nsi",
-  "starterCode": "def es_primo(n):\n    # Tu codigo aqui\n    pass\n\nn = int(input())\n# Llama a la funcion e imprime 'si' o 'no'\n"
+  "starterCode": "def es_primo(n):\n    # Tu codigo aqui.\n    pass\n\nn = int(input())\n\n# Llama a la funcion e imprime 'si' o 'no'."
 }

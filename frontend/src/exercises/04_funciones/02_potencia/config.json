@@ -2,5 +2,5 @@
   "id": "potencia",
   "title": "Calcular Potencia",
   "description": "Escribe una funcion llamada 'potencia' que reciba dos enteros (base y exponente, con exponente >= 0) y devuelva base elevado al exponente. No uses el operador ** ni la funcion pow. Luego lee la base y el exponente (uno por linea) e imprime el resultado.\n\nEjemplo de entrada:\n2\n5\n\nEjemplo de salida:\n32",
-  "starterCode": "def potencia(base, exp):\n    # Tu codigo aqui\n    pass\n\nbase = int(input())\nexp = int(input())\n# Llama a la funcion e imprime el resultado\n"
+  "starterCode": "def potencia(base, exp):\n    # Tu codigo aqui.\n    pass\n\nbase = int(input())\nexp = int(input())\n\n# Llama a la funcion e imprime el resultado."
 }
