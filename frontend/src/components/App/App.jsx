@@ -273,8 +273,9 @@ export default function App() {
     }
 
     setSelectedExercise(exercise)
+    const starter = exercise.config.starterCode
     const saved = localStorage.getItem(draftKey(exercise.config.id))
-    setCode(saved ?? exercise.config.starterCode)
+    setCode(saved && saved.startsWith(starter) ? saved : starter + '\n')
     setTestResults(null)
     setCompilationError(null)
     setAttempts(0)

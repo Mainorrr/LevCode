@@ -1,11 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditorState, Compartment } from '@codemirror/state'
+import { EditorState, Compartment, Annotation } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
-import { keymap } from '@codemirror/view'
+import { keymap, gutter, GutterMarker } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import './CodeEditor.css'
+
+const privilegedTx = Annotation.define()
+
+class LockMarker extends GutterMarker {
+  toDOM() {
+    const el = document.createElement('span')
+    el.className = 'cm-lock-marker'
+    el.textContent = '🔒︎'
+    return el
+  }
+}
+const lockMarker = new LockMarker()
 
 /**
  * Componente CodeEditor
@@ -27,9 +39,30 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
   useEffect(() => {
     if (!editorRef.current) return
 
+    const lockedLength = starterCode ? starterCode.length : 0
+
+    const lockFilter = EditorState.changeFilter.of((tr) => {
+      if (tr.annotation(privilegedTx)) return true
+      if (!tr.docChanged || lockedLength === 0) return true
+      let allowed = true
+      tr.changes.iterChangedRanges((fromA) => {
+        if (fromA <= lockedLength) allowed = false
+      })
+      return allowed
+    })
+
+    const lockGutter = gutter({
+      class: 'cm-lock-gutter',
+      lineMarker(view, line) {
+        return line.from < lockedLength ? lockMarker : null
+      },
+      initialSpacer: () => lockMarker,
+    })
+
     const state = EditorState.create({
       doc: code,
       extensions: [
+        lockGutter,
         basicSetup,
         keymap.of([indentWithTab]),
         python(),
@@ -41,6 +74,7 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
           ".cm-gutter": { minHeight: "260px" },
         }),
         readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly)),
+        lockFilter,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             onChange(update.state.doc.toString())
@@ -78,10 +112,13 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
 
   function confirmRevert() {
     if (!viewRef.current || !starterCode) return
+    const newCode = starterCode + '\n'
     viewRef.current.dispatch({
-      changes: { from: 0, to: viewRef.current.state.doc.length, insert: starterCode },
+      changes: { from: 0, to: viewRef.current.state.doc.length, insert: newCode },
+      selection: { anchor: newCode.length },
+      annotations: privilegedTx.of(true),
     })
-    onChange(starterCode)
+    onChange(newCode)
     setShowConfirm(false)
   }
 

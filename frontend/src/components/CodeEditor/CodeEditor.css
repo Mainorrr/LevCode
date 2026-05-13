@@ -132,3 +132,17 @@
   overflow: hidden;
   min-height: 0;
 }
+
+.cm-lock-gutter {
+  min-width: 18px;
+}
+
+.cm-lock-marker {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  cursor: default;
+  user-select: none;
+}
