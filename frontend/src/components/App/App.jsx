@@ -378,6 +378,7 @@ export default function App() {
       const results = data.results.map((r, i) => {
         const tc = testcases[i]
         return {
+          caseNumber: i + 1,
           input: tc.input,
           expectedOutput: tc.expectedOutput,
           actualOutput: r.output ?? '',
