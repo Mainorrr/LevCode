@@ -1,8 +1,26 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
 const router = express.Router();
 const pool = require("../config/db");
 const env = require("../config/env");
 const logger = require("../utils/logger");
+
+const LOG_DIR = path.join(__dirname, "..", "log");
+
+function sendLogFile(req, res, filename, downloadName) {
+  const password = req.headers["x-api-password"];
+  if (!password || (password !== env.API_PASSWORD && password !== env.ADMIN_PASSWORD)) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+  const filePath = path.join(LOG_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "Archivo de log no disponible" });
+  }
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", `attachment; filename="${downloadName}"`);
+  fs.createReadStream(filePath).pipe(res);
+}
 
 /**
  * GET /api/export/csv
@@ -167,6 +185,27 @@ router.get("/sus", async (req, res) => {
     logger.error("SUS CSV export failed", { error: err.message });
     res.status(500).json({ error: "Error al exportar respuestas SUS" });
   }
+});
+
+/**
+ * GET /api/export/log/events       — log.csv (eventos generales)
+ * GET /api/export/log/submissions  — submissions_log.csv (ejecuciones de código)
+ * GET /api/export/log/logins       — login_log.csv (eventos de login)
+ * Todos requieren X-API-Password.
+ */
+router.get("/log/events", (req, res) => {
+  const date = new Date().toISOString().slice(0, 10);
+  sendLogFile(req, res, "log.csv", `levcode_events_${date}.csv`);
+});
+
+router.get("/log/submissions", (req, res) => {
+  const date = new Date().toISOString().slice(0, 10);
+  sendLogFile(req, res, "submissions_log.csv", `levcode_submissions_${date}.csv`);
+});
+
+router.get("/log/logins", (req, res) => {
+  const date = new Date().toISOString().slice(0, 10);
+  sendLogFile(req, res, "login_log.csv", `levcode_logins_${date}.csv`);
 });
 
 module.exports = router;

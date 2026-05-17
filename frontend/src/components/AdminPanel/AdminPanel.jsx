@@ -1,6 +1,18 @@
 import { useState, useMemo, useEffect } from 'react'
 import './AdminPanel.css'
 
+function ExportButton({ onClick, label, info }) {
+  return (
+    <button onClick={onClick} className="admin-btn-export">
+      <span className="export-label">{label}</span>
+      <span className="info-tip" onClick={(e) => e.stopPropagation()}>
+        <span className="info-tip-icon" tabIndex={0} aria-label={info}>i</span>
+        <span className="info-tip-content" role="tooltip">{info}</span>
+      </span>
+    </button>
+  )
+}
+
 export default function AdminPanel() {
   const [password, setPassword] = useState('')
   const [sessions, setSessions] = useState(null)
@@ -117,6 +129,32 @@ export default function AdminPanel() {
     }
   }
 
+  const downloadFromUrl = async (url, fallbackName) => {
+    try {
+      const res = await fetch(url, { headers: { 'X-API-Password': password } })
+      if (!res.ok) {
+        setError('Error al descargar archivo')
+        return
+      }
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = fallbackName
+      a.click()
+      URL.revokeObjectURL(objectUrl)
+    } catch {
+      setError('Error de conexión al descargar')
+    }
+  }
+
+  const exportEventsLog = () =>
+    downloadFromUrl('/api/export/log/events', `levcode_events_${new Date().toISOString().slice(0, 10)}.csv`)
+  const exportSubmissionsLog = () =>
+    downloadFromUrl('/api/export/log/submissions', `levcode_submissions_${new Date().toISOString().slice(0, 10)}.csv`)
+  const exportLoginsLog = () =>
+    downloadFromUrl('/api/export/log/logins', `levcode_logins_${new Date().toISOString().slice(0, 10)}.csv`)
+
   const exportAttemptsCSV = async () => {
     try {
       const res = await fetch('/api/export/attempts', {
@@ -229,18 +267,39 @@ export default function AdminPanel() {
     <div className="admin-container">
       <div className="admin-header">
         <h2>Panel de Administración</h2>
-        <div className="admin-header-right">
-          <span className="admin-count">{filtered.length} de {sessions.length} registros</span>
-          <button onClick={exportCSV} className="admin-btn-export">
-            Exportar sesiones
-          </button>
-          <button onClick={exportSusCSV} className="admin-btn-export">
-            Exportar cuestionarios SUS
-          </button>
-          <button onClick={exportAttemptsCSV} className="admin-btn-export">
-            Exportar intentos
-          </button>
-        </div>
+      </div>
+
+      <div className="admin-export-bar">
+        <ExportButton
+          onClick={exportCSV}
+          label="Exportar sesiones"
+          info="Descarga la tabla exercise_sessions de la base de datos: una fila por (estudiante, ejercicio) con intentos, resuelto y tratamientos asignados."
+        />
+        <ExportButton
+          onClick={exportSusCSV}
+          label="Exportar cuestionarios SUS"
+          info="Descarga la tabla sus_responses: respuestas del cuestionario SUS (q1..q10), entry_time, submit_time y si fue enviado."
+        />
+        <ExportButton
+          onClick={exportAttemptsCSV}
+          label="Exportar intentos"
+          info="Descarga (en JSON) la tabla attempt_code: el código Python enviado en cada intento. Usa JSON porque el código tiene saltos de línea."
+        />
+        <ExportButton
+          onClick={exportEventsLog}
+          label="Exportar log de eventos"
+          info="Descarga log.csv del servidor: eventos generales de usuario (EXERCISE_START, EXERCISE_SOLVED, ATTEMPT_FAIL, SUS_ENTER, SUS_SUBMIT...) con tratamientos."
+        />
+        <ExportButton
+          onClick={exportSubmissionsLog}
+          label="Exportar log de envíos"
+          info="Descarga submissions_log.csv del servidor: cada ejecución de código Python con tiempo de ejecución."
+        />
+        <ExportButton
+          onClick={exportLoginsLog}
+          label="Exportar log de logins"
+          info="Descarga login_log.csv del servidor: eventos de login (validación de contraseña por carnet)."
+        />
       </div>
 
       <div className="admin-filters">
@@ -284,6 +343,10 @@ export default function AdminPanel() {
         <button onClick={fetchSessions} disabled={loading} className="admin-btn-refresh">
           {loading ? 'Cargando...' : 'Actualizar datos'}
         </button>
+      </div>
+
+      <div className="admin-table-count">
+        {filtered.length} de {sessions.length} registros
       </div>
 
       <div className="admin-table-wrapper">

@@ -83,7 +83,109 @@
 .admin-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Barra de exportaciones (admin) — debajo del título, encima de los filtros */
+.admin-export-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 16px 0;
+}
+
+.admin-export-bar .admin-btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-table-count {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.export-label {
+  white-space: nowrap;
+}
+
+/* Tooltip personalizado (HTML, no nativo del navegador) */
+.info-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-tip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-size: 0.72em;
+  font-weight: 700;
+  font-style: italic;
+  font-family: 'Georgia', serif;
+  line-height: 1;
+  cursor: help;
+  user-select: none;
+}
+
+.info-tip-icon:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.info-tip-content {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  max-width: 320px;
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  font-size: 0.82em;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 1100;
+}
+
+.info-tip-content::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent var(--border) transparent;
+}
+
+.info-tip-icon:hover + .info-tip-content,
+.info-tip-icon:focus + .info-tip-content,
+.info-tip:hover .info-tip-content {
+  opacity: 1;
+  visibility: visible;
 }
 
 .admin-count {
