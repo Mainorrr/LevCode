@@ -96,6 +96,27 @@ export default function AdminPanel() {
     }
   }
 
+  const exportSusCSV = async () => {
+    try {
+      const res = await fetch('/api/export/sus', {
+        headers: { 'X-API-Password': password },
+      })
+      if (!res.ok) {
+        setError('Error al exportar SUS')
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `levcode_sus_${new Date().toISOString().slice(0, 10)}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setError('Error de conexión al exportar')
+    }
+  }
+
   const exportAttemptsCSV = async () => {
     try {
       const res = await fetch('/api/export/attempts', {
@@ -211,13 +232,13 @@ export default function AdminPanel() {
         <div className="admin-header-right">
           <span className="admin-count">{filtered.length} de {sessions.length} registros</span>
           <button onClick={exportCSV} className="admin-btn-export">
-            Exportar CSV
+            Exportar sesiones
+          </button>
+          <button onClick={exportSusCSV} className="admin-btn-export">
+            Exportar cuestionarios SUS
           </button>
           <button onClick={exportAttemptsCSV} className="admin-btn-export">
-            Exportar Intentos
-          </button>
-          <button onClick={fetchSessions} disabled={loading} className="admin-btn-refresh">
-            {loading ? 'Cargando...' : 'Actualizar datos'}
+            Exportar intentos
           </button>
         </div>
       </div>
@@ -260,6 +281,9 @@ export default function AdminPanel() {
           <option value="false">No resuelto</option>
         </select>
         <button onClick={clearFilters} className="admin-btn-clear">Limpiar filtros</button>
+        <button onClick={fetchSessions} disabled={loading} className="admin-btn-refresh">
+          {loading ? 'Cargando...' : 'Actualizar datos'}
+        </button>
       </div>
 
       <div className="admin-table-wrapper">

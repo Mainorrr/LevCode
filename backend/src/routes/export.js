@@ -114,4 +114,59 @@ router.get("/attempts", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/export/sus
+ *
+ * Descarga todas las respuestas del cuestionario SUS como archivo CSV.
+ * Incluye sesiones que aún no fueron enviadas (submitted=false).
+ * Requiere el header: X-API-Password: <API_PASSWORD>
+ */
+router.get("/sus", async (req, res) => {
+  const password = req.headers["x-api-password"];
+
+  if (!password || (password !== env.API_PASSWORD && password !== env.ADMIN_PASSWORD)) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT
+         id, carnet, grupo, entry_time, submit_time, submitted,
+         q1, q2, q3, q4, q5, q6, q7, q8, q9, q10
+       FROM sus_responses
+       ORDER BY entry_time ASC`,
+    );
+
+    const columns = [
+      "id", "carnet", "grupo", "entry_time", "submit_time", "submitted",
+      "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10",
+    ];
+
+    const header = columns.join(",");
+    const rows = result.rows.map((row) =>
+      columns.map((col) => {
+        const val = row[col];
+        if (val === null || val === undefined) return "";
+        const str = String(val);
+        if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      }).join(","),
+    );
+
+    const csv = [header, ...rows].join("\n");
+
+    const filename = `levcode_sus_${new Date().toISOString().slice(0, 10)}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    logger.info("SUS CSV export requested", { rows: result.rows.length });
+    res.send(csv);
+  } catch (err) {
+    logger.error("SUS CSV export failed", { error: err.message });
+    res.status(500).json({ error: "Error al exportar respuestas SUS" });
+  }
+});
+
 module.exports = router;

@@ -4,6 +4,7 @@ import ResultDisplay from '../ResultDisplay/ResultDisplay'
 import UserForm from '../UserForm/UserForm'
 import ExerciseMenu from '../ExerciseMenu/ExerciseMenu'
 import AdminPanel from '../AdminPanel/AdminPanel'
+import SUSForm from '../SUSForm/SUSForm'
 import { exercises } from '../../exercises/index'
 import groupExercises from '../../groupExercises.json'
 import './App.css'
@@ -72,6 +73,7 @@ export default function App() {
   const [sessionLoading, setSessionLoading] = useState(!!initialUser && !!savedAccessPw)
   const [sessionError, setSessionError] = useState(false)
   const [toast, setToast] = useState(null)
+  const [susStatus, setSusStatus] = useState({ exists: false, submitted: false })
   const cooldownRef = useRef(null)
   const toastRef = useRef(null)
 
@@ -115,10 +117,25 @@ export default function App() {
       })
   }
 
+  // Cargar estado del cuestionario SUS desde el backend
+  const fetchSusStatus = (carnet, pw) => {
+    fetch(`/api/sus/status/${carnet}`, {
+      headers: { 'X-Access-Password': pw },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setSusStatus({ exists: !!data.exists, submitted: !!data.submitted })
+      })
+      .catch(() => {
+        // silencioso
+      })
+  }
+
   // Solo al montar: cargar estado si hay datos guardados
   useEffect(() => {
     if (initialUser && savedAccessPw) {
       fetchSessionStatus(initialUser.carnet, savedAccessPw)
+      fetchSusStatus(initialUser.carnet, savedAccessPw)
     } else {
       setSessionLoading(false)
     }
@@ -229,6 +246,7 @@ export default function App() {
       if (userInfo) {
         setView('menu')
         fetchSessionStatus(userInfo.carnet, accessPasswordInput)
+        fetchSusStatus(userInfo.carnet, accessPasswordInput)
       } else {
         setView('form')
       }
@@ -250,6 +268,7 @@ export default function App() {
       body: JSON.stringify({ password: accessPassword, carnet: info.carnet }),
     }).catch(() => {})
     fetchSessionStatus(info.carnet, accessPassword)
+    fetchSusStatus(info.carnet, accessPassword)
   }
 
   const handleChangeUser = () => {
@@ -260,6 +279,7 @@ export default function App() {
     setAccessPasswordInput('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
+    setSusStatus({ exists: false, submitted: false })
     setView('access')
   }
 
@@ -444,14 +464,21 @@ export default function App() {
     </button>
   )
 
+  const susButton = userInfo && accessPassword && view === 'menu' && (
+    <button
+      className="sus-toggle"
+      onClick={() => !susStatus.submitted && setView('sus')}
+      disabled={susStatus.submitted}
+      title={susStatus.submitted ? 'Ya respondido' : 'Cuestionario al finalizar'}
+    >
+      {susStatus.submitted ? 'Cuestionario ✓' : 'Cuestionario al finalizar'}
+    </button>
+  )
+
   if (isAdmin) {
     return (
       <div className="app-container">
         {themeToggle}
-        <header className="app-header">
-          <h1>Lev Code</h1>
-          <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
-        </header>
         <AdminPanel />
       </div>
     )
@@ -459,6 +486,7 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {susButton}
       {themeToggle}
       <header className="app-header">
         <h1>Lev Code</h1>
@@ -507,6 +535,21 @@ export default function App() {
               Reintentar
             </button>
           </div>
+        </div>
+      )}
+
+      {view === 'sus' && userInfo && (
+        <div className="app-body">
+          <SUSForm
+            carnet={userInfo.carnet}
+            grupo={userInfo.grupo}
+            accessPassword={accessPassword}
+            showToast={showToast}
+            onComplete={() => {
+              fetchSusStatus(userInfo.carnet, accessPassword)
+              setView('menu')
+            }}
+          />
         </div>
       )}
 

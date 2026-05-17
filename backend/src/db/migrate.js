@@ -95,6 +95,28 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS description VARCHAR(200);
     `);
 
+    // Tabla de respuestas del cuestionario SUS (System Usability Scale)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sus_responses (
+        id           SERIAL PRIMARY KEY,
+        carnet       VARCHAR(6)   NOT NULL UNIQUE,
+        grupo        VARCHAR(255) NOT NULL,
+        entry_time   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+        submit_time  TIMESTAMPTZ,
+        submitted    BOOLEAN      NOT NULL DEFAULT FALSE,
+        q1  INTEGER CHECK (q1  BETWEEN 1 AND 5),
+        q2  INTEGER CHECK (q2  BETWEEN 1 AND 5),
+        q3  INTEGER CHECK (q3  BETWEEN 1 AND 5),
+        q4  INTEGER CHECK (q4  BETWEEN 1 AND 5),
+        q5  INTEGER CHECK (q5  BETWEEN 1 AND 5),
+        q6  INTEGER CHECK (q6  BETWEEN 1 AND 5),
+        q7  INTEGER CHECK (q7  BETWEEN 1 AND 5),
+        q8  INTEGER CHECK (q8  BETWEEN 1 AND 5),
+        q9  INTEGER CHECK (q9  BETWEEN 1 AND 5),
+        q10 INTEGER CHECK (q10 BETWEEN 1 AND 5)
+      );
+    `);
+
     logger.info("Database migration completed");
   } catch (err) {
     // No fatal: el servidor arranca igual; los endpoints de sesión

@@ -1,0 +1,153 @@
+.susform-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 48px;
+}
+
+.susform-card {
+  width: 100%;
+  max-width: 760px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+}
+
+.susform-title {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 1.4em;
+}
+
+.susform-subtitle {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+  font-size: 0.92em;
+  line-height: 1.5;
+}
+
+.susform-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.susform-question {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: var(--bg);
+  margin: 0;
+}
+
+.susform-question-text {
+  font-size: 0.95em;
+  color: var(--text);
+  padding: 0 4px;
+  font-weight: 500;
+}
+
+.susform-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.susform-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 76px;
+}
+
+.susform-option:hover {
+  border-color: var(--accent);
+}
+
+.susform-option.selected {
+  border-color: var(--accent);
+  background: var(--overlay);
+}
+
+.susform-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.susform-option-value {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.susform-option-label {
+  font-size: 0.72em;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.susform-option.selected .susform-option-label,
+.susform-option.selected .susform-option-value {
+  color: var(--accent);
+}
+
+.susform-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.9em;
+}
+
+.susform-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.susform-btn {
+  padding: 10px 22px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.susform-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.susform-btn-secondary {
+  background: var(--overlay);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 600px) {
+  .susform-scale {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+  .susform-option {
+    padding: 8px 2px;
+    min-height: 68px;
+  }
+  .susform-option-label {
+    font-size: 0.62em;
+  }
+}

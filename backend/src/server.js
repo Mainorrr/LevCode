@@ -4,6 +4,7 @@ const logger = require("./utils/logger");
 const env = require("./config/env");
 const submissionsRouter = require("./routes/submissions");
 const sessionsRouter = require("./routes/sessions");
+const susRouter = require("./routes/sus");
 const exportRouter = require("./routes/export");
 const adminRouter = require("./routes/admin");
 const accessPasswordsRouter = require("./routes/accessPasswords");
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/submissions", accessAuth, submissionsRouter);
 app.use("/api/sessions", accessAuth, sessionsRouter);
+app.use("/api/sus", accessAuth, susRouter);
 app.use("/api/export", exportRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/access", accessPasswordsRouter);
