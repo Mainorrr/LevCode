@@ -43,10 +43,6 @@ export default function UserForm({ onSubmit, initialData }) {
     <div className="userform-container">
       <div className="userform-card">
         <h2 className="userform-title">Datos del Estudiante</h2>
-        <p className="userform-subtitle">
-          Ingresa tu información antes de comenzar. Estos datos son necesarios para registrar tus intentos.
-        </p>
-
         <form onSubmit={handleSubmit} className="userform-form">
           <div className="userform-field">
             <label htmlFor="carnet">Carnet Estudiantil</label>

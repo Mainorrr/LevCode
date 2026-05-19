@@ -19,13 +19,8 @@
   font-size: 1.5em;
   color: var(--accent);
   margin-bottom: 6px;
-}
-
-.userform-subtitle {
-  font-size: 0.9em;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  line-height: 1.5;
+  /* centrar */
+  text-align: center;
 }
 
 .userform-form {
