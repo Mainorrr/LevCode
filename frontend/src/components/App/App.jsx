@@ -496,7 +496,7 @@ export default function App() {
       {toast && <div className="app-toast">{toast}</div>}
 
       {view === 'form' && (
-        <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} />
+        <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} accessPassword={accessPassword} />
       )}
 
       {view === 'access' && (
@@ -595,6 +595,7 @@ export default function App() {
             </div>
 
             <div className="user-badge">
+              {userInfo.nombre_completo && <>{userInfo.nombre_completo} &nbsp;·&nbsp; </>}
               {userInfo.carnet} &nbsp;·&nbsp; Grupo {userInfo.grupo}
             </div>
 
