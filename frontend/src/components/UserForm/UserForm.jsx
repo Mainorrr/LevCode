@@ -54,13 +54,15 @@ export default function UserForm({ onSubmit, initialData, accessPassword }) {
       setError('Debes seleccionar un grupo.')
       return
     }
-    if (!(upperCarnet in usersMap)) {
-      setError('carnet no es parte del proyecto')
-      return
-    }
-    if (usersMap[upperCarnet] !== selectedGrupo) {
-      setError('carnet y grupo son diferentes')
-      return
+    if (selectedGrupo !== 'Test') {
+      if (!(upperCarnet in usersMap)) {
+        setError('carnet no es parte del proyecto')
+        return
+      }
+      if (usersMap[upperCarnet] !== selectedGrupo) {
+        setError('carnet y grupo son diferentes')
+        return
+      }
     }
 
     setSubmitting(true)
