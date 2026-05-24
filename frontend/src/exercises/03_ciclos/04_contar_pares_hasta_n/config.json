@@ -1,0 +1,6 @@
+{
+  "id": "contar-pares-hasta-n",
+  "title": "Contar pares hasta N",
+  "description": "Lee un número entero N (mayor o igual a 1) e imprime cuántos números pares hay entre 1 y N (inclusive).\n\nEjemplo de entrada:\n10\n\nEjemplo de salida:\n5",
+  "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
+}

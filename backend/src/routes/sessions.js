@@ -4,6 +4,42 @@ const pool = require("../config/db");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
 
+// Carnet reservado para hacer pruebas — único cuyos datos pueden borrarse por API.
+const TEST_CARNET = "X00000";
+
+/**
+ * DELETE /api/sessions/test-user-data
+ *
+ * Borra TODOS los datos del carnet de pruebas (X00000) en exercise_sessions y
+ * sus_responses. Está hardcoded — no acepta ningún carnet como parámetro, por lo
+ * que NO puede usarse para borrar datos de otro usuario.
+ */
+router.delete("/test-user-data", async (req, res) => {
+  try {
+    const r1 = await pool.query(
+      "DELETE FROM exercise_sessions WHERE carnet = $1",
+      [TEST_CARNET],
+    );
+    const r2 = await pool.query(
+      "DELETE FROM sus_responses WHERE carnet = $1",
+      [TEST_CARNET],
+    );
+    logger.info("Test user data flushed", {
+      carnet: TEST_CARNET,
+      sessionsDeleted: r1.rowCount,
+      susDeleted: r2.rowCount,
+    });
+    res.json({
+      success: true,
+      sessionsDeleted: r1.rowCount,
+      susDeleted: r2.rowCount,
+    });
+  } catch (err) {
+    logger.error("Flush test user data failed", { error: err.message });
+    res.status(500).json({ success: false, error: "Error al borrar datos del usuario de pruebas" });
+  }
+});
+
 /**
  * POST /api/sessions
  *

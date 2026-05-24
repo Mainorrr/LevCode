@@ -70,17 +70,19 @@ export default function ResultDisplay({ testResults, compilationError, loading }
       {/* Casos fallidos */}
       {!allPassed && failedCases.length > 0 && (
         <div className="result-box">
-          <h3 className="cases-title">Casos fallidos</h3>
-          <div className="cases-legend">
-            <span className="legend-item">
-              <Eye size={14} className="case-eye visible" /> Información disponible
-            </span>
-            <span className="legend-item">
-              <EyeOff size={14} className="case-eye hidden" /> Caso oculto
-            </span>
-            <span className="legend-item">
-              <ChevronDown size={14} /> Click para desplegar
-            </span>
+          <div className="cases-title-row">
+            <h3 className="cases-title">Casos fallidos</h3>
+            <div className="cases-legend">
+              <span className="legend-item">
+                <Eye size={14} className="case-eye visible" /> Información disponible
+              </span>
+              <span className="legend-item">
+                <EyeOff size={14} className="case-eye hidden" /> Caso oculto
+              </span>
+              <span className="legend-item">
+                <ChevronDown size={14} /> Click para desplegar
+              </span>
+            </div>
           </div>
           <div className="cases-list">
             {failedCases.map((tc) => {

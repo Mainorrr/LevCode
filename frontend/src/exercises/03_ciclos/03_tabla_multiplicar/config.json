@@ -1,6 +1,6 @@
 {
   "id": "tabla-multiplicar",
-  "title": "Tabla de Multiplicar",
-  "description": "Lee un numero entero N e imprime su tabla de multiplicar del 1 al 10. Cada linea debe tener el formato 'N x i = resultado'.\n\nEjemplo de entrada:\n3\n\nEjemplo de salida:\n3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27\n3 x 10 = 30",
+  "title": "Tabla de multiplicar",
+  "description": "Lee un número entero N e imprime su tabla de multiplicar del 1 al 10. Cada línea debe tener el formato 'N x i = resultado'.\n\nEjemplo de entrada:\n3\n\nEjemplo de salida:\n3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27\n3 x 10 = 30",
   "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

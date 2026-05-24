@@ -1,0 +1,12 @@
+[
+  { "input": "hola",        "expectedOutput": "2", "showInfo": true,  "showInfoHidden": true  },
+  { "input": "python",      "expectedOutput": "1", "showInfo": true,  "showInfoHidden": false },
+  { "input": "aeiou",       "expectedOutput": "5", "showInfo": true,  "showInfoHidden": false },
+  { "input": "xyz",         "expectedOutput": "0", "showInfo": true,  "showInfoHidden": false },
+  { "input": "murcielago",  "expectedOutput": "5", "showInfo": true,  "showInfoHidden": false },
+  { "input": "java",        "expectedOutput": "2", "showInfo": false, "showInfoHidden": false },
+  { "input": "programacion","expectedOutput": "5", "showInfo": false, "showInfoHidden": false },
+  { "input": "computacion", "expectedOutput": "5", "showInfo": false, "showInfoHidden": false },
+  { "input": "ingenieria",  "expectedOutput": "6", "showInfo": false, "showInfoHidden": false },
+  { "input": "rtm",         "expectedOutput": "0", "showInfo": false, "showInfoHidden": false }
+]

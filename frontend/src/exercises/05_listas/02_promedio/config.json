@@ -1,6 +1,6 @@
 {
   "id": "promedio-lista",
-  "title": "Promedio de una Lista",
-  "description": "Lee un entero N en la primera linea y luego N enteros (uno por linea). Imprime el promedio (entero, division entera) de los elementos.\n\nEjemplo de entrada:\n4\n10\n20\n30\n40\n\nEjemplo de salida:\n25",
+  "title": "Promedio de una lista",
+  "description": "Lee un entero N en la primera línea y luego N enteros (uno por línea). Imprime el promedio (entero, división entera) de los elementos.\n\nEjemplo de entrada:\n4\n10\n20\n30\n40\n\nEjemplo de salida:\n25",
   "starterCode": "n = int(input())\nlista = []\nfor _ in range(n):\n    lista.append(int(input()))\n\n# Tu codigo comienza aqui (usa division entera //)."
 }

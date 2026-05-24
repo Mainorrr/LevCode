@@ -19,24 +19,24 @@ import signoNumeroConfig       from './02_condicionales/04_signo_numero/config.j
 import signoNumeroTestcases    from './02_condicionales/04_signo_numero/testcases.json'
 
 // 03 - Ciclos
-import sumaNConfig               from './03_ciclos/01_suma_n/config.json'
-import sumaNTestcases             from './03_ciclos/01_suma_n/testcases.json'
-import factorialConfig            from './03_ciclos/02_factorial/config.json'
-import factorialTestcases         from './03_ciclos/02_factorial/testcases.json'
-import tablaMultiplicarConfig     from './03_ciclos/03_tabla_multiplicar/config.json'
-import tablaMultiplicarTestcases  from './03_ciclos/03_tabla_multiplicar/testcases.json'
-import contarDigitosConfig        from './03_ciclos/04_contar_digitos/config.json'
-import contarDigitosTestcases     from './03_ciclos/04_contar_digitos/testcases.json'
+import sumaNConfig                  from './03_ciclos/01_suma_n/config.json'
+import sumaNTestcases               from './03_ciclos/01_suma_n/testcases.json'
+import factorialConfig              from './03_ciclos/02_factorial/config.json'
+import factorialTestcases           from './03_ciclos/02_factorial/testcases.json'
+import tablaMultiplicarConfig       from './03_ciclos/03_tabla_multiplicar/config.json'
+import tablaMultiplicarTestcases    from './03_ciclos/03_tabla_multiplicar/testcases.json'
+import contarParesHastaNConfig      from './03_ciclos/04_contar_pares_hasta_n/config.json'
+import contarParesHastaNTestcases   from './03_ciclos/04_contar_pares_hasta_n/testcases.json'
 
 // 04 - Funciones
-import esPrimoConfig           from './04_funciones/01_es_primo/config.json'
-import esPrimoTestcases        from './04_funciones/01_es_primo/testcases.json'
-import potenciaConfig          from './04_funciones/02_potencia/config.json'
-import potenciaTestcases       from './04_funciones/02_potencia/testcases.json'
-import maxMinConfig            from './04_funciones/03_max_min/config.json'
-import maxMinTestcases         from './04_funciones/03_max_min/testcases.json'
-import fibonacciConfig         from './04_funciones/04_fibonacci/config.json'
-import fibonacciTestcases      from './04_funciones/04_fibonacci/testcases.json'
+import esPrimoConfig                from './04_funciones/01_es_primo/config.json'
+import esPrimoTestcases             from './04_funciones/01_es_primo/testcases.json'
+import potenciaConfig               from './04_funciones/02_potencia/config.json'
+import potenciaTestcases            from './04_funciones/02_potencia/testcases.json'
+import sumaParesFuncionConfig       from './04_funciones/03_suma_pares_funcion/config.json'
+import sumaParesFuncionTestcases    from './04_funciones/03_suma_pares_funcion/testcases.json'
+import contarVocalesConfig          from './04_funciones/04_contar_vocales/config.json'
+import contarVocalesTestcases       from './04_funciones/04_contar_vocales/testcases.json'
 
 // 05 - Listas
 import sumaListaConfig         from './05_listas/01_suma_lista/config.json'
@@ -45,8 +45,8 @@ import promedioConfig          from './05_listas/02_promedio/config.json'
 import promedioTestcases       from './05_listas/02_promedio/testcases.json'
 import buscarElementoConfig    from './05_listas/03_buscar_elemento/config.json'
 import buscarElementoTestcases from './05_listas/03_buscar_elemento/testcases.json'
-import ordenarListaConfig      from './05_listas/04_ordenar_lista/config.json'
-import ordenarListaTestcases   from './05_listas/04_ordenar_lista/testcases.json'
+import contarMayoresConfig     from './05_listas/04_contar_mayores/config.json'
+import contarMayoresTestcases  from './05_listas/04_contar_mayores/testcases.json'
 
 /**
  * Registro central de ejercicios.
@@ -67,20 +67,20 @@ export const exercises = [
   { config: signoNumeroConfig,      testcases: signoNumeroTestcases },
 
   // 03 - Ciclos
-  { config: sumaNConfig,            testcases: sumaNTestcases },
-  { config: factorialConfig,        testcases: factorialTestcases },
-  { config: tablaMultiplicarConfig, testcases: tablaMultiplicarTestcases },
-  { config: contarDigitosConfig,    testcases: contarDigitosTestcases },
+  { config: sumaNConfig,             testcases: sumaNTestcases },
+  { config: factorialConfig,         testcases: factorialTestcases },
+  { config: tablaMultiplicarConfig,  testcases: tablaMultiplicarTestcases },
+  { config: contarParesHastaNConfig, testcases: contarParesHastaNTestcases },
 
   // 04 - Funciones
-  { config: esPrimoConfig,          testcases: esPrimoTestcases },
-  { config: potenciaConfig,         testcases: potenciaTestcases },
-  { config: maxMinConfig,           testcases: maxMinTestcases },
-  { config: fibonacciConfig,        testcases: fibonacciTestcases },
+  { config: esPrimoConfig,           testcases: esPrimoTestcases },
+  { config: potenciaConfig,          testcases: potenciaTestcases },
+  { config: sumaParesFuncionConfig,  testcases: sumaParesFuncionTestcases },
+  { config: contarVocalesConfig,     testcases: contarVocalesTestcases },
 
   // 05 - Listas
   { config: sumaListaConfig,        testcases: sumaListaTestcases },
   { config: promedioConfig,         testcases: promedioTestcases },
   { config: buscarElementoConfig,   testcases: buscarElementoTestcases },
-  { config: ordenarListaConfig,     testcases: ordenarListaTestcases },
+  { config: contarMayoresConfig,    testcases: contarMayoresTestcases },
 ]

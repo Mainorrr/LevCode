@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
+import { Play, HelpCircle, Trash2 } from 'lucide-react'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import HelpModal from '../HelpModal/HelpModal'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
 import UserForm from '../UserForm/UserForm'
 import ExerciseMenu from '../ExerciseMenu/ExerciseMenu'
 import AdminPanel from '../AdminPanel/AdminPanel'
 import SUSForm from '../SUSForm/SUSForm'
 import { exercises } from '../../exercises/index'
-import groupExercises from '../../groupExercises.json'
 import './App.css'
 
 /**
@@ -52,12 +53,9 @@ export default function App() {
   const [isDark, setIsDark] = useState(() => localStorage.getItem('levcode_theme') !== 'light')
   const savedAccessPw = sessionStorage.getItem('levcode_access_pw')
   const initialUser = getSavedUser()
-  const [view, setView] = useState(initialUser && savedAccessPw ? 'menu' : savedAccessPw ? 'form' : 'access')
+  const [view, setView] = useState(initialUser && savedAccessPw ? 'menu' : 'form')
   const [userInfo, setUserInfo] = useState(initialUser)
   const [accessPassword, setAccessPassword] = useState(savedAccessPw || '')
-  const [accessPasswordInput, setAccessPasswordInput] = useState('')
-  const [accessError, setAccessError] = useState('')
-  const [accessLoading, setAccessLoading] = useState(false)
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [code, setCode] = useState('')
   const [testResults, setTestResults] = useState(null)
@@ -74,8 +72,36 @@ export default function App() {
   const [sessionError, setSessionError] = useState(false)
   const [toast, setToast] = useState(null)
   const [susStatus, setSusStatus] = useState({ exists: false, submitted: false })
+  const [assignedExerciseIds, setAssignedExerciseIds] = useState(null)
   const cooldownRef = useRef(null)
   const toastRef = useRef(null)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [susConfirmOpen, setSusConfirmOpen] = useState(false)
+  const [flushConfirmOpen, setFlushConfirmOpen] = useState(false)
+  const [flushing, setFlushing] = useState(false)
+
+  const isTestUser = userInfo?.carnet === 'X00000' && userInfo?.grupo === 'Test'
+
+  const handleFlushTestUser = async () => {
+    setFlushing(true)
+    try {
+      await fetch('/api/sessions/test-user-data', {
+        method: 'DELETE',
+        headers: { 'X-Access-Password': accessPassword },
+      })
+      // Limpiar drafts y cooldown locales del usuario de prueba
+      const prefix = 'levcode_draft_X00000_'
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith(prefix) || k === 'levcode_cooldown_X00000') {
+          localStorage.removeItem(k)
+        }
+      })
+      window.location.reload()
+    } catch {
+      setFlushing(false)
+      setFlushConfirmOpen(false)
+    }
+  }
 
   const showToast = (message) => {
     clearTimeout(toastRef.current)
@@ -93,9 +119,11 @@ export default function App() {
       .then(async (r) => {
         if (r.status === 401) {
           sessionStorage.removeItem('levcode_access_pw')
+          sessionStorage.removeItem('levcode_user')
           setAccessPassword('')
+          setUserInfo(null)
           setSessionLoading(false)
-          setView('access')
+          setView('form')
           return null
         }
         if (!r.ok) {
@@ -117,6 +145,17 @@ export default function App() {
       })
   }
 
+  // Cargar (o crear) la asignación de ejercicios del estudiante
+  const fetchAssignment = (carnet, grupo, pw) => {
+    const url = `/api/exercises/assignment/${encodeURIComponent(carnet)}?grupo=${encodeURIComponent(grupo || '')}`
+    fetch(url, { headers: { 'X-Access-Password': pw } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && data.success) setAssignedExerciseIds(data.exercises || [])
+      })
+      .catch(() => { /* silencioso */ })
+  }
+
   // Cargar estado del cuestionario SUS desde el backend
   const fetchSusStatus = (carnet, pw) => {
     fetch(`/api/sus/status/${carnet}`, {
@@ -136,6 +175,7 @@ export default function App() {
     if (initialUser && savedAccessPw) {
       fetchSessionStatus(initialUser.carnet, savedAccessPw)
       fetchSusStatus(initialUser.carnet, savedAccessPw)
+      fetchAssignment(initialUser.carnet, initialUser.grupo, savedAccessPw)
     } else {
       setSessionLoading(false)
     }
@@ -218,57 +258,17 @@ export default function App() {
     return `rgb(${Math.round(sr + t * (dr - sr))}, ${Math.round(sg + t * (dg - sg))}, ${Math.round(sb + t * (db - sb))})`
   }
 
-  // ── View: access (primer paso) ─────────────────────────────────────────────
-  const handleAccessSubmit = async (e) => {
-    e.preventDefault()
-    setAccessError('')
-    setAccessLoading(true)
-    try {
-      const res = await fetch('/api/access/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: accessPasswordInput, carnet: userInfo?.carnet || '' }),
-      })
-      if (!res.ok) {
-        setAccessError('Error del servidor. Intenta de nuevo.')
-        setAccessLoading(false)
-        return
-      }
-      const data = await res.json()
-      if (!data.valid) {
-        setAccessError('Contraseña incorrecta')
-        setAccessLoading(false)
-        return
-      }
-      sessionStorage.setItem('levcode_access_pw', accessPasswordInput)
-      setAccessPassword(accessPasswordInput)
-      setAccessLoading(false)
-      if (userInfo) {
-        setView('menu')
-        fetchSessionStatus(userInfo.carnet, accessPasswordInput)
-        fetchSusStatus(userInfo.carnet, accessPasswordInput)
-      } else {
-        setView('form')
-      }
-    } catch {
-      setAccessError('Error de conexión con el servidor')
-      setAccessLoading(false)
-    }
-  }
-
-  // ── View: form (segundo paso) ─────────────────────────────────────────────
+  // ── View: form (único paso de ingreso) ────────────────────────────────────
   const handleUserFormSubmit = (info) => {
-    sessionStorage.setItem('levcode_user', JSON.stringify(info))
-    setUserInfo(info)
+    const { accessPassword: pw, ...userData } = info
+    sessionStorage.setItem('levcode_user', JSON.stringify(userData))
+    sessionStorage.setItem('levcode_access_pw', pw)
+    setUserInfo(userData)
+    setAccessPassword(pw)
     setView('menu')
-    // Revalidar para asociar el LOGIN_SUCCESS al carnet en el log del backend
-    fetch('/api/access/validate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: accessPassword, carnet: info.carnet }),
-    }).catch(() => {})
-    fetchSessionStatus(info.carnet, accessPassword)
-    fetchSusStatus(info.carnet, accessPassword)
+    fetchSessionStatus(userData.carnet, pw)
+    fetchSusStatus(userData.carnet, pw)
+    fetchAssignment(userData.carnet, userData.grupo, pw)
   }
 
   const handleChangeUser = () => {
@@ -276,11 +276,11 @@ export default function App() {
     sessionStorage.removeItem('levcode_access_pw')
     setUserInfo(null)
     setAccessPassword('')
-    setAccessPasswordInput('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
     setSusStatus({ exists: false, submitted: false })
-    setView('access')
+    setAssignedExerciseIds(null)
+    setView('form')
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
@@ -464,10 +464,27 @@ export default function App() {
     </button>
   )
 
+  const helpButton = !isAdmin && view !== 'form' && (
+    <button className="help-toggle" onClick={() => setHelpOpen(true)} title="Ayuda de Python">
+      <HelpCircle size={18} />
+    </button>
+  )
+
+  const flushTestButton = isTestUser && (
+    <button
+      className="flush-toggle"
+      onClick={() => setFlushConfirmOpen(true)}
+      title="Borrar datos del usuario de pruebas (X00000)"
+    >
+      <Trash2 size={16} />
+      <span>Borrar datos</span>
+    </button>
+  )
+
   const susButton = userInfo && accessPassword && view === 'menu' && (
     <button
       className="sus-toggle"
-      onClick={() => !susStatus.submitted && setView('sus')}
+      onClick={() => !susStatus.submitted && setSusConfirmOpen(true)}
       disabled={susStatus.submitted}
       title={susStatus.submitted ? 'Ya respondido' : 'Cuestionario al finalizar'}
     >
@@ -478,7 +495,7 @@ export default function App() {
   if (isAdmin) {
     return (
       <div className="app-container">
-        {themeToggle}
+        <div className="top-bar">{themeToggle}</div>
         <AdminPanel />
       </div>
     )
@@ -486,8 +503,39 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {susButton}
-      {themeToggle}
+      <div className="top-bar">
+        {flushTestButton}
+        {susButton}
+        {helpButton}
+        {themeToggle}
+      </div>
+      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
+      {flushConfirmOpen && (
+        <div className="confirm-overlay" onClick={() => !flushing && setFlushConfirmOpen(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <p className="confirm-modal-title">¿Borrar datos del usuario de pruebas?</p>
+            <p className="confirm-modal-body">Se eliminarán <strong>todas las sesiones y respuestas SUS de X00000</strong>. Esta acción solo afecta al usuario de pruebas. La página se recargará al terminar.</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-modal-cancel" onClick={() => setFlushConfirmOpen(false)} disabled={flushing}>Cancelar</button>
+              <button className="confirm-modal-confirm flush-confirm" onClick={handleFlushTestUser} disabled={flushing}>
+                {flushing ? 'Borrando...' : 'Borrar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {susConfirmOpen && (
+        <div className="confirm-overlay" onClick={() => setSusConfirmOpen(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <p className="confirm-modal-title">¿Comenzar el cuestionario?</p>
+            <p className="confirm-modal-body">Este cuestionario debes responderlo <strong>solo cuando se acabe tu tiempo o al haber completado todos los ejercicios</strong>. Debe ser <strong>lo último que realices antes de salir del laboratorio</strong>.</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-modal-cancel" onClick={() => setSusConfirmOpen(false)}>Cancelar</button>
+              <button className="confirm-modal-confirm" onClick={() => { setSusConfirmOpen(false); setView('sus') }}>Comenzar</button>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="app-header">
         <h1>Lev Code</h1>
         <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
@@ -496,27 +544,7 @@ export default function App() {
       {toast && <div className="app-toast">{toast}</div>}
 
       {view === 'form' && (
-        <UserForm onSubmit={handleUserFormSubmit} initialData={userInfo} accessPassword={accessPassword} />
-      )}
-
-      {view === 'access' && (
-        <div className="access-gate">
-          <h2>Contraseña de acceso</h2>
-          <form onSubmit={handleAccessSubmit}>
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={accessPasswordInput}
-              onChange={(e) => setAccessPasswordInput(e.target.value)}
-              className="admin-input"
-              autoFocus
-            />
-            {accessError && <p className="admin-error">{accessError}</p>}
-            <button type="submit" className="admin-btn" disabled={accessLoading}>
-              {accessLoading ? 'Verificando...' : 'Ingresar'}
-            </button>
-          </form>
-        </div>
+        <UserForm onSubmit={handleUserFormSubmit} />
       )}
 
       {view === 'menu' && sessionLoading && (
@@ -556,10 +584,9 @@ export default function App() {
       {view === 'menu' && !sessionLoading && !sessionError && (
         <div className="app-body">
           <ExerciseMenu
-            exercises={userInfo ? exercises.filter((ex) => {
-              const allowed = groupExercises[userInfo.grupo]
-              return !allowed || allowed.includes(ex.config.id)
-            }) : exercises}
+            exercises={userInfo && assignedExerciseIds
+              ? exercises.filter((ex) => assignedExerciseIds.includes(ex.config.id))
+              : exercises}
             onSelect={handleExerciseSelect}
             userInfo={userInfo}
             solvedExercises={solvedExercises}
@@ -595,7 +622,6 @@ export default function App() {
             </div>
 
             <div className="user-badge">
-              {userInfo.nombre_completo && <>{userInfo.nombre_completo} &nbsp;·&nbsp; </>}
               {userInfo.carnet} &nbsp;·&nbsp; Grupo {userInfo.grupo}
             </div>
 
@@ -613,11 +639,18 @@ export default function App() {
                   disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
                   className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
                 >
-                  {solvedExercises.has(selectedExercise.config.id)
-                    ? 'Ejercicio completado'
-                    : cooldownRemaining > 0
-                      ? `Espera ${cooldownRemaining}s`
-                      : loading ? 'Ejecutando...' : 'Ejecutar Código'}
+                  {solvedExercises.has(selectedExercise.config.id) ? (
+                    'Ejercicio completado'
+                  ) : cooldownRemaining > 0 ? (
+                    `Espera ${cooldownRemaining}s`
+                  ) : loading ? (
+                    'Ejecutando...'
+                  ) : (
+                    <>
+                      <Play size={16} fill="currentColor" strokeWidth={0} />
+                      Ejecutar
+                    </>
+                  )}
                 </button>
               }
             />

@@ -1,6 +1,5 @@
 const pool = require("../config/db");
 const logger = require("../utils/logger");
-const populateUsers = require("../Users/UsersPopulate");
 
 /**
  * Crea las tablas necesarias si no existen.
@@ -96,14 +95,8 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS description VARCHAR(200);
     `);
 
-    // Tabla de usuarios registrados
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        carnet          VARCHAR(6)   PRIMARY KEY,
-        nombre_completo VARCHAR(255),
-        grupo           VARCHAR(255) NOT NULL
-      );
-    `);
+    // Tabla legacy `users` — la lista de estudiantes ahora vive en memoria (Users.tsv)
+    await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
 
     // Tabla de respuestas del cuestionario SUS (System Usability Scale)
     await pool.query(`
@@ -130,8 +123,6 @@ async function migrate() {
     // Resiudal tables no longer needed
     await pool.query(`DROP TABLE IF EXISTS courses CASCADE;`);
     await pool.query(`DROP TABLE IF EXISTS course_groups CASCADE;`);
-
-    await populateUsers();
 
     logger.info("Database migration completed");
   } catch (err) {

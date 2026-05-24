@@ -5,6 +5,7 @@ const pool = require("../config/db");
 const env = require("../config/env");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
+const { carnetBelongsToGroup } = require("../Users/usersLoader");
 
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -16,8 +17,9 @@ function hashPassword(password) {
  * Body: { password }
  */
 router.post("/validate", async (req, res) => {
-  const { password, carnet } = req.body;
-  const carnetStr = typeof carnet === "string" ? carnet.trim() : "";
+  const { password, carnet, grupo } = req.body;
+  const carnetStr = typeof carnet === "string" ? carnet.trim().toUpperCase() : "";
+  const grupoStr = typeof grupo === "string" ? grupo.trim() : "";
 
   const carnetForFail = carnetStr || "NONE";
 
@@ -35,9 +37,18 @@ router.post("/validate", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      res.json({ valid: false });
+      res.json({ valid: false, error: "Contraseña incorrecta" });
       csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
       return;
+    }
+
+    // Verificación de carnet/grupo: el carnet debe pertenecer al grupo seleccionado.
+    if (carnetStr && grupoStr) {
+      if (!carnetBelongsToGroup(carnetStr, grupoStr)) {
+        res.json({ valid: false, error: "El carnet no forma parte de este grupo" });
+        csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
+        return;
+      }
     }
 
     res.json({ valid: true });

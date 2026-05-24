@@ -1,6 +1,6 @@
 {
   "id": "suma-uno-a-n",
   "title": "Suma de 1 a N",
-  "description": "Lee un numero entero N (mayor o igual a 1) e imprime la suma de todos los numeros desde 1 hasta N (inclusive).\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n15",
+  "description": "Lee un número entero N (mayor o igual a 1) e imprime la suma de todos los números desde 1 hasta N (inclusive).\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n15",
   "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

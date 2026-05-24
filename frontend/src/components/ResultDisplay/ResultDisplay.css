@@ -66,10 +66,19 @@
   border-bottom: none;
 }
 
+.cases-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
 .cases-title {
   font-size: 0.85em;
   color: var(--text-muted);
-  margin: 0 0 12px 0;
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -78,11 +87,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
   font-size: 0.78em;
   color: var(--text-muted);
 }

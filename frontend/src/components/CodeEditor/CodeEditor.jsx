@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditorState, Compartment, Annotation } from '@codemirror/state'
+import { EditorState, Compartment, Annotation, StateField, RangeSetBuilder } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
-import { keymap, gutter, GutterMarker } from '@codemirror/view'
+import { keymap, gutter, GutterMarker, Decoration } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
+import { RefreshCw } from 'lucide-react'
 import './CodeEditor.css'
 
 const privilegedTx = Annotation.define()
@@ -13,7 +14,7 @@ class LockMarker extends GutterMarker {
   toDOM() {
     const el = document.createElement('span')
     el.className = 'cm-lock-marker'
-    el.textContent = '🔒︎'
+    el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="10" rx="2"/><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>'
     return el
   }
 }
@@ -51,6 +52,24 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
       return allowed
     })
 
+    // Mueve el cursor al inicio de la primera línea editable si intenta entrar a la zona bloqueada.
+    const lockSelectionFilter = EditorState.transactionFilter.of((tr) => {
+      if (lockedLength === 0 || !tr.selection) return tr
+      const sel = tr.selection.main
+      if (sel.anchor <= lockedLength || sel.head <= lockedLength) {
+        const docLen = tr.newDoc.length
+        // Buscar el inicio de la primera línea cuyo from > lockedLength
+        let target = Math.min(lockedLength + 1, docLen)
+        if (target <= docLen) {
+          const line = tr.newDoc.lineAt(target)
+          target = line.from
+          if (target <= lockedLength) target = Math.min(line.to + 1, docLen)
+        }
+        return [tr, { selection: { anchor: target, head: target } }]
+      }
+      return tr
+    })
+
     const lockGutter = gutter({
       class: 'cm-lock-gutter',
       lineMarker(view, line) {
@@ -59,10 +78,30 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
       initialSpacer: () => lockMarker,
     })
 
+    const lockedLineDeco = Decoration.line({ class: 'cm-locked-line' })
+    const lockedLinesField = StateField.define({
+      create(state) {
+        const builder = new RangeSetBuilder()
+        if (lockedLength > 0) {
+          let pos = 0
+          while (pos < state.doc.length) {
+            const line = state.doc.lineAt(pos)
+            if (line.from >= lockedLength) break
+            builder.add(line.from, line.from, lockedLineDeco)
+            pos = line.to + 1
+          }
+        }
+        return builder.finish()
+      },
+      update(deco) { return deco },
+      provide: f => EditorView.decorations.from(f),
+    })
+
     const state = EditorState.create({
       doc: code,
       extensions: [
         lockGutter,
+        lockedLinesField,
         basicSetup,
         keymap.of([indentWithTab]),
         python(),
@@ -70,11 +109,13 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
         EditorView.theme({
           "&": { height: "100%" },
           ".cm-scroller": { overflow: "auto" },
-          ".cm-content": { minHeight: "260px" },
+          ".cm-content": { minHeight: "260px", paddingTop: "0", paddingBottom: "0" },
           ".cm-gutter": { minHeight: "260px" },
+          ".cm-gutters": { paddingTop: "0", paddingBottom: "0" },
         }),
         readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly)),
         lockFilter,
+        lockSelectionFilter,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             onChange(update.state.doc.toString())
@@ -125,16 +166,16 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
   return (
     <div className="editor-container">
       <div className="editor-label">
-        <span>Código Python</span>
+        <div className="editor-label-left">
+          {!readOnly && starterCode && (
+            <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Iniciar de nuevo" aria-label="Iniciar de nuevo">
+              <RefreshCw size={14} strokeWidth={3} />
+            </button>
+          )}
+          <span>Código Python</span>
+        </div>
         <div className="editor-label-actions">
-          {readOnly
-            ? <span className="editor-solved-badge">¡Ejercicio completado!</span>
-            : starterCode && (
-              <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Restaurar código inicial">
-                Iniciar de nuevo
-              </button>
-            )
-          }
+          {readOnly && <span className="editor-solved-badge">¡Ejercicio completado!</span>}
           {actionSlot}
         </div>
       </div>
@@ -144,7 +185,7 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
         <div className="revert-modal-overlay" onClick={() => setShowConfirm(false)}>
           <div className="revert-modal" onClick={e => e.stopPropagation()}>
             <p className="revert-modal-title">¿Borrar tu código?</p>
-            <p className="revert-modal-body">Tu código actual será eliminado y reemplazado por el código inicial. Esta acción no se puede deshacer.</p>
+            <p className="revert-modal-body">Tu código actual será eliminado y reemplazado por el código inicial. Puedes deshacer esta acción presionando Ctrl + Z en el teclado.</p>
             <div className="revert-modal-actions">
               <button className="revert-modal-cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
               <button className="revert-modal-confirm" onClick={confirmRevert}>Sí, borrar</button>

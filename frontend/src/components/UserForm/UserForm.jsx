@@ -1,36 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { groups } from '../../courses'
 import './UserForm.css'
 
-export default function UserForm({ onSubmit, initialData, accessPassword }) {
-  const [nombreCompleto, setNombreCompleto] = useState(initialData?.nombre_completo || '')
-  const [carnet, setCarnet] = useState(initialData?.carnet || '')
-  const [selectedGrupo, setSelectedGrupo] = useState(initialData?.grupo || '')
+export default function UserForm({ onSubmit }) {
+  const [carnet, setCarnet] = useState('')
+  const [selectedGrupo, setSelectedGrupo] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [usersMap, setUsersMap] = useState(null)  // null = cargando, object = listo
-  const [loadError, setLoadError] = useState(false)
-
-  const loadUsers = () => {
-    setLoadError(false)
-    setUsersMap(null)
-    fetch('/api/users', {
-      headers: { 'X-Access-Password': accessPassword },
-    })
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => {
-        if (data.success) {
-          const map = {}
-          for (const u of data.users) map[u.carnet.toUpperCase()] = u.grupo
-          setUsersMap(map)
-        } else {
-          setLoadError(true)
-        }
-      })
-      .catch(() => setLoadError(true))
-  }
-
-  useEffect(() => { loadUsers() }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -38,10 +15,6 @@ export default function UserForm({ onSubmit, initialData, accessPassword }) {
 
     const upperCarnet = carnet.trim().toUpperCase()
 
-    if (!nombreCompleto.trim()) {
-      setError('El nombre completo es requerido.')
-      return
-    }
     if (!upperCarnet) {
       setError('El carnet estudiantil es requerido.')
       return
@@ -54,66 +27,49 @@ export default function UserForm({ onSubmit, initialData, accessPassword }) {
       setError('Debes seleccionar un grupo.')
       return
     }
-    if (selectedGrupo !== 'Test') {
-      if (!(upperCarnet in usersMap)) {
-        setError('carnet no es parte del proyecto')
-        return
-      }
-      if (usersMap[upperCarnet] !== selectedGrupo) {
-        setError('carnet y grupo son diferentes')
-        return
-      }
+    if (!password) {
+      setError('La contraseña es requerida.')
+      return
     }
 
     setSubmitting(true)
     try {
-      await fetch(`/api/users/${upperCarnet}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Password': accessPassword,
-        },
-        body: JSON.stringify({ nombre_completo: nombreCompleto.trim() }),
+      const res = await fetch('/api/access/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, carnet: upperCarnet, grupo: selectedGrupo }),
       })
+      if (!res.ok) {
+        setError('Error del servidor. Intenta de nuevo.')
+        setSubmitting(false)
+        return
+      }
+      const data = await res.json()
+      if (!data.valid) {
+        setError(data.error || 'Contraseña incorrecta')
+        setSubmitting(false)
+        return
+      }
     } catch {
-      // Continuar aunque falle el guardado del nombre
+      setError('Error de conexión con el servidor')
+      setSubmitting(false)
+      return
     }
     setSubmitting(false)
 
     onSubmit({
       carnet: upperCarnet,
       grupo: selectedGrupo,
-      nombre_completo: nombreCompleto.trim(),
+      accessPassword: password,
     })
   }
-
-  const isReady = usersMap !== null && !loadError
 
   return (
     <div className="userform-container">
       <div className="userform-card">
         <h2 className="userform-title">Datos del Estudiante</h2>
 
-        {loadError && (
-          <div className="userform-load-error">
-            <p>No se pudo cargar la lista de estudiantes.</p>
-            <button className="userform-retry-btn" onClick={loadUsers}>Reintentar</button>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="userform-form">
-          <div className="userform-field">
-            <label htmlFor="nombre">Nombre Completo</label>
-            <input
-              id="nombre"
-              type="text"
-              placeholder="ej: Juan Pérez Solís"
-              value={nombreCompleto}
-              onChange={(e) => setNombreCompleto(e.target.value)}
-              className="userform-input"
-            />
-          </div>
-
           <div className="userform-field">
             <label htmlFor="carnet">Carnet Estudiantil</label>
             <input
@@ -142,14 +98,26 @@ export default function UserForm({ onSubmit, initialData, accessPassword }) {
             </select>
           </div>
 
+          <div className="userform-field">
+            <label htmlFor="password">Contraseña de acceso</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="userform-input"
+            />
+          </div>
+
           {error && <p className="userform-error">{error}</p>}
 
           <button
             type="submit"
             className="userform-btn"
-            disabled={!isReady || submitting}
+            disabled={submitting}
           >
-            {submitting ? 'Verificando...' : !isReady ? 'Cargando...' : 'Ver Ejercicios'}
+            {submitting ? 'Verificando...' : 'Ver Ejercicios'}
           </button>
         </form>
       </div>

@@ -1,0 +1,6 @@
+{
+  "id": "suma-pares-funcion",
+  "title": "Suma de pares con función",
+  "description": "Escribe una función llamada 'suma_pares' que reciba un entero N (mayor o igual a 1) y devuelva la suma de todos los números pares desde 1 hasta N (inclusive). Luego lee un entero N, llama a la función e imprime el resultado.\n\nEjemplo de entrada:\n10\n\nEjemplo de salida:\n30",
+  "starterCode": "# Escribe la funcion suma_pares(n) que devuelva la suma de los pares de 1 a n.\n# Luego lee n, llama a la funcion e imprime el resultado."
+}

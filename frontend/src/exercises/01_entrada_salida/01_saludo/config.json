@@ -1,6 +1,6 @@
 {
   "id": "saludo-personalizado",
-  "title": "Saludo Personalizado",
+  "title": "Saludo personalizado",
   "description": "Lee un nombre desde la entrada e imprime un saludo con el formato 'Hola, NOMBRE!'.\n\nEjemplo de entrada:\nAna\n\nEjemplo de salida:\nHola, Ana!",
   "starterCode": "nombre = input()\n\n# Tu codigo comienza aqui."
 }

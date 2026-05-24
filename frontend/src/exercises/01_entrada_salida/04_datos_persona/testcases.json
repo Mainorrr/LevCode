@@ -1,12 +1,62 @@
 [
-  { "input": "Ana\n25",     "expectedOutput": "Ana tiene 25 anios",     "showInfo": true,  "showInfoHidden": true  },
-  { "input": "Carlos\n30",  "expectedOutput": "Carlos tiene 30 anios",  "showInfo": true,  "showInfoHidden": false },
-  { "input": "Maria\n18",   "expectedOutput": "Maria tiene 18 anios",   "showInfo": true,  "showInfoHidden": false },
-  { "input": "Luis\n50",    "expectedOutput": "Luis tiene 50 anios",    "showInfo": true,  "showInfoHidden": false },
-  { "input": "Sofia\n7",    "expectedOutput": "Sofia tiene 7 anios",    "showInfo": true,  "showInfoHidden": false },
-  { "input": "Pedro\n65",   "expectedOutput": "Pedro tiene 65 anios",   "showInfo": false, "showInfoHidden": false },
-  { "input": "Elena\n40",   "expectedOutput": "Elena tiene 40 anios",   "showInfo": false, "showInfoHidden": false },
-  { "input": "Andrei\n22",  "expectedOutput": "Andrei tiene 22 anios",  "showInfo": false, "showInfoHidden": false },
-  { "input": "Roberto\n99", "expectedOutput": "Roberto tiene 99 anios", "showInfo": false, "showInfoHidden": false },
-  { "input": "Juan\n1",     "expectedOutput": "Juan tiene 1 anios",     "showInfo": false, "showInfoHidden": false }
+  {
+    "input": "Ana\n25",
+    "expectedOutput": "Ana tiene 25 años",
+    "showInfo": true,
+    "showInfoHidden": true
+  },
+  {
+    "input": "Carlos\n30",
+    "expectedOutput": "Carlos tiene 30 años",
+    "showInfo": true,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Maria\n18",
+    "expectedOutput": "Maria tiene 18 años",
+    "showInfo": true,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Luis\n50",
+    "expectedOutput": "Luis tiene 50 años",
+    "showInfo": true,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Sofia\n7",
+    "expectedOutput": "Sofia tiene 7 años",
+    "showInfo": true,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Pedro\n65",
+    "expectedOutput": "Pedro tiene 65 años",
+    "showInfo": false,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Elena\n40",
+    "expectedOutput": "Elena tiene 40 años",
+    "showInfo": false,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Andrei\n22",
+    "expectedOutput": "Andrei tiene 22 años",
+    "showInfo": false,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Roberto\n99",
+    "expectedOutput": "Roberto tiene 99 años",
+    "showInfo": false,
+    "showInfoHidden": false
+  },
+  {
+    "input": "Juan\n1",
+    "expectedOutput": "Juan tiene 1 años",
+    "showInfo": false,
+    "showInfoHidden": false
+  }
 ]

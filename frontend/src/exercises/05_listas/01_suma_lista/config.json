@@ -1,6 +1,6 @@
 {
   "id": "suma-lista",
-  "title": "Suma de los Elementos",
-  "description": "Lee un entero N (cantidad de elementos) en la primera linea y luego N enteros (uno por linea). Imprime la suma de todos los elementos.\n\nEjemplo de entrada:\n4\n1\n2\n3\n4\n\nEjemplo de salida:\n10",
+  "title": "Suma de los elementos",
+  "description": "Lee un entero N (cantidad de elementos) en la primera línea y luego N enteros (uno por línea). Imprime la suma de todos los elementos.\n\nEjemplo de entrada:\n4\n1\n2\n3\n4\n\nEjemplo de salida:\n10",
   "starterCode": "n = int(input())\nlista = []\nfor _ in range(n):\n    lista.append(int(input()))\n\n# Tu codigo comienza aqui."
 }

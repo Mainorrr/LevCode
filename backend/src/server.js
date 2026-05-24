@@ -8,9 +8,10 @@ const susRouter = require("./routes/sus");
 const exportRouter = require("./routes/export");
 const adminRouter = require("./routes/admin");
 const accessPasswordsRouter = require("./routes/accessPasswords");
-const usersRouter = require("./routes/users");
+const exercisesRouter = require("./routes/exercises");
 const accessAuth = require("./middleware/accessAuth");
 const requestTimer = require("./middleware/requestTimer");
+const scheduleGuard = require("./middleware/scheduleGuard");
 
 const app = express();
 
@@ -33,13 +34,13 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/api/submissions", accessAuth, submissionsRouter);
-app.use("/api/sessions", accessAuth, sessionsRouter);
+app.use("/api/submissions", accessAuth, scheduleGuard, submissionsRouter);
+app.use("/api/sessions", accessAuth, scheduleGuard, sessionsRouter);
 app.use("/api/sus", accessAuth, susRouter);
 app.use("/api/export", exportRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/access", accessPasswordsRouter);
-app.use("/api/users", accessAuth, usersRouter);
+app.use("/api/exercises", accessAuth, exercisesRouter);
 
 // Health check (public, no auth required)
 app.get("/health", (req, res) => {
