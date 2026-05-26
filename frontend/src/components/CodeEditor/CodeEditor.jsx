@@ -30,7 +30,7 @@ const lockMarker = new LockMarker()
  *   - starterCode: string - Código inicial para el botón de revertir
  *   - readOnly: boolean - Si true, el editor no permite edición
  */
-export default function CodeEditor({ code, onChange, starterCode, readOnly = false, actionSlot, isDark = true }) {
+export default function CodeEditor({ code, onChange, starterCode, starterCodeTop, starterCodeBottom, readOnly = false, actionSlot, isDark = true, starterPosition = 'top' }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
   const readOnlyCompartment = useRef(new Compartment())
@@ -40,32 +40,39 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
   useEffect(() => {
     if (!editorRef.current) return
 
-    const lockedLength = starterCode ? starterCode.length : 0
+    const starterTop = typeof starterCodeTop === 'string'
+      ? starterCodeTop
+      : (starterPosition === 'top' ? (starterCode || '') : '')
+    const starterBottom = typeof starterCodeBottom === 'string'
+      ? starterCodeBottom
+      : (starterPosition === 'bottom' ? (starterCode || '') : '')
+    const lockedTopLength = starterTop.length
+    const lockedBottomLength = starterBottom.length
 
     const lockFilter = EditorState.changeFilter.of((tr) => {
       if (tr.annotation(privilegedTx)) return true
-      if (!tr.docChanged || lockedLength === 0) return true
+      if (!tr.docChanged || (lockedTopLength === 0 && lockedBottomLength === 0)) return true
       let allowed = true
-      tr.changes.iterChangedRanges((fromA) => {
-        if (fromA <= lockedLength) allowed = false
+      const docLen = tr.startState.doc.length
+      const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
+      tr.changes.iterChangedRanges((fromA, toA) => {
+        if (fromA < lockedTopLength || toA > bottomStart) allowed = false
       })
       return allowed
     })
 
     // Mueve el cursor al inicio de la primera línea editable si intenta entrar a la zona bloqueada.
     const lockSelectionFilter = EditorState.transactionFilter.of((tr) => {
-      if (lockedLength === 0 || !tr.selection) return tr
+      if ((lockedTopLength === 0 && lockedBottomLength === 0) || !tr.selection) return tr
       const sel = tr.selection.main
-      if (sel.anchor <= lockedLength || sel.head <= lockedLength) {
-        const docLen = tr.newDoc.length
-        // Buscar el inicio de la primera línea cuyo from > lockedLength
-        let target = Math.min(lockedLength + 1, docLen)
-        if (target <= docLen) {
-          const line = tr.newDoc.lineAt(target)
-          target = line.from
-          if (target <= lockedLength) target = Math.min(line.to + 1, docLen)
-        }
-        return [tr, { selection: { anchor: target, head: target } }]
+      const docLen = tr.newDoc.length
+      const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
+      const minPos = lockedTopLength
+      const maxPos = bottomStart
+      const outOfRange = sel.anchor < minPos || sel.anchor > maxPos || sel.head < minPos || sel.head > maxPos
+      if (outOfRange) {
+        const base = sel.anchor < minPos ? minPos : (sel.anchor > maxPos ? maxPos : sel.anchor)
+        return [tr, { selection: { anchor: base, head: base } }]
       }
       return tr
     })
@@ -73,7 +80,11 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
     const lockGutter = gutter({
       class: 'cm-lock-gutter',
       lineMarker(view, line) {
-        return line.from < lockedLength ? lockMarker : null
+        const docLen = view.state.doc.length
+        const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
+        if (line.from < lockedTopLength) return lockMarker
+        if (lockedBottomLength > 0 && line.to >= bottomStart) return lockMarker
+        return null
       },
       initialSpacer: () => lockMarker,
     })
@@ -82,12 +93,15 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
     const lockedLinesField = StateField.define({
       create(state) {
         const builder = new RangeSetBuilder()
-        if (lockedLength > 0) {
+        if (lockedTopLength > 0 || lockedBottomLength > 0) {
+          const docLen = state.doc.length
+          const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
           let pos = 0
           while (pos < state.doc.length) {
             const line = state.doc.lineAt(pos)
-            if (line.from >= lockedLength) break
-            builder.add(line.from, line.from, lockedLineDeco)
+            if (line.from < lockedTopLength || (lockedBottomLength > 0 && line.to >= bottomStart)) {
+              builder.add(line.from, line.from, lockedLineDeco)
+            }
             pos = line.to + 1
           }
         }
@@ -152,11 +166,26 @@ export default function CodeEditor({ code, onChange, starterCode, readOnly = fal
   }, [isDark])
 
   function confirmRevert() {
-    if (!viewRef.current || !starterCode) return
-    const newCode = starterCode + '\n'
+    if (!viewRef.current) return
+    const starterTop = typeof starterCodeTop === 'string'
+      ? starterCodeTop
+      : (starterPosition === 'top' ? (starterCode || '') : '')
+    const starterBottom = typeof starterCodeBottom === 'string'
+      ? starterCodeBottom
+      : (starterPosition === 'bottom' ? (starterCode || '') : '')
+    if (!starterTop && !starterBottom) return
+
+    let newCode = ''
+    if (starterTop) newCode += starterTop
+    if (starterTop && !starterTop.endsWith('\n')) newCode += '\n'
+    newCode += '\n'
+    if (starterBottom) newCode += starterBottom
+    if (starterBottom && !starterBottom.endsWith('\n')) newCode += '\n'
+
+    const editableStart = starterTop.length + (starterTop.endsWith('\n') ? 0 : (starterTop ? 1 : 0))
     viewRef.current.dispatch({
       changes: { from: 0, to: viewRef.current.state.doc.length, insert: newCode },
-      selection: { anchor: newCode.length },
+      selection: { anchor: editableStart },
       annotations: privilegedTx.of(true),
     })
     onChange(newCode)

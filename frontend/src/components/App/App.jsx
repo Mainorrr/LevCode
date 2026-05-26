@@ -48,6 +48,17 @@ function MoonIcon() {
   )
 }
 
+function buildCodeWithStarters(topStarter, bottomStarter, editable = '\n') {
+  let result = ''
+  if (topStarter) result += topStarter
+  if (topStarter && !topStarter.endsWith('\n')) result += '\n'
+  result += editable
+  if (bottomStarter && !editable.endsWith('\n')) result += '\n'
+  if (bottomStarter) result += bottomStarter
+  if (bottomStarter && !bottomStarter.endsWith('\n')) result += '\n'
+  return result
+}
+
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(window.location.pathname === '/admin')
   const [isDark, setIsDark] = useState(() => localStorage.getItem('levcode_theme') !== 'light')
@@ -293,9 +304,24 @@ export default function App() {
     }
 
     setSelectedExercise(exercise)
-    const starter = exercise.config.starterCode
+    const starter = exercise.config.starterCode || ''
+    const starterPosition = exercise.config.starterPosition || 'top'
+    const topStarter = typeof exercise.config.starterCodeTop === 'string'
+      ? exercise.config.starterCodeTop
+      : (starterPosition === 'top' ? starter : '')
+    const bottomStarter = typeof exercise.config.starterCodeBottom === 'string'
+      ? exercise.config.starterCodeBottom
+      : (starterPosition === 'bottom' ? starter : '')
     const saved = localStorage.getItem(draftKey(exercise.config.id))
-    setCode(saved && saved.startsWith(starter) ? saved : starter + '\n')
+    let initialCode = ''
+    if (saved) {
+      const startsOk = topStarter ? saved.startsWith(topStarter) : true
+      const endsOk = bottomStarter ? saved.endsWith(bottomStarter) : true
+      initialCode = startsOk && endsOk ? saved : buildCodeWithStarters(topStarter, bottomStarter)
+    } else {
+      initialCode = buildCodeWithStarters(topStarter, bottomStarter)
+    }
+    setCode(initialCode)
     setTestResults(null)
     setCompilationError(null)
     setAttempts(0)
@@ -631,6 +657,9 @@ export default function App() {
               code={code}
               onChange={setCode}
               starterCode={selectedExercise.config.starterCode}
+              starterCodeTop={selectedExercise.config.starterCodeTop}
+              starterCodeBottom={selectedExercise.config.starterCodeBottom}
+              starterPosition={selectedExercise.config.starterPosition}
               readOnly={solvedExercises.has(selectedExercise.config.id)}
               isDark={isDark}
               actionSlot={
