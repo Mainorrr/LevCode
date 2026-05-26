@@ -1,6 +1,6 @@
 {
   "id": "buscar-elemento",
-  "title": "Buscar un elemento",
-  "description": "Lee un entero N en la primera línea, luego N enteros (uno por línea) y finalmente un entero X. Imprime la posición (índice base 0) de la primera aparición de X en la lista, o -1 si no se encuentra.\n\nEjemplo de entrada:\n5\n10\n20\n30\n40\n50\n30\n\nEjemplo de salida:\n2",
-  "starterCode": "n = int(input())\nlista = []\nfor _ in range(n):\n    lista.append(int(input()))\nx = int(input())\n\n# Tu codigo comienza aqui."
+  "title": "Mayor elemento",
+  "description": "Escriba un programa que lea un entero n y luego n números enteros (uno por línea), e imprima el mayor de todos los elementos. Para resolverlo, debe recorrer la lista con un ciclo. No use la función max.\n\nEjemplo de entrada:\n5\n10\n20\n30\n40\n50\n\nEjemplo de salida:\n50",
+  "starterCode": "# Tu codigo comienza aqui."
 }

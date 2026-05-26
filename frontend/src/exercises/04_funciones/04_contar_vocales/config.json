@@ -1,6 +1,8 @@
 {
   "id": "contar-vocales",
-  "title": "Contar vocales",
-  "description": "Escribe una función llamada 'contar_vocales' que reciba una cadena de texto (solo letras en minúscula) y devuelva cuántas vocales (a, e, i, o, u) contiene. Luego lee una cadena, llama a la función e imprime el resultado.\n\nEjemplo de entrada:\nhola\n\nEjemplo de salida:\n2",
-  "starterCode": "# Escribe la funcion contar_vocales(texto) que devuelva cuantas vocales tiene.\n# Luego lee la cadena, llama a la funcion e imprime el resultado."
+  "title": "Celsius a Fahrenheit",
+  "description": "Defina una función llamada celsius_a_fahrenheit que reciba un número entero c y retorne su equivalente en Fahrenheit. La fórmula es F = c * 9 / 5 + 32.\n\nEjemplo de entrada:\n100\n\nEjemplo de salida:\n212.0",
+ 
+  "starterCodeTop": "c = int(input())\n#Tu codigo comienza aqui.",
+  "starterCodeBottom": "print(celsius_a_fahrenheit(c))"
 }

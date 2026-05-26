@@ -1,6 +1,6 @@
 {
   "id": "area-rectangulo",
   "title": "Área de un rectángulo",
-  "description": "Lee la base y la altura de un rectángulo (números enteros, uno por línea) e imprime su área.\n\nEjemplo de entrada:\n4\n5\n\nEjemplo de salida:\n20",
-  "starterCode": "base = int(input())\naltura = int(input())\n\n# Tu codigo comienza aqui."
+  "description": "Escriba un programa que lea la base y la altura de un rectángulo (números enteros, uno por línea) e imprima su área.\n\nEjemplo de entrada:\n4\n5\n\nEjemplo de salida:\n20",
+  "starterCode": "# Tu codigo comienza aqui."
 }
