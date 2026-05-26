@@ -11,7 +11,6 @@ const accessPasswordsRouter = require("./routes/accessPasswords");
 const exercisesRouter = require("./routes/exercises");
 const accessAuth = require("./middleware/accessAuth");
 const requestTimer = require("./middleware/requestTimer");
-const scheduleGuard = require("./middleware/scheduleGuard");
 
 const app = express();
 
@@ -34,8 +33,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/api/submissions", accessAuth, scheduleGuard, submissionsRouter);
-app.use("/api/sessions", accessAuth, scheduleGuard, sessionsRouter);
+app.use("/api/submissions", accessAuth, submissionsRouter);
+app.use("/api/sessions", accessAuth, sessionsRouter);
 app.use("/api/sus", accessAuth, susRouter);
 app.use("/api/export", exportRouter);
 app.use("/api/admin", adminRouter);

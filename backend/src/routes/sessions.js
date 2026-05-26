@@ -106,14 +106,15 @@ router.post("/", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO exercise_sessions (carnet, grupo, problem_id, attempts, solved, hide_tests, show_tries, try_timer)
-       VALUES ($1, $2, $3, 0, $4, $5, $6, $7)
+      `INSERT INTO exercise_sessions (carnet, grupo, problem_id, attempts, solved, started, hide_tests, show_tries, try_timer)
+       VALUES ($1, $2, $3, 0, $4, TRUE, $5, $6, $7)
        ON CONFLICT (carnet, problem_id) DO UPDATE
          SET attempts       = CASE
                                 WHEN exercise_sessions.solved THEN exercise_sessions.attempts
                                 ELSE exercise_sessions.attempts + 1
                               END,
              solved         = exercise_sessions.solved OR EXCLUDED.solved,
+             started        = TRUE,
              updated_at     = CASE
                                 WHEN exercise_sessions.solved THEN exercise_sessions.updated_at
                                 ELSE NOW()
@@ -213,22 +214,25 @@ router.get("/status/:carnet", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT problem_id, solved FROM exercise_sessions
+      `SELECT problem_id, solved, started FROM exercise_sessions
        WHERE carnet = $1`,
       [carnet],
     );
 
     const solved = [];
     const inProgress = [];
+    const assigned = [];
     for (const row of result.rows) {
       if (row.solved) {
         solved.push(row.problem_id);
-      } else {
+      } else if (row.started) {
         inProgress.push(row.problem_id);
+      } else {
+        assigned.push(row.problem_id);
       }
     }
 
-    res.json({ solved, inProgress });
+    res.json({ solved, inProgress, assigned });
   } catch (err) {
     logger.error("Failed to fetch exercise status", { error: err.message });
     res.status(500).json({ error: "Error al consultar estado de ejercicios" });
@@ -283,6 +287,17 @@ router.get("/:carnet/:problemId", async (req, res) => {
        FROM exercise_sessions s WHERE s.carnet = $1 AND s.problem_id = $2`,
       [carnet, problemId],
     );
+
+    // Marcar como iniciado al abrir un ejercicio pre-asignado (sin afectar
+    // attempts ni updated_at). Idempotente: no hace nada si ya estaba started.
+    if (result.rows.length > 0) {
+      await pool.query(
+        `UPDATE exercise_sessions
+            SET started = TRUE
+          WHERE carnet = $1 AND problem_id = $2 AND started = FALSE`,
+        [carnet, problemId],
+      );
+    }
 
     if (result.rows.length === 0) {
       res.status(404).json({ success: false, error: "Sesión no encontrada" });

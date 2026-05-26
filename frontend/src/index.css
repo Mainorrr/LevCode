@@ -1,29 +1,4 @@
 :root {
-  /* Backgrounds — match editor exactly */
-  --bg:           #0d1117;   /* editor background */
-  --surface:      #161b22;   /* cards, panels, editor header */
-  --overlay:      #21262d;   /* hover, modals, elevated surfaces */
-
-  /* Borders */
-  --border:       #30363d;
-
-  /* Text — derived from editor's foreground & comment colors */
-  --text:         #c9d1d9;   /* matches editor foreground exactly */
-  --text-muted:   #8b949e;   /* matches editor comment color exactly */
-  --text-subtle:  #6e7681;   /* tertiary, placeholders */
-
-  /* Accent — matches editor's variable/number color (#79c0ff) */
-  --accent:       #79c0ff;   /* headers, links, focus, button background */
-  --accent-hover: #58a6ff;   /* button hover */
-
-  /* Feedback — derived from editor syntax palette */
-  --success:       #7ee787;   /* matches editor tag/name color */
-  --success-hover: #56d364;
-  --danger:        #ff7b72;   /* matches editor keyword color */
-  --danger-hover:  #f85149;
-}
-
-[data-theme="light"] {
   --bg:           #ffffff;
   --surface:      #f6f8fa;
   --overlay:      #eaeef2;
@@ -37,6 +12,23 @@
   --success-hover: #116329;
   --danger:        #cf222e;
   --danger-hover:  #a40e26;
+}
+
+[data-theme="dark"] {
+  /* Backgrounds — match editor exactly */
+  --bg:           #0d1117;
+  --surface:      #161b22;
+  --overlay:      #21262d;
+  --border:       #30363d;
+  --text:         #c9d1d9;
+  --text-muted:   #8b949e;
+  --text-subtle:  #6e7681;
+  --accent:       #79c0ff;
+  --accent-hover: #58a6ff;
+  --success:       #7ee787;
+  --success-hover: #56d364;
+  --danger:        #ff7b72;
+  --danger-hover:  #f85149;
 }
 
 * {

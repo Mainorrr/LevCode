@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { Play, HelpCircle, Trash2 } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Play, HelpCircle, Trash2, Home, LogOut } from 'lucide-react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import HelpModal from '../HelpModal/HelpModal'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
@@ -59,14 +60,54 @@ function buildCodeWithStarters(topStarter, bottomStarter, editable = '\n') {
   return result
 }
 
+const ROUTES = {
+  form: '/',
+  menu: '/ejercicios',
+  exercise: (id) => `/ejercicios/${id}`,
+  sus: '/cuestionario',
+  admin: '/admin',
+}
+
+function viewFromPath(pathname) {
+  if (pathname === '/admin') return 'admin'
+  if (pathname === '/cuestionario') return 'sus'
+  if (/^\/ejercicios\/.+/.test(pathname)) return 'exercise'
+  if (pathname === '/ejercicios') return 'menu'
+  return 'form'
+}
+
+function exerciseIdFromPath(pathname) {
+  const m = pathname.match(/^\/ejercicios\/(.+)$/)
+  return m ? m[1] : null
+}
+
 export default function App() {
-  const [isAdmin, setIsAdmin] = useState(window.location.pathname === '/admin')
-  const [isDark, setIsDark] = useState(() => localStorage.getItem('levcode_theme') !== 'light')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const rawView = viewFromPath(location.pathname)
+  const isAdmin = rawView === 'admin'
+  const routeExerciseId = exerciseIdFromPath(location.pathname)
+
+  const goTo = (target, opts = {}) => {
+    const replace = opts.replace === true
+    if (target === 'exercise') {
+      navigate(ROUTES.exercise(opts.id), { replace })
+    } else {
+      navigate(ROUTES[target], { replace })
+    }
+  }
+
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('levcode_theme_v2') === 'dark')
   const savedAccessPw = sessionStorage.getItem('levcode_access_pw')
   const initialUser = getSavedUser()
-  const [view, setView] = useState(initialUser && savedAccessPw ? 'menu' : 'form')
   const [userInfo, setUserInfo] = useState(initialUser)
   const [accessPassword, setAccessPassword] = useState(savedAccessPw || '')
+
+  // Vista efectiva: si la ruta requiere sesión y no hay, forzamos 'form' en el
+  // render para no intentar pintar ExerciseMenu/SUSForm con userInfo=null antes
+  // de que el useEffect de redirección actualice la URL.
+  const hasSession = !!userInfo && !!accessPassword
+  const view = (rawView !== 'form' && rawView !== 'admin' && !hasSession) ? 'form' : rawView
   const [selectedExercise, setSelectedExercise] = useState(null)
   const [code, setCode] = useState('')
   const [testResults, setTestResults] = useState(null)
@@ -74,6 +115,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [solvedExercises, setSolvedExercises] = useState(new Set())
   const [inProgressExercises, setInProgressExercises] = useState(new Set())
+  const [assignedExercises, setAssignedExercises] = useState(new Set())
   const [attempts, setAttempts] = useState(0)
   const [showTries, setShowTries] = useState(false)
   const [hideTests, setHideTests] = useState(false)
@@ -134,7 +176,7 @@ export default function App() {
           setAccessPassword('')
           setUserInfo(null)
           setSessionLoading(false)
-          setView('form')
+          goTo('form', { replace: true })
           return null
         }
         if (!r.ok) {
@@ -147,6 +189,7 @@ export default function App() {
         if (!data) return
         setSolvedExercises(new Set(data.solved || []))
         setInProgressExercises(new Set(data.inProgress || []))
+        setAssignedExercises(new Set(data.assigned || []))
         setSessionLoading(false)
       })
       .catch((err) => {
@@ -192,16 +235,25 @@ export default function App() {
     }
   }, [])
 
-  // Detectar ruta /admin por pathname
+  // Guard: rutas protegidas requieren sesión. Si no hay, redirige a /.
   useEffect(() => {
-    const onPopState = () => setIsAdmin(window.location.pathname === '/admin')
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [])
+    if (isAdmin) return
+    const needsAuth = view !== 'form'
+    if (needsAuth && (!userInfo || !accessPassword)) {
+      goTo('form', { replace: true })
+    }
+  }, [view, isAdmin, userInfo, accessPassword])
+
+  // Si ya hay sesión y el usuario llega a /, mandarlo al menú
+  useEffect(() => {
+    if (view === 'form' && userInfo && accessPassword) {
+      goTo('menu', { replace: true })
+    }
+  }, [view, userInfo, accessPassword])
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-    localStorage.setItem('levcode_theme', isDark ? 'dark' : 'light')
+    localStorage.setItem('levcode_theme_v2', isDark ? 'dark' : 'light')
   }, [isDark])
 
   // Guardar borrador del código en localStorage (debounced 500ms)
@@ -276,7 +328,7 @@ export default function App() {
     sessionStorage.setItem('levcode_access_pw', pw)
     setUserInfo(userData)
     setAccessPassword(pw)
-    setView('menu')
+    goTo('menu')
     fetchSessionStatus(userData.carnet, pw)
     fetchSusStatus(userData.carnet, pw)
     fetchAssignment(userData.carnet, userData.grupo, pw)
@@ -289,9 +341,11 @@ export default function App() {
     setAccessPassword('')
     setSolvedExercises(new Set())
     setInProgressExercises(new Set())
+    setAssignedExercises(new Set())
     setSusStatus({ exists: false, submitted: false })
     setAssignedExerciseIds(null)
-    setView('form')
+    setSelectedExercise(null)
+    goTo('form')
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
@@ -302,7 +356,12 @@ export default function App() {
       showToast('¡Ejercicio Completado!')
       return
     }
+    goTo('exercise', { id: exercise.config.id })
+  }
 
+  // Carga el ejercicio en memoria y sincroniza con backend.
+  // Se invoca tanto al hacer click en el menú como al llegar directo a /ejercicios/:id (deep link, back/forward).
+  const loadExercise = (exercise) => {
     setSelectedExercise(exercise)
     const starter = exercise.config.starterCode || ''
     const starterPosition = exercise.config.starterPosition || 'top'
@@ -329,9 +388,22 @@ export default function App() {
     setHideTests(false)
     setTryTimer(false)
     loadGlobalCooldown()
-    setView('exercise')
 
-    const isNew = !solvedExercises.has(exercise.config.id) && !inProgressExercises.has(exercise.config.id)
+    // "isNew" = no existe ningún registro en la DB. Si está en `assigned`,
+    // la fila ya fue pre-creada y solo hay que abrirla (rama else → GET, que
+    // además marca started=true en el backend).
+    const isNew = !solvedExercises.has(exercise.config.id)
+      && !inProgressExercises.has(exercise.config.id)
+      && !assignedExercises.has(exercise.config.id)
+
+    const markStarted = () => {
+      setAssignedExercises((prev) => {
+        const next = new Set(prev)
+        next.delete(exercise.config.id)
+        return next
+      })
+      setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
+    }
 
     const applyTreatments = (data) => {
       setAttempts(data.attempts)
@@ -342,8 +414,7 @@ export default function App() {
     }
 
     if (isNew) {
-      // Primera vez: crear registro en DB (attempts = 0)
-      setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
+      markStarted()
       fetch('/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
@@ -356,9 +427,8 @@ export default function App() {
       })
         .then((r) => r.ok ? r.json() : Promise.reject())
         .then((data) => { if (data.success) applyTreatments(data) })
-        .catch(() => { setView('menu') })
+        .catch(() => { goTo('menu') })
     } else {
-      // Ya existe: solo leer datos sin incrementar
       fetch(`/api/sessions/${userInfo.carnet}/${exercise.config.id}`, {
         headers: { 'X-Access-Password': accessPassword },
       })
@@ -366,14 +436,31 @@ export default function App() {
         .then((data) => {
           if (data.success) {
             applyTreatments(data)
+            if (!data.solved) markStarted()
             if (data.solved && data.solutionCode) {
               setCode(data.solutionCode)
             }
           }
         })
-        .catch(() => { setView('menu') })
+        .catch(() => { goTo('menu') })
     }
   }
+
+  // Sincroniza el ejercicio cargado con el id en la URL (entrar directo, back/forward).
+  // Espera a que termine fetchSessionStatus para que isNew se evalúe correctamente.
+  useEffect(() => {
+    if (view !== 'exercise') return
+    if (!userInfo || !accessPassword) return
+    if (!routeExerciseId) return
+    if (sessionLoading) return
+    if (selectedExercise && selectedExercise.config.id === routeExerciseId) return
+    const exercise = exercises.find((ex) => ex.config.id === routeExerciseId)
+    if (!exercise) {
+      goTo('menu', { replace: true })
+      return
+    }
+    loadExercise(exercise)
+  }, [view, routeExerciseId, userInfo, accessPassword, sessionLoading])
 
   // ── View: exercise ────────────────────────────────────────────────────────
 
@@ -507,6 +594,28 @@ export default function App() {
     </button>
   )
 
+  const homeButton = userInfo && !isAdmin && view !== 'form' && (
+    <button
+      className="home-toggle"
+      onClick={() => { if (view !== 'menu') { goTo('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) } }}
+      title="Ir a la lista de ejercicios"
+      disabled={view === 'menu'}
+    >
+      <Home size={18} />
+    </button>
+  )
+
+  const logoutButton = userInfo && !isAdmin && view !== 'form' && (
+    <button
+      className="logout-toggle"
+      onClick={handleChangeUser}
+      title="Salir y cambiar de usuario"
+    >
+      <LogOut size={16} />
+      <span>Salir</span>
+    </button>
+  )
+
   const susButton = userInfo && accessPassword && view === 'menu' && (
     <button
       className="sus-toggle"
@@ -521,20 +630,30 @@ export default function App() {
   if (isAdmin) {
     return (
       <div className="app-container">
-        <div className="top-bar">{themeToggle}</div>
-        <AdminPanel />
+        <AdminPanel themeToggle={themeToggle} />
       </div>
     )
   }
 
   return (
-    <div className="app-container">
-      <div className="top-bar">
-        {flushTestButton}
-        {susButton}
-        {helpButton}
-        {themeToggle}
-      </div>
+    <>
+      <header className="top-bar">
+        <div className="top-bar-left">
+          {homeButton}
+          {logoutButton}
+        </div>
+        <div className="top-bar-center">
+          <h1 className="top-bar-title">Lev Code</h1>
+          <p className="top-bar-subtitle">Un proyecto para el curso de Investigación en ciencias de la computación</p>
+        </div>
+        <div className="top-bar-right">
+          {flushTestButton}
+          {susButton}
+          {helpButton}
+          {view !== 'form' && themeToggle}
+        </div>
+      </header>
+      <div className="app-container">
       {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
       {flushConfirmOpen && (
         <div className="confirm-overlay" onClick={() => !flushing && setFlushConfirmOpen(false)}>
@@ -557,16 +676,11 @@ export default function App() {
             <p className="confirm-modal-body">Este cuestionario debes responderlo <strong>solo cuando se acabe tu tiempo o al haber completado todos los ejercicios</strong>. Debe ser <strong>lo último que realices antes de salir del laboratorio</strong>.</p>
             <div className="confirm-modal-actions">
               <button className="confirm-modal-cancel" onClick={() => setSusConfirmOpen(false)}>Cancelar</button>
-              <button className="confirm-modal-confirm" onClick={() => { setSusConfirmOpen(false); setView('sus') }}>Comenzar</button>
+              <button className="confirm-modal-confirm" onClick={() => { setSusConfirmOpen(false); goTo('sus') }}>Comenzar</button>
             </div>
           </div>
         </div>
       )}
-      <header className="app-header">
-        <h1>Lev Code</h1>
-        <p>Un proyecto para el curso de Investigación en ciencias de la computación</p>
-      </header>
-
       {toast && <div className="app-toast">{toast}</div>}
 
       {view === 'form' && (
@@ -601,7 +715,7 @@ export default function App() {
             showToast={showToast}
             onComplete={() => {
               fetchSusStatus(userInfo.carnet, accessPassword)
-              setView('menu')
+              goTo('menu')
             }}
           />
         </div>
@@ -617,8 +731,15 @@ export default function App() {
             userInfo={userInfo}
             solvedExercises={solvedExercises}
             inProgressExercises={inProgressExercises}
-            onChangeUser={handleChangeUser}
           />
+        </div>
+      )}
+
+      {view === 'exercise' && !selectedExercise && (
+        <div className="app-body">
+          <div className="session-loading">
+            <p>Cargando ejercicio...</p>
+          </div>
         </div>
       )}
 
@@ -627,7 +748,7 @@ export default function App() {
           {/* Panel izquierdo: descripción + editor */}
           <div className="editor-section">
             <div className="exercise-header">
-              <button className="back-btn" onClick={() => { setView('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) }}>
+              <button className="back-btn" onClick={() => { goTo('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) }}>
                 ← Ejercicios
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
@@ -693,6 +814,7 @@ export default function App() {
           />
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

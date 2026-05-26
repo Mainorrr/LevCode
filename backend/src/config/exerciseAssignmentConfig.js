@@ -20,7 +20,7 @@ const CATEGORY_QUOTAS = {
   "01": 1, // Entrada y salida
   "02": 1, // Condicionales
   "03": 1, // Ciclos
-  "04": 2, // Funciones
+  "04": 1, // Funciones
   "05": 1, // Listas
 };
 

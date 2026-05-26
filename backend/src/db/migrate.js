@@ -41,6 +41,20 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS try_timer  BOOLEAN;
     `);
 
+    // Columna `started`: distingue ejercicios pre-asignados (started=false) de
+    // los que el estudiante abrió/intentó. Sin esto, todos los asignados se
+    // marcarían como "en progreso" desde el primer login.
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        ADD COLUMN IF NOT EXISTS started BOOLEAN NOT NULL DEFAULT FALSE;
+    `);
+    // Backfill: cualquier sesión con intentos o resuelta cuenta como iniciada.
+    await pool.query(`
+      UPDATE exercise_sessions
+         SET started = TRUE
+       WHERE started = FALSE AND (attempts > 0 OR solved = TRUE);
+    `);
+
     // Renombrar show_tests -> hide_tests si existe (migración)
     await pool.query(`
       DO $$ BEGIN

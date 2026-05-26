@@ -13,7 +13,7 @@ function ExportButton({ onClick, label, info }) {
   )
 }
 
-export default function AdminPanel() {
+export default function AdminPanel({ themeToggle }) {
   const [password, setPassword] = useState('')
   const [sessions, setSessions] = useState(null)
   const [error, setError] = useState('')
@@ -267,6 +267,7 @@ export default function AdminPanel() {
     <div className="admin-container">
       <div className="admin-header">
         <h2>Panel de Administración</h2>
+        {themeToggle}
       </div>
 
       <div className="admin-export-bar">

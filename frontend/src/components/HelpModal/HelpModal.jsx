@@ -9,8 +9,8 @@ const SECTIONS = [
     content: (
       <>
         <p>Para leer datos del usuario se utiliza <code>input()</code>. Para mostrar datos en pantalla se utiliza <code>print()</code>.</p>
-        <pre>{`nombre = input()
-print("Hola,", nombre)`}</pre>
+        <pre>{`color = input()
+print("Mi color es", color)`}</pre>
         <p><code>input()</code> siempre devuelve un texto (cadena). Si necesitas un número, debes convertirlo.</p>
         <DocLink href="https://docs.python.org/es/3/library/functions.html#input">Documentación de input()</DocLink>
         <DocLink href="https://docs.python.org/es/3/library/functions.html#print">Documentación de print()</DocLink>
@@ -30,9 +30,9 @@ print("Hola,", nombre)`}</pre>
           <li><code>bool</code> — booleanos (<code>True</code> o <code>False</code>)</li>
         </ul>
         <p>Para convertir entre tipos:</p>
-        <pre>{`edad = int(input())     # convierte texto a entero
-precio = float(input()) # convierte texto a decimal
-texto = str(42)         # convierte número a texto`}</pre>
+        <pre>{`cantidad = int(input())  # convierte texto a entero
+precio = float(input())  # convierte texto a decimal
+texto = str(42)          # convierte número a texto`}</pre>
         <DocLink href="https://docs.python.org/es/3/library/stdtypes.html">Tipos integrados</DocLink>
       </>
     ),
@@ -49,9 +49,9 @@ texto = str(42)         # convierte número a texto`}</pre>
           <li><code>%</code> módulo (resto de la división)</li>
           <li><code>**</code> potencia (ej. <code>2**3</code> es 8)</li>
         </ul>
-        <pre>{`7 // 2   # 3
-7 % 2    # 1
-2 ** 5   # 32`}</pre>
+        <pre>{`10 // 3   # 3
+10 % 3    # 1
+3 ** 4    # 81`}</pre>
         <p><strong>Comparación:</strong> <code>==</code>, <code>!=</code>, <code>{'<'}</code>, <code>{'>'}</code>, <code>{'<='}</code>, <code>{'>='}</code></p>
         <p><strong>Lógicos:</strong> <code>and</code>, <code>or</code>, <code>not</code></p>
         <DocLink href="https://docs.python.org/es/3/reference/expressions.html#operator-summary">Resumen de operadores</DocLink>
@@ -64,17 +64,17 @@ texto = str(42)         # convierte número a texto`}</pre>
     content: (
       <>
         <p>Las condiciones permiten ejecutar código solo cuando se cumple algo.</p>
-        <pre>{`if nota >= 60:
-    print("aprobado")
+        <pre>{`if temperatura > 25:
+    print("calor")
 else:
-    print("reprobado")`}</pre>
+    print("frio")`}</pre>
         <p>Cuando hay varias opciones se usa <code>elif</code>:</p>
-        <pre>{`if n > 0:
-    print("positivo")
-elif n < 0:
-    print("negativo")
+        <pre>{`if hora < 12:
+    print("manana")
+elif hora < 18:
+    print("tarde")
 else:
-    print("cero")`}</pre>
+    print("noche")`}</pre>
         <p>La indentación (4 espacios) es obligatoria en Python.</p>
         <DocLink href="https://docs.python.org/es/3/tutorial/controlflow.html#if-statements">Sentencia if</DocLink>
       </>
@@ -86,20 +86,20 @@ else:
     content: (
       <>
         <p>El ciclo <code>for</code> recorre una secuencia. <code>range(n)</code> genera los números de 0 a n-1.</p>
-        <pre>{`for i in range(5):       # 0, 1, 2, 3, 4
-    print(i)
+        <pre>{`# range(n) genera 0, 1, ..., n-1
+# range(a, b) genera a, a+1, ..., b-1
+# range(a, b, paso) avanza de "paso" en "paso"
 
-for i in range(1, 6):    # 1, 2, 3, 4, 5
-    print(i)
+for letra in "abc":
+    print(letra)          # imprime a, b, c
 
-for i in range(0, 10, 2): # 0, 2, 4, 6, 8
-    print(i)`}</pre>
+for i in range(3):
+    print("hola")         # imprime "hola" 3 veces`}</pre>
         <p>El ciclo <code>while</code> se repite mientras se cumpla una condición.</p>
-        <pre>{`n = 10
-suma = 0
-while n > 0:
-    suma += n
-    n -= 1`}</pre>
+        <pre>{`intentos = 3
+while intentos > 0:
+    print("queda intento")
+    intentos -= 1`}</pre>
         <DocLink href="https://docs.python.org/es/3/tutorial/controlflow.html#for-statements">Ciclo for</DocLink>
         <DocLink href="https://docs.python.org/es/3/reference/compound_stmts.html#while">Ciclo while</DocLink>
         <DocLink href="https://docs.python.org/es/3/library/functions.html#func-range">Función range()</DocLink>
@@ -112,16 +112,16 @@ while n > 0:
     content: (
       <>
         <p>Una función agrupa código que puede recibir parámetros y devolver un valor.</p>
-        <pre>{`def doble(x):
-    return x * 2
+        <pre>{`def triplicar(x):
+    return x * 3
 
-resultado = doble(5)  # 10`}</pre>
+resultado = triplicar(4)  # 12`}</pre>
         <p>Las funciones pueden recibir varios parámetros y devolver cualquier tipo.</p>
-        <pre>{`def es_par(n):
-    return n % 2 == 0
+        <pre>{`def cabe_en_caja(volumen, limite):
+    return volumen <= limite
 
-if es_par(8):
-    print("es par")`}</pre>
+if cabe_en_caja(80, 100):
+    print("cabe")`}</pre>
         <DocLink href="https://docs.python.org/es/3/tutorial/controlflow.html#defining-functions">Definir funciones</DocLink>
       </>
     ),
@@ -132,22 +132,19 @@ if es_par(8):
     content: (
       <>
         <p>Una lista contiene varios elementos en orden. Los índices empiezan en 0.</p>
-        <pre>{`numeros = [10, 20, 30, 40]
-print(numeros[0])   # 10
-print(numeros[-1])  # 40 (último)
-print(len(numeros)) # 4`}</pre>
+        <pre>{`colores = ["rojo", "verde", "azul", "amarillo"]
+print(colores[0])   # rojo
+print(colores[-1])  # amarillo (último)
+print(len(colores)) # 4`}</pre>
         <p>Operaciones comunes:</p>
         <pre>{`lista = []
-lista.append(5)     # agregar al final
-lista.append(7)
+lista.append("a")   # agregar al final
+lista.append("b")
 
 for x in lista:     # recorrer
-    print(x)
-
-total = sum(lista)  # suma todos los elementos
-lista.sort()        # ordena de menor a mayor`}</pre>
+    print(x)`}</pre>
         <p>Para encontrar la posición de un elemento puedes recorrer con <code>enumerate</code>:</p>
-        <pre>{`for i, valor in enumerate(lista):
+        <pre>{`for i, valor in enumerate(colores):
     if valor == buscado:
         print(i)
         break`}</pre>
@@ -163,13 +160,13 @@ lista.sort()        # ordena de menor a mayor`}</pre>
     content: (
       <>
         <p>Para combinar texto y valores se pueden usar <em>f-strings</em>:</p>
-        <pre>{`nombre = "Ana"
-edad = 25
-print(f"{nombre} tiene {edad} años")`}</pre>
+        <pre>{`ciudad = "Lima"
+habitantes = 1000000
+print(f"{ciudad} cuenta con {habitantes} habitantes")`}</pre>
         <p>También se puede concatenar con comas en <code>print</code>:</p>
-        <pre>{`print(nombre, "tiene", edad, "años")`}</pre>
+        <pre>{`print(ciudad, "cuenta con", habitantes, "habitantes")`}</pre>
         <p>O usar concatenación con <code>+</code> (solo entre cadenas):</p>
-        <pre>{`mensaje = "Hola, " + nombre + "!"
+        <pre>{`mensaje = "Bienvenido a " + ciudad
 print(mensaje)`}</pre>
         <DocLink href="https://docs.python.org/es/3/tutorial/inputoutput.html#formatted-string-literals">f-strings</DocLink>
         <DocLink href="https://docs.python.org/es/3/library/stdtypes.html#text-sequence-type-str">Tipo str</DocLink>

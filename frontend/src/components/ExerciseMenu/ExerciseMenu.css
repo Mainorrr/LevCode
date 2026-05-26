@@ -27,25 +27,28 @@
   color: var(--text-muted);
 }
 
-.menu-change-btn {
-  padding: 5px 12px;
-  background: var(--overlay);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 0.8em;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.menu-change-btn:hover {
-  background: var(--border);
-}
-
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .menu-card {

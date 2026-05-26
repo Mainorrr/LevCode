@@ -8,7 +8,7 @@ import './ExerciseMenu.css'
  *   - onSelect: function(exercise) - callback al seleccionar un ejercicio
  *   - userInfo: { carnet, grupo }
  */
-export default function ExerciseMenu({ exercises, onSelect, userInfo, solvedExercises, inProgressExercises, onChangeUser }) {
+export default function ExerciseMenu({ exercises, onSelect, userInfo, solvedExercises, inProgressExercises }) {
   return (
     <div className="menu-container">
       <div className="menu-header">
@@ -17,9 +17,6 @@ export default function ExerciseMenu({ exercises, onSelect, userInfo, solvedExer
           <span className="menu-user">
             {userInfo.carnet} &nbsp;·&nbsp; Grupo {userInfo.grupo}
           </span>
-          <button className="menu-change-btn" onClick={onChangeUser}>
-            Cambiar datos
-          </button>
         </div>
       </div>
 
