@@ -129,6 +129,7 @@ export default function App() {
   const cooldownRef = useRef(null)
   const toastRef = useRef(null)
   const [helpOpen, setHelpOpen] = useState(false)
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
   const [susConfirmOpen, setSusConfirmOpen] = useState(false)
   const [flushConfirmOpen, setFlushConfirmOpen] = useState(false)
   const [flushing, setFlushing] = useState(false)
@@ -345,6 +346,7 @@ export default function App() {
     setSusStatus({ exists: false, submitted: false })
     setAssignedExerciseIds(null)
     setSelectedExercise(null)
+    setLogoutConfirmOpen(false)
     goTo('form')
   }
 
@@ -608,7 +610,7 @@ export default function App() {
   const logoutButton = userInfo && !isAdmin && view !== 'form' && (
     <button
       className="logout-toggle"
-      onClick={handleChangeUser}
+      onClick={() => setLogoutConfirmOpen(true)}
       title="Salir y cambiar de usuario"
     >
       <LogOut size={16} />
@@ -655,6 +657,18 @@ export default function App() {
       </header>
       <div className="app-container">
       {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
+      {logoutConfirmOpen && (
+        <div className="confirm-overlay" onClick={() => setLogoutConfirmOpen(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <p className="confirm-modal-title">¿Estás seguro que quieres salir?</p>
+            <p className="confirm-modal-body">Tu progreso está guardado. Podrás continuar ingresando con tu carnet nuevamente.</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-modal-cancel" onClick={() => setLogoutConfirmOpen(false)}>Cancelar</button>
+              <button className="confirm-modal-confirm" onClick={handleChangeUser}>Salir</button>
+            </div>
+          </div>
+        </div>
+      )}
       {flushConfirmOpen && (
         <div className="confirm-overlay" onClick={() => !flushing && setFlushConfirmOpen(false)}>
           <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
