@@ -1,12 +1,12 @@
 [
-  { "input": "hola",        "expectedOutput": "2", "showInfo": true,  "showInfoHidden": true  },
-  { "input": "python",      "expectedOutput": "1", "showInfo": true,  "showInfoHidden": false },
-  { "input": "aeiou",       "expectedOutput": "5", "showInfo": true,  "showInfoHidden": false },
-  { "input": "xyz",         "expectedOutput": "0", "showInfo": true,  "showInfoHidden": false },
-  { "input": "murcielago",  "expectedOutput": "5", "showInfo": true,  "showInfoHidden": false },
-  { "input": "java",        "expectedOutput": "2", "showInfo": false, "showInfoHidden": false },
-  { "input": "programacion","expectedOutput": "5", "showInfo": false, "showInfoHidden": false },
-  { "input": "computacion", "expectedOutput": "5", "showInfo": false, "showInfoHidden": false },
-  { "input": "ingenieria",  "expectedOutput": "6", "showInfo": false, "showInfoHidden": false },
-  { "input": "rtm",         "expectedOutput": "0", "showInfo": false, "showInfoHidden": false }
+  { "input": "100", "expectedOutput": "212.0", "showInfo": true,  "showInfoHidden": true  },
+  { "input": "0",   "expectedOutput": "32.0",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "25",  "expectedOutput": "77.0",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "-40", "expectedOutput": "-40.0", "showInfo": true,  "showInfoHidden": false },
+  { "input": "37",  "expectedOutput": "98.6",  "showInfo": false, "showInfoHidden": false },
+  { "input": "100", "expectedOutput": "212.0", "showInfo": false, "showInfoHidden": false },
+  { "input": "20",  "expectedOutput": "68.0",  "showInfo": false, "showInfoHidden": false },
+  { "input": "-10", "expectedOutput": "14.0",  "showInfo": false, "showInfoHidden": false },
+  { "input": "50",  "expectedOutput": "122.0", "showInfo": false, "showInfoHidden": false },
+  { "input": "10",  "expectedOutput": "50.0",  "showInfo": false, "showInfoHidden": false }
 ]
