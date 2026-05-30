@@ -3,7 +3,7 @@
   { "input": "1",  "expectedOutput": "1",   "showInfo": true,  "showInfoHidden": false },
   { "input": "2",  "expectedOutput": "5",   "showInfo": true,  "showInfoHidden": false },
   { "input": "3",  "expectedOutput": "14",  "showInfo": true,  "showInfoHidden": false },
-  { "input": "5",  "expectedOutput": "55",  "showInfo": false, "showInfoHidden": false },
+  { "input": "5",  "expectedOutput": "55",  "showInfo": true,  "showInfoHidden": false },
   { "input": "10", "expectedOutput": "385", "showInfo": false, "showInfoHidden": false },
   { "input": "6",  "expectedOutput": "91",  "showInfo": false, "showInfoHidden": false },
   { "input": "7",  "expectedOutput": "140", "showInfo": false, "showInfoHidden": false },

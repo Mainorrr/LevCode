@@ -159,6 +159,16 @@
 
 .cm-locked-line {
   background-color: rgba(128, 128, 128, 0.28);
+  cursor: not-allowed;
+  user-select: none;
+  -webkit-user-select: none;
+  caret-color: transparent;
+}
+
+.cm-locked-line * {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 [data-theme="light"] .cm-locked-line {

@@ -109,7 +109,7 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS description VARCHAR(200);
     `);
 
-    // Tabla legacy `users` — la lista de estudiantes ahora vive en memoria (Users.tsv)
+    // Tabla legacy `users` — la lista de estudiantes ahora vive en memoria (Users.csv)
     await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
 
     // Tabla de respuestas del cuestionario SUS (System Usability Scale)

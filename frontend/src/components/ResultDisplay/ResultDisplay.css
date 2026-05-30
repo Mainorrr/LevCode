@@ -113,6 +113,44 @@
   overflow: hidden;
 }
 
+/* Estado verde (caso pasado) — tintes coordinados con el header `.success` */
+.case-item.passed {
+  background: rgba(126, 231, 135, 0.10);
+  border-color: rgba(126, 231, 135, 0.35);
+}
+
+.case-item.passed .case-body {
+  border-top-color: rgba(126, 231, 135, 0.25);
+}
+
+[data-theme="light"] .case-item.passed {
+  background: rgba(46, 160, 67, 0.10);
+  border-color: rgba(46, 160, 67, 0.35);
+}
+
+[data-theme="light"] .case-item.passed .case-body {
+  border-top-color: rgba(46, 160, 67, 0.25);
+}
+
+/* Estado rojo (caso fallido) — tintes coordinados con el header `.failure` */
+.case-item.failed {
+  background: rgba(255, 123, 114, 0.10);
+  border-color: rgba(255, 123, 114, 0.35);
+}
+
+.case-item.failed .case-body {
+  border-top-color: rgba(255, 123, 114, 0.25);
+}
+
+[data-theme="light"] .case-item.failed {
+  background: rgba(207, 34, 46, 0.08);
+  border-color: rgba(207, 34, 46, 0.35);
+}
+
+[data-theme="light"] .case-item.failed .case-body {
+  border-top-color: rgba(207, 34, 46, 0.25);
+}
+
 .case-header {
   display: flex;
   align-items: center;
@@ -206,6 +244,16 @@
 .case-value.actual {
   border-color: rgba(255, 123, 114, 0.3);
   color: var(--danger);
+}
+
+/* En un caso pasado, la salida del usuario coincide con la esperada — pintarla en verde. */
+.case-item.passed .case-value.actual {
+  border-color: rgba(126, 231, 135, 0.3);
+  color: var(--success);
+}
+
+[data-theme="light"] .case-item.passed .case-value.actual {
+  border-color: rgba(46, 160, 67, 0.3);
 }
 
 /* ── No cases message ── */

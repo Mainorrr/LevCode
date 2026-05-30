@@ -56,7 +56,8 @@ function buildCodeWithStarters(topStarter, bottomStarter, editable = '\n') {
   result += editable
   if (bottomStarter && !editable.endsWith('\n')) result += '\n'
   if (bottomStarter) result += bottomStarter
-  if (bottomStarter && !bottomStarter.endsWith('\n')) result += '\n'
+  // No añadimos \n al final: ese carácter dejaba una línea vacía visible debajo
+  // del bloque inferior bloqueado. El intérprete de Python no requiere salto final.
   return result
 }
 
@@ -318,7 +319,7 @@ export default function App() {
     }
     const [sr, sg, sb] = hexToRgb(style.getPropertyValue('--success'))
     const [dr, dg, db] = hexToRgb(style.getPropertyValue('--danger'))
-    const t = Math.min(n / 5, 1)
+    const t = Math.min(n / 10, 1)
     return `rgb(${Math.round(sr + t * (dr - sr))}, ${Math.round(sg + t * (dg - sg))}, ${Math.round(sb + t * (db - sb))})`
   }
 
@@ -607,7 +608,7 @@ export default function App() {
     </button>
   )
 
-  const logoutButton = userInfo && !isAdmin && view !== 'form' && (
+  const logoutButton = userInfo && !isAdmin && view === 'menu' && (
     <button
       className="logout-toggle"
       onClick={() => setLogoutConfirmOpen(true)}

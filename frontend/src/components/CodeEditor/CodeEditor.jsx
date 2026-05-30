@@ -40,12 +40,21 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
   useEffect(() => {
     if (!editorRef.current) return
 
-    const starterTop = typeof starterCodeTop === 'string'
+    const starterTopRaw = typeof starterCodeTop === 'string'
       ? starterCodeTop
       : (starterPosition === 'top' ? (starterCode || '') : '')
-    const starterBottom = typeof starterCodeBottom === 'string'
+    const starterBottomRaw = typeof starterCodeBottom === 'string'
       ? starterCodeBottom
       : (starterPosition === 'bottom' ? (starterCode || '') : '')
+    // El starter superior recibe un \n automático en el doc si no termina en uno
+    // (ver buildCodeWithStarters en App.jsx). Ese \n forma parte de la línea bloqueada
+    // visualmente, así que debe contarse aquí; de lo contrario el cursor puede aterrizar
+    // entre el \n y el primer carácter del starter inferior, permitiendo insertar texto
+    // al inicio de la línea bloqueada.
+    // En cambio el starter inferior YA NO recibe \n al final (se eliminó para no dejar
+    // una línea vacía bajo el bloque bloqueado), así que su largo es el del prop tal cual.
+    const starterTop = starterTopRaw + (starterTopRaw && !starterTopRaw.endsWith('\n') ? '\n' : '')
+    const starterBottom = starterBottomRaw
     const lockedTopLength = starterTop.length
     const lockedBottomLength = starterBottom.length
 
@@ -56,25 +65,62 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
       const docLen = tr.startState.doc.length
       const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
       tr.changes.iterChangedRanges((fromA, toA) => {
-        if (fromA < lockedTopLength || toA > bottomStart) allowed = false
+        if (fromA < lockedTopLength) allowed = false
+        if (lockedBottomLength > 0 && (fromA >= bottomStart || toA > bottomStart)) allowed = false
       })
       return allowed
     })
 
-    // Mueve el cursor al inicio de la primera línea editable si intenta entrar a la zona bloqueada.
+    // Fuerza que la selección permanezca dentro del rango editable.
+    // Importante: usamos `transactionFilter` (NO `transactionExtender`); este último
+    // sólo combina `effects`/`annotations` e ignora `selection`, por lo que cualquier
+    // intento de clampear el cursor desde un extender es silenciosamente descartado.
+    const clamp = (pos, min, max) => Math.max(min, Math.min(max, pos))
     const lockSelectionFilter = EditorState.transactionFilter.of((tr) => {
-      if ((lockedTopLength === 0 && lockedBottomLength === 0) || !tr.selection) return tr
+      if (lockedTopLength === 0 && lockedBottomLength === 0) return tr
+      if (!tr.selection) return tr
       const sel = tr.selection.main
       const docLen = tr.newDoc.length
       const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
       const minPos = lockedTopLength
-      const maxPos = bottomStart
-      const outOfRange = sel.anchor < minPos || sel.anchor > maxPos || sel.head < minPos || sel.head > maxPos
-      if (outOfRange) {
-        const base = sel.anchor < minPos ? minPos : (sel.anchor > maxPos ? maxPos : sel.anchor)
-        return [tr, { selection: { anchor: base, head: base } }]
-      }
-      return tr
+      // Si hay zona bloqueada inferior, el cursor no puede llegar a `bottomStart`
+      // (esa posición visualmente está al inicio de la línea bloqueada y permitiría
+      // insertar caracteres al principio de ella). Lo limitamos a la posición anterior,
+      // que cae al final de la última línea editable.
+      const maxPos = lockedBottomLength > 0 && bottomStart > minPos ? bottomStart - 1 : bottomStart
+      const anchor = clamp(sel.anchor, minPos, maxPos)
+      const head = clamp(sel.head, minPos, maxPos)
+      if (anchor === sel.anchor && head === sel.head) return tr
+      return [tr, { selection: { anchor, head }, sequential: true }]
+    })
+
+    // Bloquea clics del mouse sobre líneas bloqueadas (incluye gutter y contenido).
+    const blockLockedMouse = EditorView.domEventHandlers({
+      mousedown(event, view) {
+        if (lockedTopLength === 0 && lockedBottomLength === 0) return false
+        const pos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false)
+        if (pos == null) return false
+        const docLen = view.state.doc.length
+        const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
+        // Detecta también clic dentro de la línea bloqueada por su línea de documento,
+        // no solo por posición: posAtCoords puede caer en bottomStart incluso al clicar
+        // al final visual de la línea bloqueada.
+        const line = view.state.doc.lineAt(Math.min(Math.max(pos, 0), docLen))
+        const onLockedTop = line.from < lockedTopLength
+        const onLockedBottom = lockedBottomLength > 0 && line.to >= bottomStart
+        if (onLockedTop || onLockedBottom) {
+          event.preventDefault()
+          event.stopPropagation()
+          // Reubica el cursor a un punto seguro en la zona editable y mantiene el foco.
+          const safePos = onLockedTop
+            ? lockedTopLength
+            : (bottomStart > lockedTopLength ? bottomStart - 1 : lockedTopLength)
+          view.dispatch({ selection: { anchor: safePos, head: safePos } })
+          view.focus()
+          return true
+        }
+        return false
+      },
     })
 
     const lockGutter = gutter({
@@ -90,24 +136,29 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
     })
 
     const lockedLineDeco = Decoration.line({ class: 'cm-locked-line' })
-    const lockedLinesField = StateField.define({
-      create(state) {
-        const builder = new RangeSetBuilder()
-        if (lockedTopLength > 0 || lockedBottomLength > 0) {
-          const docLen = state.doc.length
-          const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
-          let pos = 0
-          while (pos < state.doc.length) {
-            const line = state.doc.lineAt(pos)
-            if (line.from < lockedTopLength || (lockedBottomLength > 0 && line.to >= bottomStart)) {
-              builder.add(line.from, line.from, lockedLineDeco)
-            }
-            pos = line.to + 1
+    // Recalcula el decorado de líneas bloqueadas a partir del documento actual.
+    // Debe correrse tanto al crear el estado como tras cada cambio, ya que las
+    // posiciones bloqueadas se desplazan al editar la zona editable.
+    const buildLockedDeco = (state) => {
+      const builder = new RangeSetBuilder()
+      if (lockedTopLength > 0 || lockedBottomLength > 0) {
+        const docLen = state.doc.length
+        const bottomStart = Math.max(lockedTopLength, docLen - lockedBottomLength)
+        let pos = 0
+        while (pos <= state.doc.length) {
+          const line = state.doc.lineAt(pos)
+          if (line.from < lockedTopLength || (lockedBottomLength > 0 && line.to >= bottomStart)) {
+            builder.add(line.from, line.from, lockedLineDeco)
           }
+          if (line.to >= state.doc.length) break
+          pos = line.to + 1
         }
-        return builder.finish()
-      },
-      update(deco) { return deco },
+      }
+      return builder.finish()
+    }
+    const lockedLinesField = StateField.define({
+      create: (state) => buildLockedDeco(state),
+      update: (deco, tr) => tr.docChanged ? buildLockedDeco(tr.state) : deco,
       provide: f => EditorView.decorations.from(f),
     })
 
@@ -130,6 +181,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
         readOnlyCompartment.current.of(EditorState.readOnly.of(readOnly)),
         lockFilter,
         lockSelectionFilter,
+        blockLockedMouse,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             onChange(update.state.doc.toString())
@@ -180,7 +232,6 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
     if (starterTop && !starterTop.endsWith('\n')) newCode += '\n'
     newCode += '\n'
     if (starterBottom) newCode += starterBottom
-    if (starterBottom && !starterBottom.endsWith('\n')) newCode += '\n'
 
     const editableStart = starterTop.length + (starterTop.endsWith('\n') ? 0 : (starterTop ? 1 : 0))
     viewRef.current.dispatch({

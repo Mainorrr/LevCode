@@ -6,14 +6,14 @@ const logger = require('../utils/logger')
 const usersByCarnet = new Map()
 
 function loadUsers() {
-  const tsvPath = path.join(__dirname, 'Users.tsv')
-  const text = fs.readFileSync(tsvPath, 'utf8')
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+  const csvPath = path.join(__dirname, 'Users.csv')
+  const text = fs.readFileSync(csvPath, 'utf8')
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
   const dataLines = lines[0].toLowerCase().startsWith('carnet') ? lines.slice(1) : lines
 
   usersByCarnet.clear()
   for (const line of dataLines) {
-    const [carnetRaw, grupoRaw] = line.split('\t').map(s => s && s.trim())
+    const [carnetRaw, grupoRaw] = line.split(',').map(s => s && s.trim())
     if (!carnetRaw || !grupoRaw) continue
     const carnet = carnetRaw.toUpperCase()
     if (!usersByCarnet.has(carnet)) usersByCarnet.set(carnet, new Set())

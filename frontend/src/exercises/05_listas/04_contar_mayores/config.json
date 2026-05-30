@@ -1,6 +1,6 @@
 {
   "id": "contar-mayores",
   "title": "Contar mayores que cero",
-  "description": "Escriba un programa que lea un entero n y luego n números enteros (uno por línea), e imprima cuántos de los elementos son estrictamente mayores que cero. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\n5\n3\n-1\n0\n7\n-2\n\nEjemplo de salida:\n2",
+  "description": "Escriba un programa que lea un entero n y luego m números enteros (uno por línea), e imprima cuántos de los elementos son estrictamente mayores que cero. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\n5\n3\n-1\n0\n7\n-2\n\nEjemplo de salida:\n2",
   "starterCode": "# Tu codigo comienza aqui."
 }

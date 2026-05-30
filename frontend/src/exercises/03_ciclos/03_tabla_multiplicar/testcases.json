@@ -26,7 +26,7 @@
   {
     "input": "10",
     "expectedOutput": "10\n20\n30\n40\n50\n60\n70\n80\n90\n100",
-    "showInfo": false,
+    "showInfo": true,
     "showInfoHidden": false
   },
   {

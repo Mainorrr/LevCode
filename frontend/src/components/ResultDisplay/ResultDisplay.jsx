@@ -52,8 +52,6 @@ export default function ResultDisplay({ testResults, compilationError, loading }
   const total = testResults.length
   const allPassed = passed === total
 
-  const failedCases = testResults.filter((r) => !r.passed)
-
   const toggleCase = (caseNumber) => {
     setOpenCases((prev) => ({ ...prev, [caseNumber]: !prev[caseNumber] }))
   }
@@ -67,11 +65,11 @@ export default function ResultDisplay({ testResults, compilationError, loading }
         </span>
       </div>
 
-      {/* Casos fallidos */}
-      {!allPassed && failedCases.length > 0 && (
+      {/* Todos los casos: pasados (verde) y fallidos (rojo) */}
+      {!allPassed && testResults.length > 0 && (
         <div className="result-box">
           <div className="cases-title-row">
-            <h3 className="cases-title">Casos fallidos</h3>
+            <h3 className="cases-title">Casos de prueba</h3>
             <div className="cases-legend">
               <span className="legend-item">
                 <Eye size={14} className="case-eye visible" /> Información disponible
@@ -85,11 +83,11 @@ export default function ResultDisplay({ testResults, compilationError, loading }
             </div>
           </div>
           <div className="cases-list">
-            {failedCases.map((tc) => {
+            {testResults.map((tc) => {
               const isOpen = !!openCases[tc.caseNumber]
               const canExpand = tc.showInfo
               return (
-                <div key={tc.caseNumber} className="case-item">
+                <div key={tc.caseNumber} className={`case-item ${tc.passed ? 'passed' : 'failed'}`}>
                   <button
                     type="button"
                     className="case-header"
