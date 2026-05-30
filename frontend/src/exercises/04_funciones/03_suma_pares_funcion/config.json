@@ -1,7 +1,7 @@
 {
   "id": "suma-pares-funcion",
   "title": "Suma de cuadrados",
-  "description": "Defina una función llamada suma_cuadrados que reciba un entero n (mayor o igual a 1) y retorne la suma de los cuadrados de los números del 1 al n.\n\nEjemplo de entrada:\n4\n\nEjemplo de salida:\n30",
+  "description": "Defina una función llamada suma_cuadrados que reciba un entero n (mayor o igual a 1) y retorne la suma de los cuadrados de los números del 1 al n.\n\nRecuerde: el cuadrado de un número es ese número multiplicado por sí mismo (por ejemplo, el cuadrado de 3 es 3 × 3 = 9).\n\nEjemplo de entrada:\nn = 4\n\nEjemplo de salida:\n30",
   "starterCode": "# Tu codigo comienza aqui.",
   "starterCodeTop": "n = int(input())",
   "starterCodeBottom": "print(suma_cuadrados(n))"

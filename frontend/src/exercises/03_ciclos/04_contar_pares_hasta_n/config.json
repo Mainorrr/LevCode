@@ -1,6 +1,6 @@
 {
   "id": "contar-pares-hasta-n",
   "title": "Números del 1 al N",
-  "description": "Dado un número entero n (mayor o igual a 1), imprima los números del 1 al n, uno por línea. Para resolverlo, debe usar un ciclo.\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n1\n2\n3\n4\n5",
+  "description": "Dado el entero n (mayor o igual a 1), imprima los números del 1 al n, uno por línea. Para resolverlo debe usar un ciclo.\n\nEjemplo de entrada:\nn = 5\n\nEjemplo de salida:\n1\n2\n3\n4\n5",
   "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

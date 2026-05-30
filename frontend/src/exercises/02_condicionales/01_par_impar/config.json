@@ -1,6 +1,6 @@
 {
   "id": "par-o-impar",
   "title": "Par o impar",
-  "description": "Dado un número entero n, escriba un programa que imprima 'par' si es par o 'impar' si es impar.\n\nEjemplo de entrada:\n4\n\nEjemplo de salida:\npar",
+  "description": "Dado el número entero n, escriba un programa que imprima 'par' si es par o 'impar' si es impar.\n\nEjemplo de entrada:\nn = 4\n\nEjemplo de salida:\npar",
   "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

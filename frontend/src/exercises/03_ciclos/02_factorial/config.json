@@ -1,6 +1,6 @@
 {
   "id": "factorial",
   "title": "Factorial de un número",
-  "description": "Dado un número entero n (mayor o igual a 0), imprima el factorial de n. Para resolverlo, debe usar un ciclo.\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n120",
+  "description": "Dado el entero n (mayor o igual a 0), imprima el factorial de n. Para resolverlo debe usar un ciclo.\n\nEjemplo de entrada:\nn = 5\n\nEjemplo de salida:\n120",
   "starterCode": "n = int(input())\n\n# Tu codigo comienza aqui."
 }

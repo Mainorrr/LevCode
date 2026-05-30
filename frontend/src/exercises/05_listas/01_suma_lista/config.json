@@ -1,6 +1,6 @@
 {
   "id": "suma-lista",
   "title": "Suma de los elementos",
-  "description": "Escriba un programa que lea un entero n y luego n números enteros (uno por línea), e imprima la suma de todos sus elementos. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\n4\n1\n2\n3\n4\n\nEjemplo de salida:\n10",
-  "starterCode": "# Tu codigo comienza aqui."
+  "description": "Dada una lista de numeros con una cantidad n de elementos, escriba un programa que imprima la suma de todos sus elementos. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\nn = 4\nnumeros = [1, 2, 3, 4]\n\nEjemplo de salida:\n10",
+  "starterCode": "n = int(input())\nnumeros = [int(input()) for _ in range(n)]\n# Tu codigo comienza aqui."
 }

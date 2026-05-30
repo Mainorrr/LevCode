@@ -1,7 +1,7 @@
 {
   "id": "es-primo",
   "title": "Es primo",
-  "description": "Defina una función llamada es_primo que reciba un número entero n y retorne True si es primo o False en caso contrario.\n\nEjemplo de entrada:\n7\n\nEjemplo de salida:\nsi",
+  "description": "Defina una función llamada es_primo que reciba un número entero n y retorne True si es primo o False en caso contrario.\n\nEjemplo de entrada:\nn = 7\n\nEjemplo de salida:\nsi",
   "starterCode": "# Tu codigo comienza aqui.",
   "starterCodeTop": "n = int(input())\n",
   "starterCodeBottom": "print('si' if es_primo(n) else 'no')"

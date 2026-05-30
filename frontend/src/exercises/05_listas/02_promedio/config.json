@@ -1,6 +1,6 @@
 {
   "id": "promedio-lista",
   "title": "Promedio de una lista",
-  "description": "Escriba un programa que lea un entero n y luego n números enteros (uno por línea), e imprima el promedio usando división entera. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\n4\n10\n20\n30\n40\n\nEjemplo de salida:\n25",
-  "starterCode": "# Tu codigo comienza aqui."
+  "description": "Dada una lista de numeros con una cantidad n de elementos, escriba un programa que imprima su promedio usando división entera. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\nn = 4\nnumeros = [10, 20, 30, 40]\n\nEjemplo de salida:\n25",
+  "starterCode": "n = int(input())\nnumeros = [int(input()) for _ in range(n)]\n# Tu codigo comienza aqui."
 }

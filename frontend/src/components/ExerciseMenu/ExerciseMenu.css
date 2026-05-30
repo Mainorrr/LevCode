@@ -27,6 +27,14 @@
   color: var(--text-muted);
 }
 
+.menu-instructions {
+  font-size: 0.95em;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 900px;
+}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

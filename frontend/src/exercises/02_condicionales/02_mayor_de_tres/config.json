@@ -1,6 +1,6 @@
 {
   "id": "mayor-de-tres",
   "title": "Mayor de tres números",
-  "description": "Dados tres números enteros a, b y c, imprima el mayor de ellos. Si hay empate, imprima ese mismo valor.\n\nEjemplo de entrada:\n5\n9\n3\n\nEjemplo de salida:\n9",
+  "description": "Dados los enteros a, b y c, imprima el mayor de ellos. Si hay empate, imprima ese mismo valor.\n\nEjemplo de entrada:\na = 5\nb = 9\nc = 3\n\nEjemplo de salida:\n9",
   "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n\n# Tu codigo comienza aqui."
 }

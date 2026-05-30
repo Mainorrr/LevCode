@@ -1,7 +1,7 @@
 {
   "id": "contar-vocales",
   "title": "Celsius a Fahrenheit",
-  "description": "Defina una función llamada celsius_a_fahrenheit que reciba un número entero c y retorne su equivalente en Fahrenheit. La fórmula es F = c * 9 / 5 + 32.\n\nEjemplo de entrada:\n100\n\nEjemplo de salida:\n212.0",
+  "description": "Defina una función llamada celsius_a_fahrenheit que reciba un número entero c y retorne su equivalente en Fahrenheit. La fórmula es F = c * 9 / 5 + 32.\n\nEjemplo de entrada:\nc = 100\n\nEjemplo de salida:\n212.0",
  
   "starterCodeTop": "c = int(input())\n#Tu codigo comienza aqui.",
   "starterCodeBottom": "print(celsius_a_fahrenheit(c))"
