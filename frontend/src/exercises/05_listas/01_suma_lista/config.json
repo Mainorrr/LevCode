@@ -1,6 +1,6 @@
 {
   "id": "suma-lista",
-  "title": "Suma de los elementos",
-  "description": "Dada una lista de numeros con una cantidad n de elementos, escriba un programa que imprima la suma de todos sus elementos. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\nn = 4\nnumeros = [1, 2, 3, 4]\n\nEjemplo de salida:\n10",
+  "title": "Invertir una lista",
+  "description": "Dada una lista de n números enteros, imprima sus elementos en orden inverso, uno por línea. Para resolverlo, debe recorrer la lista con un ciclo.\n\nEjemplo de entrada:\n5\n1\n2\n3\n4\n5\n\nEjemplo de salida:\n5\n4\n3\n2\n1",
   "starterCode": "n = int(input())\nnumeros = [int(input()) for _ in range(n)]\n# Tu codigo comienza aqui."
 }
