@@ -1,6 +1,6 @@
 {
   "id": "mayor-de-tres",
   "title": "El Número Negativo",
-  "description": "Lee tres números enteros (uno por línea) e imprime el primero que sea negativo. Si hay más de uno negativo, imprime el primero que aparece.\n\nEjemplo de entrada:\n4\n-2\n7\n\nEjemplo de salida:\n-2",
+  "description": "Lee tres números enteros (uno por línea) e imprime el numero que sea negativo.\n\nEjemplo de entrada:\n4\n-2\n7\n\nEjemplo de salida:\n-2",
   "starterCode": "# Tu codigo comienza aqui."
 }

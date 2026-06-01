@@ -1,12 +1,12 @@
 [
-  { "input": "5",    "expectedOutput": "15",     "showInfo": true,  "showInfoHidden": true  },
-  { "input": "1",    "expectedOutput": "1",      "showInfo": true,  "showInfoHidden": false },
-  { "input": "10",   "expectedOutput": "55",     "showInfo": true,  "showInfoHidden": false },
-  { "input": "100",  "expectedOutput": "5050",   "showInfo": true,  "showInfoHidden": false },
-  { "input": "3",    "expectedOutput": "6",      "showInfo": true,  "showInfoHidden": false },
-  { "input": "20",   "expectedOutput": "210",    "showInfo": false, "showInfoHidden": false },
-  { "input": "50",   "expectedOutput": "1275",   "showInfo": false, "showInfoHidden": false },
-  { "input": "7",    "expectedOutput": "28",     "showInfo": false, "showInfoHidden": false },
-  { "input": "1000", "expectedOutput": "500500", "showInfo": false, "showInfoHidden": false },
-  { "input": "15",   "expectedOutput": "120",    "showInfo": false, "showInfoHidden": false }
+  { "input": "3\n5\n10\n2",                  "expectedOutput": "17",   "showInfo": true,  "showInfoHidden": true  },
+  { "input": "1\n42",                          "expectedOutput": "42",   "showInfo": true,  "showInfoHidden": false },
+  { "input": "4\n10\n20\n30\n40",            "expectedOutput": "100",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "5\n1\n2\n3\n4\n5",            "expectedOutput": "15",   "showInfo": true,  "showInfoHidden": false },
+  { "input": "2\n100\n50",                     "expectedOutput": "150",  "showInfo": true,  "showInfoHidden": false },
+  { "input": "6\n15\n25\n10\n5\n20\n35",     "expectedOutput": "110",  "showInfo": false, "showInfoHidden": false },
+  { "input": "3\n7\n8\n9",                    "expectedOutput": "24",   "showInfo": false, "showInfoHidden": false },
+  { "input": "2\n-5\n10",                      "expectedOutput": "5",    "showInfo": false, "showInfoHidden": false },
+  { "input": "4\n0\n0\n0\n0",               "expectedOutput": "0",    "showInfo": false, "showInfoHidden": false },
+  { "input": "5\n11\n22\n33\n44\n55",        "expectedOutput": "165",  "showInfo": false, "showInfoHidden": false }
 ]
