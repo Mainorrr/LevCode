@@ -1,6 +1,6 @@
 {
   "id": "aprobado-reprobado",
   "title": "Aprobado o reprobado",
-  "description": "Dada la calificación entera nota entre 0 y 100, imprima 'aprobado' si es mayor o igual a 60, o 'reprobado' en caso contrario.\n\nEjemplo de entrada:\nnota = 75\n\nEjemplo de salida:\naprobado",
-  "starterCode": "nota = int(input())\n\n# Tu codigo comienza aqui."
+  "description": "Lea una nota entera entre 0 y 100 e imprima el resultado del curso:\n- Mayor a 70: aprobado\n- Entre 60 y 70 (inclusive): ampliacion\n- Menor a 60: reprobado\n\nEjemplo de entrada:\n75\n\nEjemplo de salida:\naprobado",
+  "starterCode": "# Tu codigo comienza aqui."
 }

@@ -1,6 +1,6 @@
 {
   "id": "mayor-de-tres",
-  "title": "Mayor de tres números",
-  "description": "Dados los enteros a, b y c, imprima el mayor de ellos. Si hay empate, imprima ese mismo valor.\n\nEjemplo de entrada:\na = 5\nb = 9\nc = 3\n\nEjemplo de salida:\n9",
-  "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n\n# Tu codigo comienza aqui."
+  "title": "El Número Negativo",
+  "description": "Lee tres números enteros (uno por línea) e imprime el primero que sea negativo. Si hay más de uno negativo, imprime el primero que aparece.\n\nEjemplo de entrada:\n4\n-2\n7\n\nEjemplo de salida:\n-2",
+  "starterCode": "# Tu codigo comienza aqui."
 }
