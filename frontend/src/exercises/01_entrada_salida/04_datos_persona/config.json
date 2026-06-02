@@ -2,5 +2,5 @@
   "id": "datos-persona",
   "title": "Datos de persona",
   "description": "Escriba un programa que lea el nombre y la edad de una persona de la entrada estandar e imprima el mensaje 'NOMBRE tiene EDAD años'.\n\nEjemplo de entrada:\nAna\n25\n\nEjemplo de salida:\nAna tiene 25 años\n\nNota: solicita solo el valor requerido\n\nINCORRECTO:\nnombre = input('Ingrese su nombre: ')\nCORRECTO:\nnombre = input()",
-  "starterCode": "# Tu codigo comienza aqui."
+  "initialEditable": "# Tu codigo comienza aqui."
 }

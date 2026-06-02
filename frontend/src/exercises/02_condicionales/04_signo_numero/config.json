@@ -2,5 +2,5 @@
   "id": "signo-numero",
   "title": "Signo del número",
   "description": "Escriba un programa que lea un número entero n de la entrada estandar e imprima 'positivo' si es mayor que 0, 'negativo' si es menor que 0, o 'cero' si es igual a 0.\n\nEjemplo de entrada:\nn = -7\n\nEjemplo de salida:\nnegativo",
-  "starterCode": "# Tu codigo comienza aqui."
+  "initialEditable": "# Tu codigo comienza aqui."
 }

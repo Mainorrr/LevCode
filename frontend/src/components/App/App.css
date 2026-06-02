@@ -1,5 +1,4 @@
 .app-container {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
@@ -96,6 +95,9 @@
 }
 
 .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: 1px solid var(--border);
   color: var(--text-muted);
@@ -112,6 +114,31 @@
   color: var(--accent);
 }
 
+.back-btn-solved,
+.back-btn-solved:hover {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+  font-weight: 600;
+}
+
+.back-btn-solved {
+  animation: back-btn-pulse 2s ease-in-out infinite;
+}
+
+.back-btn-solved:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes back-btn-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 18px 14px rgba(126, 231, 135, 0);
+  }
+}
+
 .exercise-title {
   font-size: 1.25em;
   color: var(--text);
@@ -121,13 +148,12 @@
 
 .exercise-timer {
   margin-left: auto;
-  font-size: 0.9em;
+  align-self: center;
+  font-size: 1.25em;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  color: var(--bg);
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
+  background: transparent;
   white-space: nowrap;
 }
 

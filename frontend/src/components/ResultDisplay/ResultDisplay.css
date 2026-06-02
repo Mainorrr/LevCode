@@ -186,7 +186,7 @@
 }
 
 .case-eye.visible {
-  color: var(--success);
+  color: var(--text-muted);
 }
 
 .case-eye.hidden {
@@ -237,8 +237,8 @@
 }
 
 .case-value.expected {
-  border-color: rgba(126, 231, 135, 0.3);
-  color: var(--success);
+  border-color: var(--border);
+  color: var(--text-muted);
 }
 
 .case-value.actual {

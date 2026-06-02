@@ -2,5 +2,5 @@
   "id": "par-o-impar",
   "title": "Par o impar",
   "description": "Escriba un programa que lea de la entrada estandar un numero entero e imprima 'par' si es par o 'impar' si es impar.\n\nEjemplo de entrada:\n4\n\nEjemplo de salida:\npar",
-  "starterCode": "# Tu codigo comienza aqui."
+  "initialEditable": "# Tu codigo comienza aqui."
 }

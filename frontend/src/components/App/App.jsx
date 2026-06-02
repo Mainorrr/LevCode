@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Play, HelpCircle, Trash2, Home, LogOut } from 'lucide-react'
+import { Play, HelpCircle, Trash2, Home, LogOut, ArrowLeft, ArrowRight } from 'lucide-react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import HelpModal from '../HelpModal/HelpModal'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
@@ -59,6 +59,11 @@ function buildCodeWithStarters(topStarter, bottomStarter, editable = '\n') {
   // No añadimos \n al final: ese carácter dejaba una línea vacía visible debajo
   // del bloque inferior bloqueado. El intérprete de Python no requiere salto final.
   return result
+}
+
+function editableDefault(initialEditable) {
+  if (typeof initialEditable !== 'string' || initialEditable === '') return '\n'
+  return initialEditable.endsWith('\n') ? initialEditable : initialEditable + '\n'
 }
 
 const ROUTES = {
@@ -374,14 +379,15 @@ export default function App() {
     const bottomStarter = typeof exercise.config.starterCodeBottom === 'string'
       ? exercise.config.starterCodeBottom
       : (starterPosition === 'bottom' ? starter : '')
+    const initialEditable = editableDefault(exercise.config.initialEditable)
     const saved = localStorage.getItem(draftKey(exercise.config.id))
     let initialCode = ''
     if (saved) {
       const startsOk = topStarter ? saved.startsWith(topStarter) : true
       const endsOk = bottomStarter ? saved.endsWith(bottomStarter) : true
-      initialCode = startsOk && endsOk ? saved : buildCodeWithStarters(topStarter, bottomStarter)
+      initialCode = startsOk && endsOk ? saved : buildCodeWithStarters(topStarter, bottomStarter, initialEditable)
     } else {
-      initialCode = buildCodeWithStarters(topStarter, bottomStarter)
+      initialCode = buildCodeWithStarters(topStarter, bottomStarter, initialEditable)
     }
     setCode(initialCode)
     setTestResults(null)
@@ -763,14 +769,21 @@ export default function App() {
           {/* Panel izquierdo: descripción + editor */}
           <div className="editor-section">
             <div className="exercise-header">
-              <button className="back-btn" onClick={() => { goTo('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) }}>
-                ← Ejercicios
+              <button
+                className={`back-btn${solvedExercises.has(selectedExercise.config.id) ? ' back-btn-solved' : ''}`}
+                onClick={() => { goTo('menu'); fetchSessionStatus(userInfo.carnet, accessPassword) }}
+              >
+                {solvedExercises.has(selectedExercise.config.id) ? (
+                  <>Siguiente ejercicio <ArrowRight size={14} strokeWidth={2.25} /></>
+                ) : (
+                  <><ArrowLeft size={14} strokeWidth={2.25} /> Ejercicios</>
+                )}
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
               {showTries && (
                 <span
                   className="exercise-timer"
-                  style={{ background: getAttemptsColor(attempts) }}
+                  style={{ color: getAttemptsColor(attempts) }}
                 >
                   Intentos: {attempts}
                 </span>
@@ -796,6 +809,7 @@ export default function App() {
               starterCodeTop={selectedExercise.config.starterCodeTop}
               starterCodeBottom={selectedExercise.config.starterCodeBottom}
               starterPosition={selectedExercise.config.starterPosition}
+              initialEditable={selectedExercise.config.initialEditable}
               readOnly={solvedExercises.has(selectedExercise.config.id)}
               isDark={isDark}
               actionSlot={

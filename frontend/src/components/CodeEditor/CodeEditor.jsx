@@ -3,6 +3,7 @@ import { EditorState, Compartment, Annotation, StateField, RangeSetBuilder } fro
 import { EditorView, basicSetup } from 'codemirror'
 import { keymap, gutter, GutterMarker, Decoration } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
+import { indentUnit } from '@codemirror/language'
 import { python } from '@codemirror/lang-python'
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { RefreshCw } from 'lucide-react'
@@ -10,10 +11,13 @@ import './CodeEditor.css'
 
 const privilegedTx = Annotation.define()
 
+const LOCKED_TOOLTIP = 'Esta línea no puede modificarse. Escribe en las líneas sin candado.'
+
 class LockMarker extends GutterMarker {
   toDOM() {
     const el = document.createElement('span')
     el.className = 'cm-lock-marker'
+    el.title = LOCKED_TOOLTIP
     el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="10" rx="2"/><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>'
     return el
   }
@@ -30,7 +34,7 @@ const lockMarker = new LockMarker()
  *   - starterCode: string - Código inicial para el botón de revertir
  *   - readOnly: boolean - Si true, el editor no permite edición
  */
-export default function CodeEditor({ code, onChange, starterCode, starterCodeTop, starterCodeBottom, readOnly = false, actionSlot, isDark = true, starterPosition = 'top' }) {
+export default function CodeEditor({ code, onChange, starterCode, starterCodeTop, starterCodeBottom, initialEditable, readOnly = false, actionSlot, isDark = true, starterPosition = 'top' }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
   const readOnlyCompartment = useRef(new Compartment())
@@ -135,7 +139,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
       initialSpacer: () => lockMarker,
     })
 
-    const lockedLineDeco = Decoration.line({ class: 'cm-locked-line' })
+    const lockedLineDeco = Decoration.line({ class: 'cm-locked-line', attributes: { title: LOCKED_TOOLTIP } })
     // Recalcula el decorado de líneas bloqueadas a partir del documento actual.
     // Debe correrse tanto al crear el estado como tras cada cambio, ya que las
     // posiciones bloqueadas se desplazan al editar la zona editable.
@@ -169,6 +173,8 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
         lockedLinesField,
         basicSetup,
         keymap.of([indentWithTab]),
+        indentUnit.of('    '),
+        EditorState.tabSize.of(4),
         python(),
         themeCompartment.current.of(isDark ? githubDark : githubLight),
         EditorView.theme({
@@ -225,12 +231,16 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
     const starterBottom = typeof starterCodeBottom === 'string'
       ? starterCodeBottom
       : (starterPosition === 'bottom' ? (starterCode || '') : '')
-    if (!starterTop && !starterBottom) return
+    const editableInitial = typeof initialEditable === 'string' && initialEditable !== ''
+      ? (initialEditable.endsWith('\n') ? initialEditable : initialEditable + '\n')
+      : '\n'
+    if (!starterTop && !starterBottom && !initialEditable) return
 
     let newCode = ''
     if (starterTop) newCode += starterTop
     if (starterTop && !starterTop.endsWith('\n')) newCode += '\n'
-    newCode += '\n'
+    newCode += editableInitial
+    if (starterBottom && !editableInitial.endsWith('\n')) newCode += '\n'
     if (starterBottom) newCode += starterBottom
 
     const editableStart = starterTop.length + (starterTop.endsWith('\n') ? 0 : (starterTop ? 1 : 0))
@@ -247,7 +257,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
     <div className="editor-container">
       <div className="editor-label">
         <div className="editor-label-left">
-          {!readOnly && starterCode && (
+          {!readOnly && (starterCode || starterCodeTop || starterCodeBottom || initialEditable) && (
             <button className="editor-revert-btn" onClick={() => setShowConfirm(true)} title="Iniciar de nuevo" aria-label="Iniciar de nuevo">
               <RefreshCw size={14} strokeWidth={3} />
             </button>
