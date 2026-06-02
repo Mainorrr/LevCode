@@ -1,7 +1,7 @@
 {
   "id": "potencia",
   "title": "Porcentaje de incremento",
-  "description": "Defina una función llamada porcentaje_incremento que reciba un número base y un porcentaje, y retorne el resultado de incrementar el número base por ese porcentaje. \nLa fórmula es: base * (1 + porcentaje/100).\n\nEjemplo de entrada:\n```\n100\n20\n```\n\nEjemplo de salida:\n```\n120.0\n```",
-  "starterCodeTop": "# Escribe aquí tu función porcentaje_incremento\n",
+  "description": "Defina una función llamada porcentaje_incremento que reciba un número base y un porcentaje, y retorne el resultado de incrementar el número base por ese porcentaje. \nLa fórmula es: base * (1 + porcentaje/100).\n\nEjemplo de entrada:\n```\n100\n20\n```\n Donde 100 es el número base y 20 es el porcentaje.\n\nEjemplo de salida:\n```\n120.0\n```",
+  "initialEditable": "# Escribe aquí tu función porcentaje_incremento\n",
   "starterCodeBottom": "if __name__ == \"__main__\":\n    base = float(input())\n    porcentaje = float(input())\n    print(round(porcentaje_incremento(base, porcentaje), 1))"
 }

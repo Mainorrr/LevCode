@@ -1,7 +1,7 @@
 {
   "id": "es-primo",
   "title": "Velocidad final",
-  "description": "Defina una función llamada velocidad_final que reciba la velocidad inicial v0 y el tiempo t, y retorne la velocidad final en caída libre. \nLa fórmula es: v0 - 9.8*t.\n\nEjemplo de entrada:\n```\n20\n2\n```\n\nEjemplo de salida:\n```\n0.4\n```",
-  "starterCodeTop": "# Escribe aquí tu función velocidad_final\n",
+  "description": "Defina una función llamada velocidad_final que reciba la velocidad inicial v0 y el tiempo t, y retorne la velocidad final en caída libre. \nLa fórmula es: v0 - 9.8*t.\n\nEjemplo de entrada:\n```\n20\n2\n```\n Donde 20 es la velocidad inicial y 2 es el tiempo.\n\nEjemplo de salida:\n```\n0.4\n```",
+  "initialEditable": "# Escribe aquí tu función velocidad_final\n",
   "starterCodeBottom": "if __name__ == \"__main__\":\n    v0 = float(input())\n    t = float(input())\n    print(round(velocidad_final(v0, t), 1))"
 }
