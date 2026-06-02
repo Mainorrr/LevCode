@@ -1,7 +1,7 @@
 {
   "id": "contar-mayores",
-  "title": "Contar menores que el último",
-  "description": "Dada una lista de n números enteros escriba un programa que imprima cuántos elementos son estrictamente menores al último elemento de la lista.\n\nEjemplo de entrada:\n```\n5\n3\n1\n7\n3\n9\n```\n\nEjemplo de salida:\n```\n2\n```",
+  "title": "Contar mayores que el primero",
+  "description": "Dada una lista de n números enteros, imprima cuántos elementos son estrictamente mayores que el primer elemento de la lista.\n\nEjemplo de entrada:\n```\n5\n3\n1\n7\n3\n9\n```\n\nEjemplo de salida:\n```\n2\n```",
   "starterCode": "n = int(input())\nnumeros = [int(input()) for _ in range(n)]",
   "initialEditable": "# Tu codigo comienza aqui."
 }
