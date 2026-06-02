@@ -1,8 +1,7 @@
 {
   "id": "es-primo",
-  "title": "Es primo",
-  "description": "Defina una función llamada es_primo que reciba un número entero n y retorne True si es primo o False en caso contrario.\n\nEjemplo de entrada:\nn = 7\n\nEjemplo de salida:\nsi",
-  "starterCode": "# Tu codigo comienza aqui.",
-  "starterCodeTop": "n = int(input())\n",
-  "starterCodeBottom": "print('si' if es_primo(n) else 'no')"
+  "title": "Velocidad final",
+  "description": "Defina una función llamada velocidad_final que reciba la velocidad inicial v0 y el tiempo t, y retorne la velocidad final en caída libre. \nLa fórmula es: v0 - 9.8*t.\n\nEjemplo de entrada:\n20\n2\n\nEjemplo de salida:\n0.4",
+  "starterCodeTop": "# Escribe aquí tu función velocidad_final\n",
+  "starterCodeBottom": "if __name__ == \"__main__\":\n    v0 = float(input())\n    t = float(input())\n    print(round(velocidad_final(v0, t), 1))"
 }

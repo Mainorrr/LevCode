@@ -1,8 +1,7 @@
 {
   "id": "potencia",
-  "title": "Calcular potencia",
-  "description": "Defina una función llamada potencia que reciba dos enteros base y exp (con exp mayor o igual a 1) y retorne base elevado al exp.\n\nEjemplo de entrada:\nbase = 2\nexp = 5\n\nEjemplo de salida:\n32",
-  "starterCode": "# Tu codigo comienza aqui.",
-  "starterCodeTop": "base = int(input())\nexp = int(input())",
-  "starterCodeBottom": "print(potencia(base, exp))"
+  "title": "Porcentaje de incremento",
+  "description": "Defina una función llamada porcentaje_incremento que reciba un número base y un porcentaje, y retorne el resultado de incrementar el número base por ese porcentaje. \nLa fórmula es: base * (1 + porcentaje/100).\n\nEjemplo de entrada:\n100\n20\n\nEjemplo de salida:\n120.0",
+  "starterCodeTop": "# Escribe aquí tu función porcentaje_incremento\n",
+  "starterCodeBottom": "if __name__ == \"__main__\":\n    base = float(input())\n    porcentaje = float(input())\n    print(round(porcentaje_incremento(base, porcentaje), 1))"
 }

@@ -1,8 +1,7 @@
 {
   "id": "suma-pares-funcion",
-  "title": "Suma de cuadrados",
-  "description": "Defina una función llamada suma_cuadrados que reciba un entero n (mayor o igual a 1) y retorne la suma de los cuadrados de los números del 1 al n.\n\nRecuerde: el cuadrado de un número es ese número multiplicado por sí mismo (por ejemplo, el cuadrado de 3 es 3 × 3 = 9).\n\nEjemplo de entrada:\nn = 4\n\nEjemplo de salida:\n30",
-  "starterCode": "# Tu codigo comienza aqui.",
-  "starterCodeTop": "n = int(input())",
-  "starterCodeBottom": "print(suma_cuadrados(n))"
+  "title": "Energia potencial",
+  "description": "Defina una función llamada energia_potencial que reciba la masa m, la altura h y la gravedad g, y retorne la energía potencial. \nLa fórmula es: m * g * h.\n\nEjemplo de entrada:\nm = 10\nh = 5\ng = 9.8\n\nEjemplo de salida:\n490.0",
+  "starterCodeTop": "# Escribe aquí tu función energia_potencial\n",
+  "starterCodeBottom": "if __name__ == \"__main__\":\n    m = float(input())\n    h = float(input())\n    g = float(input())\n    print(round(energia_potencial(m, h, g), 1))"
 }
