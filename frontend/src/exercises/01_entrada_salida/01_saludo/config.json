@@ -1,6 +1,6 @@
 {
   "id": "saludo-personalizado",
   "title": "Saludo personalizado",
-  "description": "Dada la variable nombre, escriba un programa que imprima un saludo con el formato 'Hola, NOMBRE!'.\n\nEjemplo de entrada:\nAna\n\nEjemplo de salida:\nHola, Ana!\n\nNota: solicita solo el valor requerido\n\nINCORRECTO:\nnombre = input('Ingrese su nombre: ')\nCORRECTO:\nnombre = input()",
-  "starterCode": "nombre = input()\n# Tu codigo comienza aqui."
+  "description": "Escriba un programa que lea un nombre de la entrada estandar e imprima un saludo con el formato 'Hola, NOMBRE!'.\n\nEjemplo de entrada:\nAna\n\nEjemplo de salida:\nHola, Ana!\n\nNota: solicita solo el valor requerido\n\nINCORRECTO:\nnombre = input('Ingrese su nombre: ')\nCORRECTO:\nnombre = input()",
+  "starterCode": "# Tu codigo comienza aqui."
 }

@@ -1,6 +1,6 @@
 {
   "id": "aprobado-reprobado",
   "title": "Aprobado o reprobado",
-  "description": "Lea una nota entera entre 0 y 100 e imprima el resultado del curso:\n- Mayor a 70: aprobado\n- Entre 60 y 70 (inclusive): ampliacion\n- Menor a 60: reprobado\n\nEjemplo de entrada:\n75\n\nEjemplo de salida:\naprobado",
+  "description": "Escriba un programa que lea una nota entera entre 0 y 100 e imprima el resultado del curso:\n- Mayor o igual a 70: aprobado\n- Entre 60 y 69 (inclusive): ampliacion\n- Menor a 60: reprobado\n\nEjemplo de entrada:\n75\n\nEjemplo de salida:\naprobado",
   "starterCode": "# Tu codigo comienza aqui."
 }

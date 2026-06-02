@@ -1,6 +1,6 @@
 {
   "id": "suma-dos-numeros",
   "title": "Suma de dos números",
-  "description": "Dadas las variables numero_uno y numero_dos, escriba un programa que imprima la suma de ambos.\n\nEjemplo de entrada:\nnumero_uno = 5\nnumero_dos = 3\n\nEjemplo de salida: 8\n\nNota: solicita solo el valor requerido\n\nINCORRECTO:\nnombre = input('Ingrese su nombre: ')\nCORRECTO:\nnombre = input()",
+  "description": "Escriba un programa que lea dos números de la entrada estandar e imprima la suma de ambos.\n\nEjemplo de entrada:\n5\n3\n\nEjemplo de salida: 8\n\nNota: solicita solo el valor requerido\n\nINCORRECTO:\nnumero = input('Ingrese numero: ')\nCORRECTO:\nnumero = input()",
   "starterCode": "# Tu codigo comienza aqui."
 }
