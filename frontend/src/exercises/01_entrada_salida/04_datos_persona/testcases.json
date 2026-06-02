@@ -9,13 +9,13 @@
     "input": "Carlos\n30",
     "expectedOutput": "Carlos tiene 30 años",
     "showInfo": true,
-    "showInfoHidden": false
+    "showInfoHidden": true
   },
   {
     "input": "Maria\n18",
     "expectedOutput": "Maria tiene 18 años",
     "showInfo": true,
-    "showInfoHidden": false
+    "showInfoHidden": true
   },
   {
     "input": "Luis\n50",

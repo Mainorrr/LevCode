@@ -1,7 +1,7 @@
 {
   "id": "suma-lista",
   "title": "Invertir una lista",
-  "description": "Dada una lista de n números enteros, imprima sus elementos en orden inverso, uno por línea.\n\nEjemplo de entrada:\n5\n1\n2\n3\n4\n5\n\nEjemplo de salida:\n5\n4\n3\n2\n1",
+  "description": "Dada una lista de n números enteros, imprima sus elementos en orden inverso, uno por línea.\n\nEjemplo de entrada:\n```\n5\n1\n2\n3\n4\n5\n```\n\nEjemplo de salida:\n```\n5\n4\n3\n2\n1\n```",
   "starterCode": "n = int(input())\nnumeros = [int(input()) for _ in range(n)]",
   "initialEditable": "# Tu codigo comienza aqui."
 }

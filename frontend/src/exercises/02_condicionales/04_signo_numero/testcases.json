@@ -1,7 +1,7 @@
 [
   { "input": "-7",   "expectedOutput": "negativo", "showInfo": true,  "showInfoHidden": true  },
-  { "input": "5",    "expectedOutput": "positivo", "showInfo": true,  "showInfoHidden": false },
-  { "input": "0",    "expectedOutput": "cero",     "showInfo": true,  "showInfoHidden": false },
+  { "input": "5",    "expectedOutput": "positivo", "showInfo": true,  "showInfoHidden": true },
+  { "input": "0",    "expectedOutput": "cero",     "showInfo": true,  "showInfoHidden": true },
   { "input": "100",  "expectedOutput": "positivo", "showInfo": true,  "showInfoHidden": false },
   { "input": "-100", "expectedOutput": "negativo", "showInfo": true,  "showInfoHidden": false },
   { "input": "1",    "expectedOutput": "positivo", "showInfo": false, "showInfoHidden": false },

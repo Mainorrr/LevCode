@@ -66,6 +66,36 @@ function editableDefault(initialEditable) {
   return initialEditable.endsWith('\n') ? initialEditable : initialEditable + '\n'
 }
 
+// Renderiza la descripción del ejercicio interpretando bloques delimitados por ```
+// (estilo Markdown). Las líneas dentro del bloque se muestran con tipografía monoespaciada
+// estilo consola/código, similar a "Esperado" / "Tu salida" en los resultados.
+function renderDescription(desc) {
+  if (!desc) return null
+  const lines = desc.split('\n')
+  const blocks = []
+  let inCode = false
+  let buffer = []
+  const flush = (key) => {
+    if (buffer.length === 0) { buffer = []; return }
+    if (inCode) {
+      blocks.push(<pre key={key} className="exercise-code">{buffer.join('\n')}</pre>)
+    } else {
+      buffer.forEach((l, j) => blocks.push(<p key={`${key}-${j}`}>{l || ' '}</p>))
+    }
+    buffer = []
+  }
+  lines.forEach((line, i) => {
+    if (line.trim() === '```') {
+      flush(`b${i}`)
+      inCode = !inCode
+    } else {
+      buffer.push(line)
+    }
+  })
+  flush('end')
+  return blocks
+}
+
 const ROUTES = {
   form: '/',
   menu: '/ejercicios',
@@ -791,9 +821,7 @@ export default function App() {
             </div>
 
             <div className="exercise-description">
-              {selectedExercise.config.description.split('\n').map((line, i) => (
-                <p key={i}>{line || '\u00A0'}</p>
-              ))}
+              {renderDescription(selectedExercise.config.description)}
             </div>
 
             <div className="user-badge">

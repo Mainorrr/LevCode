@@ -1,7 +1,7 @@
 {
   "id": "contar-vocales",
   "title": "Altura máxima",
-    "description": "Defina una función llamada altura_maxima que reciba la velocidad inicial v0 y la gravedad g, y retorne la altura máxima alcanzada por un proyectil. \nLa fórmula es: v0**2 / (2*g).\n\nEjemplo de entrada:\n20\n9.8\n\nEjemplo de salida:\n20.4",
-  "starterCodeTop": "# Escribe aquí tu función altura_maxima\n",
+  "description": "Defina una función llamada altura_maxima que reciba la velocidad inicial v0 y la gravedad g, y retorne la altura máxima alcanzada por un proyectil. \nLa fórmula es: v0**2 / (2*g).\nv0**2 Significa v0 elevado al cuadrado\n\nEjemplo de entrada:\n```\n20\n9.8\n```\n\nEjemplo de salida:\n```\n20.4\n```",
+  "initialEditable": "# Escribe aquí tu función altura_maxima\n",
   "starterCodeBottom": "if __name__ == \"__main__\":\n    v0 = float(input())\n    g = float(input())\n    print(round(altura_maxima(v0, g), 1))"
 }

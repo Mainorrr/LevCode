@@ -1,7 +1,7 @@
 {
   "id": "contar-pares-hasta-n",
   "title": "Números del 1 al N",
-  "description": "Escriba un programa que lea un número entero n (mayor o igual a 1) y luego imprima los números del 1 al n, uno por línea.\n\nEjemplo de entrada:\nn = 5\n\nEjemplo de salida:\n1\n2\n3\n4\n5",
+  "description": "Escriba un programa que lea un número entero n (mayor o igual a 1) y luego imprima los números del 1 al n, uno por línea.\n\nEjemplo de entrada:\n```\nn = 5\n```\n\nEjemplo de salida:\n```\n1\n2\n3\n4\n5\n```",
   "starterCode": "n = int(input())",
   "initialEditable": "# Tu codigo comienza aqui."
 }

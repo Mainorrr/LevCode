@@ -1,7 +1,7 @@
 {
   "id": "suma-pares-funcion",
   "title": "Energia potencial",
-  "description": "Defina una función llamada energia_potencial que reciba la masa m, la altura h y la gravedad g, y retorne la energía potencial. \nLa fórmula es: m * g * h.\n\nEjemplo de entrada:\nm = 10\nh = 5\ng = 9.8\n\nEjemplo de salida:\n490.0",
+  "description": "Defina una función llamada energia_potencial que reciba la masa m, la altura h y la gravedad g, y retorne la energía potencial. \nLa fórmula es: m * g * h.\n\nEjemplo de entrada:\n```\nm = 10\nh = 5\ng = 9.8\n```\n\nEjemplo de salida:\n```\n490.0\n```",
   "starterCodeTop": "# Escribe aquí tu función energia_potencial\n",
   "starterCodeBottom": "if __name__ == \"__main__\":\n    m = float(input())\n    h = float(input())\n    g = float(input())\n    print(round(energia_potencial(m, h, g), 1))"
 }

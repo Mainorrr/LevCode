@@ -1,7 +1,7 @@
 [
   { "input": "20\n2",   "expectedOutput": "0.4",  "showInfo": true,  "showInfoHidden": true  },
-  { "input": "10\n1",   "expectedOutput": "0.2",  "showInfo": true,  "showInfoHidden": false },
-  { "input": "50\n2",   "expectedOutput": "30.4", "showInfo": true,  "showInfoHidden": false },
+  { "input": "10\n1",   "expectedOutput": "0.2",  "showInfo": true,  "showInfoHidden": true },
+  { "input": "50\n2",   "expectedOutput": "30.4", "showInfo": true,  "showInfoHidden": true },
   { "input": "0\n3",    "expectedOutput": "-29.4","showInfo": true,  "showInfoHidden": false },
   { "input": "30\n1",   "expectedOutput": "20.2", "showInfo": true,  "showInfoHidden": false },
   { "input": "15\n2",   "expectedOutput": "-4.6", "showInfo": false, "showInfoHidden": false },

@@ -1,7 +1,7 @@
 {
   "id": "buscar-elemento",
   "title": "Sumar dos listas",
-  "description": "Dadas dos listas de n números enteros cada una, imprima una nueva lista donde cada elemento es la suma de los elementos correspondientes, uno por línea.\n\nEjemplo de entrada:\n3\n1\n2\n3\n4\n5\n6\n\nEjemplo de salida:\n5\n7\n9",
+  "description": "Dadas dos listas de n números enteros cada una, imprima una nueva lista donde cada elemento es la suma de los elementos correspondientes, uno por línea.\n\nEjemplo de entrada:\n```\n3\n1\n2\n3\n4\n5\n6\n```\n\nEjemplo de salida:\n```\n5\n7\n9\n```",
   "starterCode": "n = int(input())\na = [int(input()) for _ in range(n)]\nb = [int(input()) for _ in range(n)]",
   "initialEditable": "# Tu codigo comienza aqui."
 }

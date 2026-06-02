@@ -1,6 +1,6 @@
 {
   "id": "factorial",
   "title": "Factorial de un número",
-  "description": "El factorial de un número n (denotado como n!) es el producto de todos los enteros positivos desde 1 hasta n. Por ejemplo: 5! = 5 × 4 × 3 × 2 × 1 = 120.\n\nEscriba un programa que lea un número entero n (mayor o igual a 0) y luego imprima el factorial de n.\n\nEjemplo de entrada:\n5\n\nEjemplo de salida:\n120\n\n¿Por qué? Porque 5! = 5 × 4 × 3 × 2 × 1 = 120",
+  "description": "El factorial de un número n (denotado como n!) es el producto de todos los enteros positivos desde 1 hasta n. Por ejemplo: 5! = 5 × 4 × 3 × 2 × 1 = 120.\n\nEscriba un programa que lea un número entero n (mayor o igual a 0) y luego imprima el factorial de n.\n\nEjemplo de entrada:\n```\n5\n```\n\nEjemplo de salida:\n```\n120\n```\n\n¿Por qué? Porque 5! = 5 × 4 × 3 × 2 × 1 = 120\n\nNota: por definición, el factorial de 0 es 1 (0! = 1).",
   "initialEditable": "# Tu codigo comienza aqui"
 }
