@@ -1,6 +1,6 @@
 {
   "id": "suma-uno-a-n",
   "title": "Suma de N Números",
-  "description": "Escriba un programa que lea un número entero n de la entrada estandar y luego lea n números más. Imprima la suma de todos esos n números.\n\nEjemplo de entrada:\n```\n3\n5\n10\n2\n```\n\nEjemplo de salida:\n```\n17\n```",
+  "description": "Escriba un programa que lea un número entero n de la entrada y luego lea n números más. Imprima la suma de todos esos n números.\n\nEjemplo de entrada:\n```\n3\n5\n10\n2\n```\n\nEjemplo de salida:\n```\n17\n```",
   "initialEditable": "# Tu codigo comienza aqui"
 }

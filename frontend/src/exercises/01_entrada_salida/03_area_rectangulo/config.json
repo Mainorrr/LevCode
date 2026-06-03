@@ -1,6 +1,6 @@
 {
   "id": "area-rectangulo",
   "title": "Área de un rectángulo",
-  "description": "Escriba un programa que lea la base y la altura de un rectángulo de la entrada e imprima su área.\n\nRecuerde: el área de un rectángulo se calcula como largo multiplicado por ancho (en este caso, base × altura).\n\nEjemplo de entrada:\n```\n4\n5\n```\n\nEjemplo de salida:\n```\n20\n```\n\nNota: Solo lea el valor requerido\n\nINCORRECTO:\n```\nbase = input('Ingrese la base: ')\n```\n\nCORRECTO:\n```\nbase = input()\n```",
+  "description": "Escriba un programa que lea la base y la altura de un rectángulo de la entrada e imprima su área.\n\nRecuerde: el área de un rectángulo se calcula como largo multiplicado por ancho (en este caso, base × altura).\n\nEjemplo de entrada:\n```\n4\n5\n```\n\nEjemplo de salida:\n```\n20\n```\n\nNota: Solo lea el valor requerido\n\nINCORRECTO:\n```\nbase = int(input('Ingrese la base: '))\n```\n\nCORRECTO:\n```\nbase = int(input())\n```",
   "initialEditable": "# Tu codigo comienza aqui."
 }

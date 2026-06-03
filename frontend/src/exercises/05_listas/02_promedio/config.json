@@ -2,6 +2,6 @@
   "id": "promedio-lista",
   "title": "Intercalar dos listas",
   "description": "Dadas dos listas de n números enteros cada una, imprima sus elementos alternando uno de cada lista, uno por línea.\n\nEjemplo de entrada:\n```\n3\n1\n2\n3\n4\n5\n6\n```\n\nEjemplo de salida:\n```\n1\n4\n2\n5\n3\n6\n```",
-  "starterCode": "n = int(input())\na = [int(input()) for _ in range(n)]\nb = [int(input()) for _ in range(n)]",
+  "starterCode": "n = int(input())\nlista1 = [int(input()) for _ in range(n)]\nlista2 = [int(input()) for _ in range(n)]",
   "initialEditable": "# Tu codigo comienza aqui."
 }
