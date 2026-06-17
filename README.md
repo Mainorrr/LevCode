@@ -1,3 +1,7 @@
+# Repositorio con datos recolectados, gráficos y otros anexos relevantes para la investigación
+
+https://github.com/Mainorrr/InvCC26a-TrialError
+
 # LevCode
 
 Juez en linea para investigacion academica sobre programacion introductoria en Python. Permite a estudiantes resolver ejercicios y registra sus intentos en una base de datos para analisis estadistico.
