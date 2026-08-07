@@ -131,12 +131,27 @@ CREATE TABLE exercise_sessions (
   problem_id   VARCHAR(100) NOT NULL,
   attempts     INTEGER      NOT NULL DEFAULT 0,
   solved       BOOLEAN      NOT NULL DEFAULT FALSE,
+  language     VARCHAR(20)  NOT NULL DEFAULT 'python',
   hide_tests   BOOLEAN,
   show_tries   BOOLEAN,
   try_timer    BOOLEAN,
   created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   CONSTRAINT uq_carnet_problem UNIQUE (carnet, problem_id)
+);
+```
+
+### Tabla: attempt_code
+
+```sql
+CREATE TABLE attempt_code (
+  id              SERIAL PRIMARY KEY,
+  session_id      INTEGER     NOT NULL REFERENCES exercise_sessions(id) ON DELETE CASCADE,
+  attempt_number  INTEGER     NOT NULL,
+  code            TEXT        NOT NULL,
+  language        VARCHAR(20) NOT NULL DEFAULT 'python',
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_session_attempt UNIQUE (session_id, attempt_number)
 );
 ```
 
@@ -155,6 +170,7 @@ CREATE TABLE access_passwords (
 - Calcular numero de intentos antes de pasar (trial-and-error score)
 - Agrupar por `grupo` para comparativas estadisticas
 - Comparar tratamientos (hide_tests, show_tries, try_timer) con pruebas estadisticas
+- `language` es covariable, NO tratamiento: se registra para controlarlo en el analisis
 - El investigador exporta los datos via CSV y hace el analisis externamente
 
 > **NUNCA implementar:** rankings visibles para el usuario, calculos de nota, ni dashboards estadisticos. Solo registrar datos crudos.
@@ -178,19 +194,44 @@ Estos datos se almacenan con cada session para analisis estadistico.
 
 | Limite | Valor |
 |--------|-------|
-| Timeout | 5 segundos por caso |
-| Output maximo | 10 MB |
+| Timeout de ejecucion | 5 segundos por caso (`RUN_TIMEOUT`) |
+| Timeout de compilacion | 10 segundos por submission (`COMPILE_TIMEOUT`) |
+| Output maximo | 10 MB (`OUTPUT_MAX`) |
 | Usuarios simultaneos max. | ~60 |
 
 ---
 
-## Seguridad -- Patrones Python Bloqueados
+## Ejecucion Multi-lenguaje
 
-El backend bloquea codigo que contiene:
+`backend/src/services/languages.js` es el registro de lenguajes. Cada spec dice
+como llevar el codigo del estudiante a un proceso: nombre de archivo, comando de
+compilacion (null si es interpretado) y comando de ejecucion.
+
+El contrato es **compilar una vez, ejecutar N veces**: cada submission crea un
+directorio temporal, compila una sola vez y reutiliza el artefacto para todos los
+casos de prueba. Un fallo de compilacion aborta la corrida y devuelve el stderr
+del compilador.
+
+`ENABLED_LANGUAGES` (env, default `python`) controla que lenguajes ven los
+estudiantes. Estar en el registro no basta: hay que habilitarlo Y el binario
+(`g++`, `javac`) debe existir en la imagen.
+
+---
+
+## Seguridad -- Patrones Bloqueados
+
+Las listas de patrones bloqueados son **por lenguaje** (`backend/src/utils/validators.js`)
+y fallan cerrado: un lenguaje sin lista definida no se ejecuta.
+
+Python bloquea codigo que contiene:
 - `import subprocess`
 - `subprocess.`
 - `os.system(`, `os.popen(`, `os.execv(`, `os.execve(`
 - `__import__(`
+
+> Para lenguajes compilados una lista negra por regex NO es suficiente: el codigo
+> nativo tiene acceso completo a syscalls. Antes de habilitar C++ o Java hacen
+> falta limites de proceso reales (`prlimit`) y una cola de concurrencia.
 
 ---
 
@@ -202,7 +243,10 @@ El backend bloquea codigo que contiene:
 4. **No implementar rankings ni calculos de nota.** Solo persistir datos crudos.
 5. **No agregar autenticacion.** Herramienta de investigacion simple.
 6. **Monorepo:** Respetar separacion `frontend/`, `backend/`.
-7. **Sin Docker-in-Docker:** Python se ejecuta via `child_process` directamente en el backend.
+7. **Sin Docker-in-Docker:** el codigo se ejecuta via `child_process` directamente en el backend.
+8. **El lenguaje no es un tratamiento.** Se registra como covariable. Los intentos se
+   cuentan por `(carnet, problem_id)`, nunca por lenguaje: si no, cambiar de lenguaje
+   reiniciaria el contador y anularia `show_tries` y `try_timer`.
 
 ---
 
@@ -210,7 +254,7 @@ El backend bloquea codigo que contiene:
 
 | Metodo | Ruta | Auth | Descripcion |
 |--------|------|------|-------------|
-| POST | `/api/submissions` | Access PW | Ejecutar codigo Python (un input) |
+| POST | `/api/submissions` | Access PW | Ejecutar codigo (un input) |
 | POST | `/api/submissions/batch` | Access PW | Ejecutar codigo contra multiples inputs |
 | GET | `/api/submissions/limits` | -- | Limites de ejecucion |
 | POST | `/api/sessions` | Access PW | Registrar/actualizar sesion de ejercicio |
