@@ -1,90 +1,107 @@
-const logger = require("./logger");
+const { DEFAULT_LANGUAGE, isEnabled } = require("../services/languages");
+
+const MAX_CODE_SIZE = 1024 * 1024; // 1MB
 
 /**
- * Validates Python source code before execution
+ * Patrones bloqueados por lenguaje.
+ *
+ * Un lenguaje sin lista definida aquí NO puede ejecutarse, aunque esté en el
+ * registro de languages.js: validateCode falla cerrado. Las listas de C++ y Java
+ * llegan junto con los límites de proceso (fase 2) — para lenguajes compilados
+ * una lista negra por regex es insuficiente por sí sola.
  */
-const validatePythonCode = (code) => {
-  // Check if code is empty
+const DANGEROUS_PATTERNS = {
+  python: [
+    /import\s+subprocess/i,
+    /subprocess\./i,
+    /os\.system\s*\(/i,
+    /os\.popen\s*\(/i,
+    /os\.execv\s*\(/i,
+    /os\.execve\s*\(/i,
+    /__import__\s*\(/i,
+    /importlib/i,
+    /eval\s*\(/i,
+    /exec\s*\(/i,
+    /compile\s*\(/i,
+    /open\s*\(/i,
+    /os\.environ/i,
+    /os\.path/i,
+    /os\.listdir/i,
+    /os\.remove/i,
+    /os\.rename/i,
+    /os\.mkdir/i,
+    /os\.rmdir/i,
+    /os\.getcwd/i,
+    /os\.chdir/i,
+    /shutil/i,
+    /socket/i,
+    /http/i,
+    /urllib/i,
+    /requests/i,
+    /ctypes/i,
+    /signal/i,
+  ],
+};
+
+/**
+ * Valida el código fuente de un estudiante antes de ejecutarlo.
+ */
+const validateCode = (code, language = DEFAULT_LANGUAGE) => {
   if (!code || typeof code !== "string" || code.trim().length === 0) {
-    return {
-      valid: false,
-      error: "Code cannot be empty",
-    };
+    return { valid: false, error: "Code cannot be empty" };
   }
 
-  // Check for suspicious patterns (basic security check)
-  const dangerousPatterns = [
-    /import\s+subprocess/gi,
-    /subprocess\./gi,
-    /os\.system\s*\(/gi,
-    /os\.popen\s*\(/gi,
-    /os\.execv\s*\(/gi,
-    /os\.execve\s*\(/gi,
-    /__import__\s*\(/gi,
-    /importlib/gi,
-    /eval\s*\(/gi,
-    /exec\s*\(/gi,
-    /compile\s*\(/gi,
-    /open\s*\(/gi,
-    /os\.environ/gi,
-    /os\.path/gi,
-    /os\.listdir/gi,
-    /os\.remove/gi,
-    /os\.rename/gi,
-    /os\.mkdir/gi,
-    /os\.rmdir/gi,
-    /os\.getcwd/gi,
-    /os\.chdir/gi,
-    /shutil/gi,
-    /socket/gi,
-    /http/gi,
-    /urllib/gi,
-    /requests/gi,
-    /ctypes/gi,
-    /signal/gi,
-  ];
+  const patterns = DANGEROUS_PATTERNS[language];
+  if (!patterns) {
+    return { valid: false, error: `Lenguaje no soportado: ${language}` };
+  }
 
-  for (const pattern of dangerousPatterns) {
+  for (const pattern of patterns) {
     if (pattern.test(code)) {
-      return {
-        valid: false,
-        error: "Code contains potentially dangerous operations",
-      };
+      return { valid: false, error: "Code contains potentially dangerous operations" };
     }
   }
 
-  // Check maximum code size (1MB)
-  const maxSize = 1024 * 1024;
-  if (code.length > maxSize) {
-    return {
-      valid: false,
-      error: "Code size exceeds maximum (1MB)",
-    };
+  if (code.length > MAX_CODE_SIZE) {
+    return { valid: false, error: "Code size exceeds maximum (1MB)" };
   }
 
   return { valid: true };
 };
 
 /**
- * Validates submission request payload
+ * Valida que el lenguaje solicitado esté disponible para los estudiantes.
+ */
+const validateLanguage = (language) => {
+  if (typeof language !== "string" || !language) {
+    return { valid: false, error: "El campo language debe ser una cadena" };
+  }
+  if (!isEnabled(language)) {
+    return { valid: false, error: `Lenguaje no disponible: ${language}` };
+  }
+  return { valid: true };
+};
+
+/**
+ * Valida el payload de una submission.
  */
 const validateSubmissionRequest = (body) => {
-  const { code, userId = null, problemId = null } = body;
+  const { code, language = DEFAULT_LANGUAGE } = body;
 
-  // Validate code
   if (!code) {
     return { valid: false, error: "Code is required" };
   }
 
-  const codeValidation = validatePythonCode(code);
-  if (!codeValidation.valid) {
-    return codeValidation;
+  const languageValidation = validateLanguage(language);
+  if (!languageValidation.valid) {
+    return languageValidation;
   }
 
-  return { valid: true };
+  return validateCode(code, language);
 };
 
 module.exports = {
-  validatePythonCode,
+  validateCode,
+  validateLanguage,
   validateSubmissionRequest,
 };

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const pythonExecutor = require("../services/pythonExecutor");
+const codeExecutor = require("../services/codeExecutor");
 const validators = require("../utils/validators");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
     logger.info("Submission received", { userId, problemId });
 
     // Execute Python code with optional stdin input
-    const result = await pythonExecutor.execute(code, input);
+    const result = await codeExecutor.execute(code, input);
 
     logger.info("Submission executed", {
       userId,
@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
       output: result.output,
       error: result.error,
       executionTime: result.executionTime,
-      limits: pythonExecutor.getLimits(),
+      limits: codeExecutor.getLimits(),
     });
 
     csvLogger.logSubmission("RUN_SINGLE", req, res, {
@@ -164,7 +164,7 @@ router.post("/batch", async (req, res) => {
 
     logger.info("Batch submission received", { userId, problemId, testCases: inputs.length });
 
-    const result = await pythonExecutor.executeBatch(code, inputs);
+    const result = await codeExecutor.executeBatch(code, inputs);
 
     logger.info("Batch submission executed", {
       userId,
@@ -224,7 +224,7 @@ router.post("/batch", async (req, res) => {
  */
 router.get("/limits", (req, res) => {
   res.json({
-    limits: pythonExecutor.getLimits(),
+    limits: codeExecutor.getLimits(),
   });
 });
 
