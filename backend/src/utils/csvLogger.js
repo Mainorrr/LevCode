@@ -25,6 +25,7 @@ const SUBMISSIONS_HEADERS = [
   "action_type",
   "carnet",
   "problem_id",
+  "language",
   "execution_time_ms",
 ];
 
@@ -32,8 +33,21 @@ function ensureFile(filePath, headers) {
   if (!fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
   }
+  const header = headers.join(",");
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, headers.join(",") + "\n", "utf8");
+    fs.writeFileSync(filePath, header + "\n", "utf8");
+    return;
+  }
+  // Si las columnas cambiaron, archivar el CSV viejo en vez de seguir escribiendo
+  // filas desalineadas sobre su cabecera. Los datos previos se conservan intactos.
+  const fd = fs.openSync(filePath, "r");
+  const buf = Buffer.alloc(header.length + 1);
+  const read = fs.readSync(fd, buf, 0, buf.length, 0);
+  fs.closeSync(fd);
+  if (buf.subarray(0, read).toString("utf8").trimEnd() !== header) {
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    fs.renameSync(filePath, filePath.replace(/\.csv$/, `.${stamp}.csv`));
+    fs.writeFileSync(filePath, header + "\n", "utf8");
   }
 }
 
@@ -95,6 +109,7 @@ function logSubmission(actionType, req, res, payload = {}) {
       action_type: actionType,
       carnet: payload.carnet || "",
       problem_id: payload.problem_id || "",
+      language: payload.language || "",
       execution_time_ms: payload.execution_time_ms === undefined ? "" : payload.execution_time_ms,
     };
     fs.appendFileSync(SUBMISSIONS_LOG, buildRow(SUBMISSIONS_HEADERS, row), "utf8");

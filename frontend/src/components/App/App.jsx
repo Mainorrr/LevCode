@@ -96,6 +96,10 @@ function renderDescription(desc) {
   return blocks
 }
 
+// Lenguaje de las submissions. Constante hasta que exista el selector por
+// ejercicio; el backend ya acepta el campo para no tener que tocarlo después.
+const LANGUAGE = 'python'
+
 const ROUTES = {
   form: '/',
   menu: '/ejercicios',
@@ -522,6 +526,7 @@ export default function App() {
           code,
           userId: userInfo.carnet,
           problemId: config.id,
+          language: LANGUAGE,
           inputs: testcases.map((tc) => tc.input),
         }),
       })

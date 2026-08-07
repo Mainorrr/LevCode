@@ -5,15 +5,16 @@ const validators = require("../utils/validators");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
 const env = require("../config/env");
+const { DEFAULT_LANGUAGE } = require("../services/languages");
 
 /**
  * POST /api/submissions
- * Submit Python code for execution
+ * Submit code for execution
  * Requires: password header
  */
 router.post("/", async (req, res) => {
   try {
-    const { code, userId, problemId, input = "" } = req.body;
+    const { code, userId, problemId, input = "", language = DEFAULT_LANGUAGE } = req.body;
 
     // Validate request
     const validation = validators.validateSubmissionRequest(req.body);
@@ -25,6 +26,7 @@ router.post("/", async (req, res) => {
       csvLogger.logSubmission("CODE_REJECTED", req, res, {
         carnet: userId,
         problem_id: problemId,
+        language,
         success: false,
         code,
         error_message: validation.error,
@@ -33,14 +35,15 @@ router.post("/", async (req, res) => {
       return;
     }
 
-    logger.info("Submission received", { userId, problemId });
+    logger.info("Submission received", { userId, problemId, language });
 
-    // Execute Python code with optional stdin input
-    const result = await codeExecutor.execute(code, input);
+    // Execute code with optional stdin input
+    const result = await codeExecutor.execute(code, input, language);
 
     logger.info("Submission executed", {
       userId,
       problemId,
+      language,
       success: result.success,
       executionTime: result.executionTime,
     });
@@ -57,6 +60,7 @@ router.post("/", async (req, res) => {
     csvLogger.logSubmission("RUN_SINGLE", req, res, {
       carnet: userId,
       problem_id: problemId,
+      language,
       success: result.success,
       code,
       input_length: (input || "").length,
@@ -75,6 +79,7 @@ router.post("/", async (req, res) => {
     csvLogger.logSubmission("RUN_SINGLE", req, res, {
       carnet: req.body && req.body.userId,
       problem_id: req.body && req.body.problemId,
+      language: (req.body && req.body.language) || DEFAULT_LANGUAGE,
       success: false,
       code: (req.body && req.body.code) || "",
       error_message: error.message,
@@ -89,7 +94,7 @@ router.post("/", async (req, res) => {
  */
 router.post("/batch", async (req, res) => {
   try {
-    const { code, userId, problemId, inputs = [] } = req.body;
+    const { code, userId, problemId, inputs = [], language = DEFAULT_LANGUAGE } = req.body;
 
     if (!code || !userId || !problemId || !Array.isArray(inputs) || inputs.length === 0) {
       res.status(400).json({
@@ -99,6 +104,7 @@ router.post("/batch", async (req, res) => {
       csvLogger.logSubmission("CODE_REJECTED", req, res, {
         carnet: userId,
         problem_id: problemId,
+        language,
         success: false,
         code: code || "",
         test_cases_total: Array.isArray(inputs) ? inputs.length : 0,
@@ -118,6 +124,7 @@ router.post("/batch", async (req, res) => {
       csvLogger.logSubmission("CODE_REJECTED", req, res, {
         carnet: userId,
         problem_id: problemId,
+        language,
         success: false,
         code,
         test_cases_total: inputs.length,
@@ -136,6 +143,7 @@ router.post("/batch", async (req, res) => {
       csvLogger.logSubmission("CODE_REJECTED", req, res, {
         carnet: userId,
         problem_id: problemId,
+        language,
         success: false,
         code,
         test_cases_total: inputs.length,
@@ -153,6 +161,7 @@ router.post("/batch", async (req, res) => {
       csvLogger.logSubmission("CODE_REJECTED", req, res, {
         carnet: userId,
         problem_id: problemId,
+        language,
         success: false,
         code,
         test_cases_total: inputs.length,
@@ -162,13 +171,14 @@ router.post("/batch", async (req, res) => {
       return;
     }
 
-    logger.info("Batch submission received", { userId, problemId, testCases: inputs.length });
+    logger.info("Batch submission received", { userId, problemId, language, testCases: inputs.length });
 
-    const result = await codeExecutor.executeBatch(code, inputs);
+    const result = await codeExecutor.executeBatch(code, inputs, language);
 
     logger.info("Batch submission executed", {
       userId,
       problemId,
+      language,
       success: result.success,
       executionTime: result.executionTime,
     });
@@ -189,6 +199,7 @@ router.post("/batch", async (req, res) => {
     csvLogger.logSubmission("RUN_BATCH", req, res, {
       carnet: userId,
       problem_id: problemId,
+      language,
       success: result.success,
       code,
       input_length: inputs.reduce((sum, i) => sum + (typeof i === "string" ? i.length : 0), 0),
@@ -209,6 +220,7 @@ router.post("/batch", async (req, res) => {
     csvLogger.logSubmission("RUN_BATCH", req, res, {
       carnet: req.body && req.body.userId,
       problem_id: req.body && req.body.problemId,
+      language: (req.body && req.body.language) || DEFAULT_LANGUAGE,
       success: false,
       code: (req.body && req.body.code) || "",
       test_cases_total: Array.isArray(req.body && req.body.inputs) ? req.body.inputs.length : 0,
