@@ -810,14 +810,6 @@ export default function App() {
                 )}
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
-              {showTries && (
-                <span
-                  className="exercise-timer"
-                  style={{ color: getAttemptsColor(attempts) }}
-                >
-                  Intentos: {attempts}
-                </span>
-              )}
             </div>
 
             <div className="exercise-description">
@@ -841,24 +833,34 @@ export default function App() {
               readOnly={solvedExercises.has(selectedExercise.config.id)}
               isDark={isDark}
               actionSlot={
-                <button
-                  onClick={handleSubmit}
-                  disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
-                  className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
-                >
-                  {solvedExercises.has(selectedExercise.config.id) ? (
-                    'Ejercicio completado'
-                  ) : cooldownRemaining > 0 ? (
-                    `Espera ${cooldownRemaining}s`
-                  ) : loading ? (
-                    'Ejecutando...'
-                  ) : (
-                    <>
-                      <Play size={16} fill="currentColor" strokeWidth={0} />
-                      Ejecutar
-                    </>
+                <>
+                  {showTries && (
+                    <span
+                      className="exercise-timer"
+                      style={{ color: getAttemptsColor(attempts) }}
+                    >
+                      Intentos: {attempts}
+                    </span>
                   )}
-                </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading || solvedExercises.has(selectedExercise.config.id) || cooldownRemaining > 0}
+                    className={`submit-btn${solvedExercises.has(selectedExercise.config.id) ? ' submit-btn-solved' : ''}${cooldownRemaining > 0 ? ' submit-btn-cooldown' : ''}`}
+                  >
+                    {solvedExercises.has(selectedExercise.config.id) ? (
+                      'Ejercicio completado'
+                    ) : cooldownRemaining > 0 ? (
+                      `Espera ${cooldownRemaining}s`
+                    ) : loading ? (
+                      'Ejecutando...'
+                    ) : (
+                      <>
+                        <Play size={16} fill="currentColor" strokeWidth={0} />
+                        Ejecutar
+                      </>
+                    )}
+                  </button>
+                </>
               }
             />
           </div>
