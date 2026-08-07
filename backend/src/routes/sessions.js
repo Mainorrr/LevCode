@@ -3,6 +3,8 @@ const router = express.Router();
 const pool = require("../config/db");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
+const validators = require("../utils/validators");
+const { DEFAULT_LANGUAGE } = require("../services/languages");
 
 // Carnet reservado para hacer pruebas — único cuyos datos pueden borrarse por API.
 const TEST_CARNET = "X00000";
@@ -45,16 +47,17 @@ router.delete("/test-user-data", async (req, res) => {
  *
  * Registra o actualiza la sesión de un estudiante en un ejercicio.
  *
- * Body: { carnet, grupo, problemId, solved }
+ * Body: { carnet, grupo, problemId, solved, code, language }
  *
  * Lógica de upsert:
  *   - Primera vez (abrir ejercicio): crea el registro con attempts = 0, solved = false
  *   - Intentos posteriores (submit): incrementa attempts
  *   - solved: solo pasa a true; nunca revierte a false
  *   - Si ya está solved: no incrementa attempts ni actualiza updated_at
+ *   - language: refleja el último lenguaje usado; se congela al resolver
  */
 router.post("/", async (req, res) => {
-  const { carnet, grupo, problemId, solved, code } = req.body;
+  const { carnet, grupo, problemId, solved, code, language = DEFAULT_LANGUAGE } = req.body;
 
   if (!carnet || !grupo || !problemId) {
     return res.status(400).json({
@@ -68,6 +71,11 @@ router.post("/", async (req, res) => {
       success: false,
       error: "El campo solved debe ser un booleano",
     });
+  }
+
+  const languageValidation = validators.validateLanguage(language);
+  if (!languageValidation.valid) {
+    return res.status(400).json({ success: false, error: languageValidation.error });
   }
 
   try {
@@ -106,8 +114,8 @@ router.post("/", async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO exercise_sessions (carnet, grupo, problem_id, attempts, solved, started, hide_tests, show_tries, try_timer)
-       VALUES ($1, $2, $3, 0, $4, TRUE, $5, $6, $7)
+      `INSERT INTO exercise_sessions (carnet, grupo, problem_id, attempts, solved, started, hide_tests, show_tries, try_timer, language)
+       VALUES ($1, $2, $3, 0, $4, TRUE, $5, $6, $7, $8)
        ON CONFLICT (carnet, problem_id) DO UPDATE
          SET attempts       = CASE
                                 WHEN exercise_sessions.solved THEN exercise_sessions.attempts
@@ -115,12 +123,16 @@ router.post("/", async (req, res) => {
                               END,
              solved         = exercise_sessions.solved OR EXCLUDED.solved,
              started        = TRUE,
+             language       = CASE
+                                WHEN exercise_sessions.solved THEN exercise_sessions.language
+                                ELSE EXCLUDED.language
+                              END,
              updated_at     = CASE
                                 WHEN exercise_sessions.solved THEN exercise_sessions.updated_at
                                 ELSE NOW()
                               END
-       RETURNING id, carnet, problem_id, attempts, solved, hide_tests, show_tries, try_timer`,
-      [carnet, grupo, problemId, solved, hideTests, showTries, tryTimer],
+       RETURNING id, carnet, problem_id, attempts, solved, hide_tests, show_tries, try_timer, language`,
+      [carnet, grupo, problemId, solved, hideTests, showTries, tryTimer, language],
     );
 
     const row = result.rows[0];
@@ -132,10 +144,10 @@ router.post("/", async (req, res) => {
     if (isRealAttempt) {
       try {
         await pool.query(
-          `INSERT INTO attempt_code (session_id, attempt_number, code)
-           VALUES ($1, $2, $3)
+          `INSERT INTO attempt_code (session_id, attempt_number, code, language)
+           VALUES ($1, $2, $3, $4)
            ON CONFLICT (session_id, attempt_number) DO NOTHING`,
-          [row.id, row.attempts, code],
+          [row.id, row.attempts, code, language],
         );
       } catch (e) {
         logger.warn("Failed to save attempt_code", { error: e.message });
@@ -147,6 +159,7 @@ router.post("/", async (req, res) => {
       problemId,
       attempts: row.attempts,
       solved: row.solved,
+      language: row.language,
     });
 
     res.json({
@@ -156,6 +169,7 @@ router.post("/", async (req, res) => {
       hideTests: row.hide_tests,
       showTries: row.show_tries,
       tryTimer: row.try_timer,
+      language: row.language,
     });
 
     // Determinar tipo de evento
@@ -280,7 +294,7 @@ router.get("/:carnet/:problemId", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT s.attempts, s.solved, s.hide_tests, s.show_tries, s.try_timer,
+      `SELECT s.attempts, s.solved, s.hide_tests, s.show_tries, s.try_timer, s.language,
               (SELECT ac.code FROM attempt_code ac
                  WHERE ac.session_id = s.id
                  ORDER BY ac.attempt_number DESC LIMIT 1) AS solution_code
@@ -318,6 +332,7 @@ router.get("/:carnet/:problemId", async (req, res) => {
       hideTests: row.hide_tests,
       showTries: row.show_tries,
       tryTimer: row.try_timer,
+      language: row.language,
       solutionCode: row.solution_code ?? null,
     });
 

@@ -73,6 +73,14 @@ async function migrate() {
       CREATE SEQUENCE IF NOT EXISTS treatment_counter MINVALUE 0 START WITH 0;
     `);
 
+    // Lenguaje usado en el ejercicio. Todo lo registrado hasta ahora fue Python,
+    // por eso el backfill con DEFAULT. Es dato de análisis: el lenguaje es una
+    // covariable frente a los tratamientos, no un tratamiento más.
+    await pool.query(`
+      ALTER TABLE exercise_sessions
+        ADD COLUMN IF NOT EXISTS language VARCHAR(20) NOT NULL DEFAULT 'python';
+    `);
+
     // Eliminar solution_code (reemplazado por la tabla attempt_code)
     await pool.query(`
       ALTER TABLE exercise_sessions
@@ -92,6 +100,13 @@ async function migrate() {
     `);
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_attempt_code_session ON attempt_code(session_id);
+    `);
+
+    // Lenguaje de cada intento. Es el registro fino: exercise_sessions.language
+    // guarda el último usado, esta columna guarda el de cada envío.
+    await pool.query(`
+      ALTER TABLE attempt_code
+        ADD COLUMN IF NOT EXISTS language VARCHAR(20) NOT NULL DEFAULT 'python';
     `);
 
     // Tabla de contraseñas de acceso para estudiantes

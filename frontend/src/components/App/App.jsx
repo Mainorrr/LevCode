@@ -603,6 +603,7 @@ export default function App() {
         problemId: selectedExercise.config.id,
         solved,
         code,
+        language: LANGUAGE,
       }),
     })
       .then((r) => r.json())

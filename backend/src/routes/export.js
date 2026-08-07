@@ -47,6 +47,7 @@ router.get("/csv", async (req, res) => {
          problem_id,
          attempts,
          solved,
+         language,
          hide_tests,
          show_tries,
          try_timer,
@@ -63,6 +64,7 @@ router.get("/csv", async (req, res) => {
       "problem_id",
       "attempts",
       "solved",
+      "language",
       "created_at",
       "updated_at",
       "hide_tests",
@@ -115,7 +117,7 @@ router.get("/attempts", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, session_id, attempt_number, code, created_at
+      `SELECT id, session_id, attempt_number, code, language, created_at
        FROM attempt_code
        ORDER BY id ASC`,
     );
