@@ -556,7 +556,7 @@ export default function App() {
           actualOutput: r.output ?? '',
           passed: r.output?.trim() === tc.expectedOutput.trim(),
           executionTime: Math.round(data.executionTime / testcases.length),
-          showInfo: hideTests ? !!tc.showInfoHidden : tc.showInfo !== false,
+          showInfo: !hideTests,
         }
       })
 
