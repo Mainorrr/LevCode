@@ -181,7 +181,7 @@ router.post("/", async (req, res) => {
     } else if (!priorRow.solved && row.solved) {
       actionType = "EXERCISE_SOLVED";
       detailsExtra.attempt_number = row.attempts;
-      detailsExtra.solution_code_length = (solutionCode || "").length;
+      detailsExtra.solution_code_length = (code || "").length;
     } else if (!priorRow.solved && !row.solved) {
       actionType = "ATTEMPT_FAIL";
       detailsExtra.attempt_number = row.attempts;
