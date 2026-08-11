@@ -10,6 +10,9 @@ const RUN_TIMEOUT = env.RUN_TIMEOUT;
 const COMPILE_TIMEOUT = env.COMPILE_TIMEOUT;
 const MAX_OUTPUT = env.OUTPUT_MAX;
 
+// Gracia tras salir el hijo directo antes de dar por perdidas sus tuberías.
+const ORPHAN_GRACE_MS = 250;
+
 /**
  * Ejecuta código de estudiantes con child_process, en cualquier lenguaje del
  * registro (ver languages.js). No requiere Docker.
@@ -113,6 +116,22 @@ class CodeRunner {
   }
 
   /**
+   * Mata el grupo de procesos completo, no solo el hijo directo.
+   * Sin esto, el código del estudiante puede dejar descendientes vivos: heredan
+   * las tuberías de stdout, así que la corrida no termina hasta que muere el
+   * último, y el timeout deja de acotar la duración real.
+   * @private
+   */
+  _killTree(proc) {
+    try {
+      process.kill(-proc.pid, "SIGKILL");
+    } catch {
+      // El grupo ya no existe; como respaldo, matar al hijo directo.
+      try { proc.kill("SIGKILL"); } catch { /* ignorar */ }
+    }
+  }
+
+  /**
    * Lanza un subproceso con límites de timeout y output.
    * `phase` solo cambia el mensaje de timeout que ve el estudiante.
    * @private
@@ -123,15 +142,48 @@ class CodeRunner {
         cwd,
         stdio: ["pipe", "pipe", "pipe"],
         env: { PATH: process.env.PATH },
+        // Grupo de procesos propio: permite matar a toda la descendencia.
+        detached: true,
       });
 
       let stdout = "";
       let stderr = "";
       let timedOut = false;
+      let settled = false;
+      let orphanHandle = null;
+
+      const settle = (result) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutHandle);
+        clearTimeout(orphanHandle);
+        resolve(result);
+      };
+
+      const finish = (code) => {
+        if (timedOut) {
+          const seconds = timeout / 1000;
+          return settle({
+            success: false,
+            output: stdout,
+            error: phase === "compile"
+              ? `La compilación tardó más de ${seconds} segundos.`
+              : `Tu código tardó más de ${seconds} segundos en ejecutarse.`,
+            exitCode: -1,
+          });
+        }
+
+        settle({
+          success: code === 0,
+          output: stdout,
+          error: stderr || (code === 0 ? "" : `Process exited with code ${code}`),
+          exitCode: code,
+        });
+      };
 
       const timeoutHandle = setTimeout(() => {
         timedOut = true;
-        proc.kill("SIGKILL");
+        this._killTree(proc);
       }, timeout);
 
       if (input) {
@@ -153,33 +205,23 @@ class CodeRunner {
         }
       });
 
-      proc.on("close", (code) => {
-        clearTimeout(timeoutHandle);
-
-        if (timedOut) {
-          const seconds = timeout / 1000;
-          return resolve({
-            success: false,
-            output: stdout,
-            error: phase === "compile"
-              ? `La compilación tardó más de ${seconds} segundos.`
-              : `Tu código tardó más de ${seconds} segundos en ejecutarse.`,
-            exitCode: -1,
-          });
-        }
-
-        resolve({
-          success: code === 0,
-          output: stdout,
-          error: stderr || (code === 0 ? "" : `Process exited with code ${code}`),
-          exitCode: code,
-        });
+      // "close" espera a que se cierren las tuberías, que un descendiente vivo
+      // puede mantener abiertas indefinidamente. Al salir el hijo directo damos
+      // una gracia corta y, si no cierran, matamos el grupo y resolvemos igual.
+      proc.on("exit", (code) => {
+        orphanHandle = setTimeout(() => {
+          if (settled) return;
+          logger.warn("Descendientes vivos tras salir el proceso", { command, phase });
+          this._killTree(proc);
+          finish(code);
+        }, ORPHAN_GRACE_MS);
       });
 
+      proc.on("close", (code) => finish(code));
+
       proc.on("error", (err) => {
-        clearTimeout(timeoutHandle);
         logger.error("Process spawn error", { command, phase, error: err.message });
-        resolve({
+        settle({
           success: false,
           output: "",
           error: `Error al ejecutar ${command}: ${err.message}`,
