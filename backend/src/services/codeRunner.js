@@ -5,6 +5,7 @@ const os = require("os");
 const logger = require("../utils/logger");
 const env = require("../config/env");
 const { getLanguage, DEFAULT_LANGUAGE } = require("./languages");
+const processLimits = require("./processLimits");
 
 const RUN_TIMEOUT = env.RUN_TIMEOUT;
 const COMPILE_TIMEOUT = env.COMPILE_TIMEOUT;
@@ -12,6 +13,14 @@ const MAX_OUTPUT = env.OUTPUT_MAX;
 
 // Gracia tras salir el hijo directo antes de dar por perdidas sus tuberías.
 const ORPHAN_GRACE_MS = 250;
+
+// Señales con las que el kernel mata al proceso al pasarse de un límite.
+const LIMIT_MESSAGES = {
+  SIGXCPU: "Tu programa consumió demasiado tiempo de CPU.",
+  SIGXFSZ: "Tu programa intentó escribir un archivo demasiado grande.",
+  SIGKILL: "Tu programa fue detenido por exceder los límites de recursos.",
+  SIGSEGV: "Tu programa falló por un acceso inválido a memoria.",
+};
 
 /**
  * Ejecuta código de estudiantes con child_process, en cualquier lenguaje del
@@ -61,23 +70,35 @@ class CodeRunner {
       return { success: false, results: [], error: `Lenguaje no soportado: ${language}` };
     }
 
+    // Falla cerrado: un lenguaje compilado no se ejecuta sin límites reales.
+    if (spec.requiresLimits && !processLimits.isAvailable()) {
+      logger.error("Lenguaje compilado sin limites de proceso disponibles", { language });
+      return {
+        success: false,
+        results: [],
+        error: "El servidor no puede ejecutar este lenguaje en este momento.",
+      };
+    }
+
     let dir = null;
     try {
       dir = fs.mkdtempSync(path.join(os.tmpdir(), "levcode_"));
       fs.writeFileSync(path.join(dir, spec.filename), code, "utf-8");
 
       if (spec.compile) {
-        const { command, args } = spec.compile(dir);
+        const rawCompile = spec.compile(dir);
+        const { command, args } = processLimits.wrap(rawCompile.command, rawCompile.args, spec.limits);
         const compiled = await this._spawn(command, args, "", COMPILE_TIMEOUT, dir, "compile");
         if (compiled.exitCode !== 0) {
           // stderr del compilador: es el mensaje que le sirve al estudiante, pero
           // sin la ruta del directorio temporal (ruido y detalle del servidor).
-          const raw = compiled.error || compiled.output || "Error de compilación";
-          return { success: false, results: [], error: this._stripTempPath(raw, dir) };
+          const compilerMessage = compiled.error || compiled.output || "Error de compilación";
+          return { success: false, results: [], error: this._stripTempPath(compilerMessage, dir) };
         }
       }
 
-      const { command, args } = spec.run(dir);
+      const rawRun = spec.run(dir);
+      const { command, args } = processLimits.wrap(rawRun.command, rawRun.args, spec.limits);
       const results = [];
       for (const input of inputs) {
         const result = await this._spawn(command, args, input, timeout, dir, "run");
@@ -160,7 +181,7 @@ class CodeRunner {
         resolve(result);
       };
 
-      const finish = (code) => {
+      const finish = (code, signal) => {
         if (timedOut) {
           const seconds = timeout / 1000;
           return settle({
@@ -169,6 +190,18 @@ class CodeRunner {
             error: phase === "compile"
               ? `La compilación tardó más de ${seconds} segundos.`
               : `Tu código tardó más de ${seconds} segundos en ejecutarse.`,
+            exitCode: -1,
+          });
+        }
+
+        // Sin código de salida y con señal: lo mató el kernel, casi siempre por
+        // exceder un límite de recursos. "exited with code null" no le dice nada
+        // al estudiante.
+        if (code === null && signal) {
+          return settle({
+            success: false,
+            output: stdout,
+            error: stderr || LIMIT_MESSAGES[signal] || `Tu programa fue detenido por el sistema (${signal}).`,
             exitCode: -1,
           });
         }
@@ -208,16 +241,16 @@ class CodeRunner {
       // "close" espera a que se cierren las tuberías, que un descendiente vivo
       // puede mantener abiertas indefinidamente. Al salir el hijo directo damos
       // una gracia corta y, si no cierran, matamos el grupo y resolvemos igual.
-      proc.on("exit", (code) => {
+      proc.on("exit", (code, signal) => {
         orphanHandle = setTimeout(() => {
           if (settled) return;
           logger.warn("Descendientes vivos tras salir el proceso", { command, phase });
           this._killTree(proc);
-          finish(code);
+          finish(code, signal);
         }, ORPHAN_GRACE_MS);
       });
 
-      proc.on("close", (code) => finish(code));
+      proc.on("close", (code, signal) => finish(code, signal));
 
       proc.on("error", (err) => {
         logger.error("Process spawn error", { command, phase, error: err.message });
