@@ -3,6 +3,7 @@ const validators = require("../utils/validators");
 const logger = require("../utils/logger");
 const env = require("../config/env");
 const { DEFAULT_LANGUAGE, enabledLanguages } = require("./languages");
+const { queue, QueueTimeoutError } = require("./runQueue");
 
 /**
  * Capa de alto nivel para ejecución de código de estudiantes.
@@ -19,7 +20,15 @@ class CodeExecutor {
     }
 
     const startTime = Date.now();
-    const result = await codeRunner.execute(code, input, language);
+    let result;
+    try {
+      result = await queue.run(() => codeRunner.execute(code, input, language));
+    } catch (err) {
+      if (err instanceof QueueTimeoutError) {
+        return { success: false, output: "", error: err.message, executionTime: Date.now() - startTime };
+      }
+      throw err;
+    }
     const executionTime = Date.now() - startTime;
 
     logger.info("Code executed", {
@@ -42,7 +51,15 @@ class CodeExecutor {
     }
 
     const startTime = Date.now();
-    const result = await codeRunner.executeBatch(code, inputs, language);
+    let result;
+    try {
+      result = await queue.run(() => codeRunner.executeBatch(code, inputs, language));
+    } catch (err) {
+      if (err instanceof QueueTimeoutError) {
+        return { success: false, results: [], error: err.message, executionTime: Date.now() - startTime };
+      }
+      throw err;
+    }
     const executionTime = Date.now() - startTime;
 
     logger.info("Batch executed", {
@@ -69,6 +86,7 @@ class CodeExecutor {
       compileTimeout: env.COMPILE_TIMEOUT,
       maxOutput: env.OUTPUT_MAX,
       languages: enabledLanguages(),
+      concurrency: queue.stats(),
     };
   }
 }

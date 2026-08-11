@@ -18,6 +18,11 @@ module.exports = {
   COMPILE_TIMEOUT: parseInt(process.env.COMPILE_TIMEOUT || "10000", 10),
   OUTPUT_MAX: parseInt(process.env.OUTPUT_MAX || process.env.PYTHON_OUTPUT_MAX || "10485760", 10),
 
+  // Cola de ejecuciones. Compilar es lo caro, asi que el tope cuenta
+  // submissions completas, no casos de prueba.
+  MAX_CONCURRENT_RUNS: parseInt(process.env.MAX_CONCURRENT_RUNS || "4", 10),
+  QUEUE_TIMEOUT: parseInt(process.env.QUEUE_TIMEOUT || "30000", 10),
+
   // Límites de recursos por proceso (se aplican con prlimit)
   MEMORY_MAX_MB: parseInt(process.env.MEMORY_MAX_MB || "512", 10),
   FSIZE_MAX_MB: parseInt(process.env.FSIZE_MAX_MB || "16", 10),
