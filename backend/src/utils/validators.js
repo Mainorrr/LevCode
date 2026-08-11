@@ -6,9 +6,17 @@ const MAX_CODE_SIZE = 1024 * 1024; // 1MB
  * Patrones bloqueados por lenguaje.
  *
  * Un lenguaje sin lista definida aquí NO puede ejecutarse, aunque esté en el
- * registro de languages.js: validateCode falla cerrado. Las listas de C++ y Java
- * llegan junto con los límites de proceso (fase 2) — para lenguajes compilados
- * una lista negra por regex es insuficiente por sí sola.
+ * registro de languages.js: validateCode falla cerrado.
+ *
+ * Para lenguajes compilados esta lista NO es la defensa principal — el código
+ * nativo llega a las syscalls por caminos que ninguna regex cubre. La defensa
+ * real son los límites de proceso (processLimits.js) y el kill de grupo. Aquí
+ * solo se cierran las puertas obvias: ejecutar programas, tocar el sistema de
+ * archivos y abrir red.
+ *
+ * Se prefiere errar hacia dejar pasar antes que hacia el falso positivo: un
+ * estudiante bloqueado por escribir algo inocente reintenta a ciegas, que es
+ * justo la conducta que este proyecto mide.
  */
 const DANGEROUS_PATTERNS = {
   python: [
@@ -40,6 +48,46 @@ const DANGEROUS_PATTERNS = {
     /requests/i,
     /ctypes/i,
     /signal/i,
+    // Crear procesos: sin esto una fork bomb pasaba la validación.
+    /os\.fork/i,
+    /os\.spawn/i,
+    /multiprocessing/i,
+    /pty\./i,
+  ],
+
+  cpp: [
+    // Ejecutar programas
+    /\bsystem\s*\(/,
+    /\bpopen\s*\(/,
+    /\bfork\s*\(/,
+    /\bexec[lv][pe]?e?\s*\(/,
+    /\bdlopen\s*\(/,
+    /\b__asm\b|\basm\s*(volatile)?\s*[({]/,
+    // Sistema de archivos y red por cabecera. Bloquear la cabecera es más
+    // fiable que perseguir cada función que trae.
+    /#\s*include\s*[<"]\s*(fstream|filesystem|cstdio|stdio\.h|unistd\.h|sys\/|netdb\.h|arpa\/|netinet\/|dlfcn\.h|csignal|signal\.h|thread|future)/,
+    /\bstd\s*::\s*filesystem/,
+    /\bfopen\s*\(|\bfreopen\s*\(/,
+    /\bofstream\b|\bifstream\b|\bfstream\b/,
+  ],
+
+  java: [
+    // Ejecutar programas
+    /\bRuntime\s*\.\s*getRuntime\s*\(/,
+    /\bProcessBuilder\b/,
+    // Sistema de archivos
+    /\bjava\s*\.\s*io\s*\.\s*File\b/,
+    /\bFile(Reader|Writer|InputStream|OutputStream)\b/,
+    /\bRandomAccessFile\b/,
+    /\bjava\s*\.\s*nio\s*\.\s*file\b/,
+    /\bFiles\s*\.|\bPaths\s*\./,
+    // Red
+    /\bjava\s*\.\s*net\b/,
+    /\b(Socket|ServerSocket|URL|URLConnection|HttpClient)\s*[(.]/,
+    // Reflexión, carga de clases y salidas al entorno
+    /\bjava\s*\.\s*lang\s*\.\s*reflect\b/,
+    /\bClassLoader\b|\bsun\s*\.\s*misc\b|\bUnsafe\b/,
+    /\bSystem\s*\.\s*(exit|load|loadLibrary|getenv|getProperty)\s*\(/,
   ],
 };
 

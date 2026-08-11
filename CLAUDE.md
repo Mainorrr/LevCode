@@ -229,9 +229,48 @@ Python bloquea codigo que contiene:
 - `os.system(`, `os.popen(`, `os.execv(`, `os.execve(`
 - `__import__(`
 
-> Para lenguajes compilados una lista negra por regex NO es suficiente: el codigo
-> nativo tiene acceso completo a syscalls. Antes de habilitar C++ o Java hacen
-> falta limites de proceso reales (`prlimit`) y una cola de concurrencia.
+C++ y Java tienen listas propias: ejecutar programas (`system(`, `fork(`,
+`Runtime.getRuntime`, `ProcessBuilder`), sistema de archivos (`<fstream>`,
+`<cstdio>`, `java.io.File`, `Files.`) y red.
+
+> Para lenguajes compilados la lista negra NO es la defensa principal: el codigo
+> nativo llega a las syscalls por caminos que ninguna regex cubre. La defensa
+> real son los limites de proceso y el kill de grupo. La lista solo cierra las
+> puertas obvias.
+
+Efectos colaterales conocidos en C++: bloquear `<cstdio>` y `<stdio.h>` deja sin
+`printf` (hay que usar `cout`), y `system("pause")` se rechaza. Ambos a
+proposito, pero conviene decirselo al estudiante en el enunciado.
+
+---
+
+## Limites de Ejecucion por Proceso
+
+`backend/src/services/processLimits.js` envuelve cada proceso con `prlimit`:
+topes de CPU, memoria virtual, tamano de archivo, cantidad de procesos y
+descriptores. Los hace cumplir el kernel, no dependen de que una regex haya
+previsto el abuso.
+
+`prlimit` se detecta al arrancar. Si falta, Python corre sin limites y se avisa
+en el log, pero los lenguajes compilados se niegan a ejecutar (`requiresLimits`).
+
+El proceso se lanza en su **propio grupo** y el timeout mata al grupo entero. Sin
+eso, un descendiente sobrevive al `SIGKILL`, mantiene abiertas las tuberias de
+stdout y la corrida no termina: el timeout deja de acotar la duracion.
+
+> `RLIMIT_NPROC` cuenta procesos por USUARIO, no por proceso. Como el codigo del
+> estudiante corre con el mismo UID que el backend, un tope bajo tambien afectaria
+> al backend. El aislamiento real seria ejecutar con un UID aparte.
+
+---
+
+## Cola de Ejecuciones
+
+`backend/src/services/runQueue.js` limita cuantas submissions se ejecutan a la
+vez (`MAX_CONCURRENT_RUNS`, default 4). El tope cuenta submissions completas
+—compilacion mas todos sus casos— porque lo caro es compilar. Lo que no cabe
+espera turno; si la espera pasa de `QUEUE_TIMEOUT` (30s) se responde que el
+servidor esta ocupado.
 
 ---
 
