@@ -1,6 +1,0 @@
-{
-  "id": "saludo-personalizado",
-  "title": "Saludo personalizado",
-  "description": "Escriba un programa que lea un nombre de la entrada e imprima un saludo con el formato 'Hola, NOMBRE!'.\n\nEjemplo de entrada:\n```\nAna\n```\n\nEjemplo de salida:\n```\nHola, Ana!\n```\n\nNota: Solo lea el valor requerido\n\nINCORRECTO:\n```\nnombre = input('Ingrese su nombre: ')\n```\n\nCORRECTO:\n```\nnombre = input()\n```",
-  "initialEditable": "# Tu codigo comienza aqui."
-}

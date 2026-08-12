@@ -1,6 +1,0 @@
-{
-  "id": "mayor-de-tres",
-  "title": "El Número Negativo",
-  "description": "Escriba un programa que lea 3 números (uno por línea) donde solo uno de ellos es negativo, e imprima ese número negativo.\n\nEjemplo de entrada:\n```\n4\n-2\n7\n```\n\nEjemplo de salida:\n```\n-2\n```",
-  "initialEditable": "# Tu codigo comienza aqui."
-}

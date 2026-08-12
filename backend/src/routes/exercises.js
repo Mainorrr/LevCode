@@ -63,7 +63,7 @@ async function createInitialSessions(carnet, grupo, problemIds) {
  * GET /api/exercises/assignment/:carnet?grupo=XX
  *
  * Devuelve la lista de ejercicios asignados al estudiante.
- * - X00000 → siempre los 20 ejercicios, sin persistir.
+ * - X00000 → siempre todos los ejercicios, sin persistir.
  * - Otros → si ya tienen asignación previa la devuelve; si no, ejecuta
  *   el algoritmo balanceado y crea las filas iniciales.
  */
