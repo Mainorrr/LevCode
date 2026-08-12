@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditorState, Compartment, Annotation, StateField, RangeSetBuilder } from '@codemirror/state'
+import { EditorState, Compartment, Annotation, StateField, RangeSetBuilder, Prec } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { keymap, gutter, GutterMarker, Decoration } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
@@ -9,6 +9,7 @@ import { cpp } from '@codemirror/lang-cpp'
 import { java } from '@codemirror/lang-java'
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { RefreshCw } from 'lucide-react'
+import { insertNewlineKeepIndent } from './newlineKeepIndent'
 import './CodeEditor.css'
 
 const privilegedTx = Annotation.define()
@@ -24,6 +25,7 @@ const LANGUAGE_MODES = {
 function languageMode(id) {
   return LANGUAGE_MODES[id] || LANGUAGE_MODES.python
 }
+
 
 const LOCKED_TOOLTIP = 'Esta línea no puede modificarse. Escribe en las líneas sin candado.'
 
@@ -187,6 +189,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
         lockedLinesField,
         basicSetup,
         keymap.of([indentWithTab]),
+        Prec.highest(keymap.of([{ key: 'Enter', run: insertNewlineKeepIndent }])),
         indentUnit.of('    '),
         EditorState.tabSize.of(4),
         languageMode(language).mode(),
