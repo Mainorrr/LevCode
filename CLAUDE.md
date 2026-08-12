@@ -68,14 +68,37 @@ frontend/src/exercises/
 
 ### config.json
 
+El enunciado comun va en `description`; lo que cambia entre lenguajes vive bajo
+`languages`. El andamiaje obligatorio (el `public class Main` de Java, el
+`int main()` de C++) va en `starterCodeTop`/`starterCodeBottom`, que el editor
+muestra como regiones bloqueadas.
+
 ```json
 {
-  "id": "hello-world",
-  "title": "Hola Mundo",
-  "description": "Imprime 'Hello World' en la consola.",
-  "starterCode": "# Tu codigo aqui\nprint('Hello World')"
+  "id": "suma-dos-numeros",
+  "title": "Suma de dos numeros",
+  "description": "Lea dos numeros e imprima la suma.",
+  "languages": {
+    "python": { "initialEditable": "# Tu codigo aqui.", "note": "Use input() sin argumentos." },
+    "cpp": {
+      "starterCodeTop": "#include <iostream>\nusing namespace std;\n\nint main() {",
+      "initialEditable": "    // Tu codigo aqui.",
+      "starterCodeBottom": "    return 0;\n}",
+      "note": "No use printf: <cstdio> esta bloqueado."
+    }
+  }
 }
 ```
+
+Un ejercicio sin `languages` usa los campos de primer nivel (`starterCode`,
+`initialEditable`) y solo ofrece Python.
+
+Los lenguajes que ve el estudiante salen de las claves de `languages`; que el
+backend los acepte depende ademas de `ENABLED_LANGUAGES`. Si se desincronizan,
+el estudiante ve un lenguaje que el backend rechaza.
+
+El borrador en localStorage es **por lenguaje**; el lenguaje elegido se recuerda
+por estudiante, no por ejercicio.
 
 ### testcases.json
 
