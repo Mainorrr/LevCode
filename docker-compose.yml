@@ -33,6 +33,8 @@ services:
     environment:
       # Override: dentro de Docker, postgres es el hostname del servicio
       - DATABASE_URL=postgresql://levcode:levcode@postgres:5432/levcode
+      # Los tres lenguajes: la imagen trae python3, g++ y javac
+      - ENABLED_LANGUAGES=python,cpp,java
     depends_on:
       postgres:
         condition: service_healthy
