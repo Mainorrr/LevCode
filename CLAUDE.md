@@ -258,9 +258,12 @@ El proceso se lanza en su **propio grupo** y el timeout mata al grupo entero. Si
 eso, un descendiente sobrevive al `SIGKILL`, mantiene abiertas las tuberias de
 stdout y la corrida no termina: el timeout deja de acotar la duracion.
 
-> `RLIMIT_NPROC` cuenta procesos por USUARIO, no por proceso. Como el codigo del
-> estudiante corre con el mismo UID que el backend, un tope bajo tambien afectaria
-> al backend. El aislamiento real seria ejecutar con un UID aparte.
+> `RLIMIT_NPROC` va **apagado** (`NPROC_MAX=0`). No cuenta procesos sino TAREAS
+> (hilos), y es por UID en todo el sistema: mientras el codigo del estudiante
+> comparta UID con el backend, cualquier tope razonable ya esta superado por los
+> hilos existentes y `g++` no logra lanzar `cc1plus`. Medido: 147 procesos son
+> 1193 tareas. La fork bomb queda acotada por el kill de grupo y la lista de
+> patrones. El tope recobra sentido con un UID dedicado.
 
 ---
 

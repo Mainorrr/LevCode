@@ -41,7 +41,8 @@ function defaultLimits() {
     cpu: Math.ceil(env.RUN_TIMEOUT / 1000) + 1, // segundos de CPU
     as: env.MEMORY_MAX_MB,                      // memoria virtual, MB
     fsize: env.FSIZE_MAX_MB,                    // tamaño máximo de archivo, MB
-    nproc: env.NPROC_MAX,                       // procesos por usuario
+    // nproc va apagado por defecto: ver NPROC_MAX en config/env.js.
+    nproc: env.NPROC_MAX > 0 ? env.NPROC_MAX : null,
     nofile: 64,                                 // descriptores abiertos
   };
 }

@@ -26,12 +26,16 @@ module.exports = {
   // Límites de recursos por proceso (se aplican con prlimit)
   MEMORY_MAX_MB: parseInt(process.env.MEMORY_MAX_MB || "512", 10),
   FSIZE_MAX_MB: parseInt(process.env.FSIZE_MAX_MB || "16", 10),
-  // RLIMIT_NPROC cuenta procesos por USUARIO, no por proceso: si el codigo del
-  // estudiante corre con el mismo UID que el backend, agotar este tope tambien
-  // impide al backend lanzar procesos. Por eso es holgado — acota el ritmo de
-  // una fork bomb, y el kill de grupo a los 5s cierra la ventana. El aislamiento
-  // real seria ejecutar con un UID aparte.
-  NPROC_MAX: parseInt(process.env.NPROC_MAX || "96", 10),
+  // APAGADO por defecto (0). RLIMIT_NPROC no cuenta procesos sino TAREAS
+  // (hilos), y es por UID en todo el sistema, no por proceso. Mientras el codigo
+  // del estudiante comparta UID con el backend, cualquier tope razonable ya esta
+  // superado por los hilos que existen: medido en una sesion normal, 147
+  // procesos son 1193 tareas, asi que un tope de 96 —o de 512— hace que g++
+  // falle al lanzar cc1plus y NINGUN lenguaje compilado funcione.
+  // Mientras tanto la fork bomb queda acotada por el kill de grupo (5s) y por
+  // la lista de patrones. Este tope recobra sentido al ejecutar con un UID
+  // dedicado: ahi si aisla, y se enciende poniendo NPROC_MAX > 0.
+  NPROC_MAX: parseInt(process.env.NPROC_MAX || "0", 10),
 
   // Lenguajes expuestos a los estudiantes. C++ y Java quedan fuera hasta que
   // existan sus límites de proceso y listas de patrones bloqueados.
