@@ -5,11 +5,25 @@ import { keymap, gutter, GutterMarker, Decoration } from '@codemirror/view'
 import { indentWithTab } from '@codemirror/commands'
 import { indentUnit } from '@codemirror/language'
 import { python } from '@codemirror/lang-python'
+import { cpp } from '@codemirror/lang-cpp'
+import { java } from '@codemirror/lang-java'
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { RefreshCw } from 'lucide-react'
 import './CodeEditor.css'
 
 const privilegedTx = Annotation.define()
+
+// Modo de CodeMirror y etiqueta por lenguaje. Se cae a Python si llega un id
+// desconocido: sin resaltado el editor sigue siendo usable.
+const LANGUAGE_MODES = {
+  python: { mode: python, label: 'Código Python' },
+  cpp:    { mode: cpp,    label: 'Código C++' },
+  java:   { mode: java,   label: 'Código Java' },
+}
+
+function languageMode(id) {
+  return LANGUAGE_MODES[id] || LANGUAGE_MODES.python
+}
 
 const LOCKED_TOOLTIP = 'Esta línea no puede modificarse. Escribe en las líneas sin candado.'
 
@@ -34,7 +48,7 @@ const lockMarker = new LockMarker()
  *   - starterCode: string - Código inicial para el botón de revertir
  *   - readOnly: boolean - Si true, el editor no permite edición
  */
-export default function CodeEditor({ code, onChange, starterCode, starterCodeTop, starterCodeBottom, initialEditable, readOnly = false, actionSlot, isDark = true, starterPosition = 'top' }) {
+export default function CodeEditor({ code, onChange, starterCode, starterCodeTop, starterCodeBottom, initialEditable, readOnly = false, actionSlot, isDark = true, starterPosition = 'top', language = 'python' }) {
   const editorRef = useRef(null)
   const viewRef = useRef(null)
   const readOnlyCompartment = useRef(new Compartment())
@@ -175,7 +189,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
         keymap.of([indentWithTab]),
         indentUnit.of('    '),
         EditorState.tabSize.of(4),
-        python(),
+        languageMode(language).mode(),
         themeCompartment.current.of(isDark ? githubDark : githubLight),
         EditorView.theme({
           "&": { height: "100%" },
@@ -262,7 +276,7 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
               <RefreshCw size={14} strokeWidth={3} />
             </button>
           )}
-          <span>Código Python</span>
+          <span>{languageMode(language).label}</span>
         </div>
         <div className="editor-label-actions">
           {readOnly && <span className="editor-solved-badge">¡Ejercicio completado!</span>}

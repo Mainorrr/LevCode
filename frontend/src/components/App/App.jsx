@@ -96,9 +96,24 @@ function renderDescription(desc) {
   return blocks
 }
 
-// Lenguaje de las submissions. Constante hasta que exista el selector por
-// ejercicio; el backend ya acepta el campo para no tener que tocarlo después.
-const LANGUAGE = 'python'
+const DEFAULT_LANGUAGE = 'python'
+
+const LANGUAGE_LABELS = { python: 'Python 3', cpp: 'C++', java: 'Java' }
+
+/**
+ * Devuelve la configuración del ejercicio para un lenguaje concreto.
+ * Si el ejercicio no declara `languages` se usan los campos de primer nivel,
+ * que es como estaban escritos los ejercicios cuando solo existía Python.
+ */
+function configForLanguage(config, language) {
+  const perLang = config.languages && config.languages[language]
+  return perLang || (language === DEFAULT_LANGUAGE ? config : null)
+}
+
+/** Ids de lenguaje que este ejercicio ofrece, en orden estable. */
+function languagesOf(config) {
+  return config.languages ? Object.keys(config.languages) : [DEFAULT_LANGUAGE]
+}
 
 const ROUTES = {
   form: '/',
@@ -156,6 +171,11 @@ export default function App() {
   const [solvedExercises, setSolvedExercises] = useState(new Set())
   const [inProgressExercises, setInProgressExercises] = useState(new Set())
   const [assignedExercises, setAssignedExercises] = useState(new Set())
+  // El lenguaje se recuerda entre ejercicios: cambiarlo es una decisión del
+  // estudiante sobre cómo trabaja, no algo por ejercicio.
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem('levcode_language') || DEFAULT_LANGUAGE,
+  )
   const [attempts, setAttempts] = useState(0)
   const [showTries, setShowTries] = useState(false)
   const [hideTests, setHideTests] = useState(false)
@@ -304,7 +324,7 @@ export default function App() {
       localStorage.setItem(draftKey(selectedExercise.config.id), code)
     }, 500)
     return () => clearTimeout(timer)
-  }, [code, selectedExercise])
+  }, [code, selectedExercise, language])
 
   // ── Cooldown global (try_timer) ─────────────────────────────────────────────
   const getCooldownKey = (carnet) => `levcode_cooldown_${carnet}`
@@ -391,7 +411,10 @@ export default function App() {
   }
 
   // ── View: menu ────────────────────────────────────────────────────────────
-  const draftKey = (problemId) => `levcode_draft_${userInfo?.carnet}_${problemId}`
+  // El borrador es por lenguaje: cambiar de lenguaje no debe pisar el código
+  // que el estudiante ya escribió en el otro.
+  const draftKey = (problemId, lang = language) =>
+    `levcode_draft_${userInfo?.carnet}_${problemId}_${lang}`
 
   const handleExerciseSelect = (exercise) => {
     if (solvedExercises.has(exercise.config.id)) {
@@ -401,29 +424,52 @@ export default function App() {
     goTo('exercise', { id: exercise.config.id })
   }
 
+  /**
+   * Código con el que arranca el editor para un ejercicio y lenguaje: el
+   * borrador guardado si sigue encajando con los bloques bloqueados, y si no,
+   * el andamiaje inicial de ese lenguaje.
+   */
+  const initialCodeFor = (exercise, lang) => {
+    const cfg = configForLanguage(exercise.config, lang) || {}
+    const starter = cfg.starterCode || ''
+    const starterPosition = cfg.starterPosition || 'top'
+    const topStarter = typeof cfg.starterCodeTop === 'string'
+      ? cfg.starterCodeTop
+      : (starterPosition === 'top' ? starter : '')
+    const bottomStarter = typeof cfg.starterCodeBottom === 'string'
+      ? cfg.starterCodeBottom
+      : (starterPosition === 'bottom' ? starter : '')
+    const initialEditable = editableDefault(cfg.initialEditable)
+    const saved = localStorage.getItem(draftKey(exercise.config.id, lang))
+    if (saved) {
+      const startsOk = topStarter ? saved.startsWith(topStarter) : true
+      const endsOk = bottomStarter ? saved.endsWith(bottomStarter) : true
+      if (startsOk && endsOk) return saved
+    }
+    return buildCodeWithStarters(topStarter, bottomStarter, initialEditable)
+  }
+
+  // Cambiar de lenguaje reemplaza el andamiaje del editor por el del lenguaje
+  // nuevo, recuperando el borrador que el estudiante tuviera en ese lenguaje.
+  const handleLanguageChange = (lang) => {
+    if (lang === language) return
+    setLanguage(lang)
+    localStorage.setItem('levcode_language', lang)
+    if (selectedExercise) setCode(initialCodeFor(selectedExercise, lang))
+  }
+
   // Carga el ejercicio en memoria y sincroniza con backend.
   // Se invoca tanto al hacer click en el menú como al llegar directo a /ejercicios/:id (deep link, back/forward).
   const loadExercise = (exercise) => {
     setSelectedExercise(exercise)
-    const starter = exercise.config.starterCode || ''
-    const starterPosition = exercise.config.starterPosition || 'top'
-    const topStarter = typeof exercise.config.starterCodeTop === 'string'
-      ? exercise.config.starterCodeTop
-      : (starterPosition === 'top' ? starter : '')
-    const bottomStarter = typeof exercise.config.starterCodeBottom === 'string'
-      ? exercise.config.starterCodeBottom
-      : (starterPosition === 'bottom' ? starter : '')
-    const initialEditable = editableDefault(exercise.config.initialEditable)
-    const saved = localStorage.getItem(draftKey(exercise.config.id))
-    let initialCode = ''
-    if (saved) {
-      const startsOk = topStarter ? saved.startsWith(topStarter) : true
-      const endsOk = bottomStarter ? saved.endsWith(bottomStarter) : true
-      initialCode = startsOk && endsOk ? saved : buildCodeWithStarters(topStarter, bottomStarter, initialEditable)
-    } else {
-      initialCode = buildCodeWithStarters(topStarter, bottomStarter, initialEditable)
+    // El lenguaje recordado puede no estar disponible en este ejercicio.
+    const disponibles = languagesOf(exercise.config)
+    const lang = disponibles.includes(language) ? language : disponibles[0]
+    if (lang !== language) {
+      setLanguage(lang)
+      localStorage.setItem('levcode_language', lang)
     }
-    setCode(initialCode)
+    setCode(initialCodeFor(exercise, lang))
     setTestResults(null)
     setCompilationError(null)
     setAttempts(0)
@@ -526,7 +572,7 @@ export default function App() {
           code,
           userId: userInfo.carnet,
           problemId: config.id,
-          language: LANGUAGE,
+          language,
           inputs: testcases.map((tc) => tc.input),
         }),
       })
@@ -603,7 +649,7 @@ export default function App() {
         problemId: selectedExercise.config.id,
         solved,
         code,
-        language: LANGUAGE,
+        language,
       }),
     })
       .then((r) => r.json())
@@ -616,6 +662,10 @@ export default function App() {
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
+  const exerciseLangConfig = selectedExercise
+    ? (configForLanguage(selectedExercise.config, language) || {})
+    : {}
+  const exerciseLanguages = selectedExercise ? languagesOf(selectedExercise.config) : []
   const themeToggle = (
     <button className="theme-toggle" onClick={() => setIsDark(d => !d)} title={isDark ? 'Modo claro' : 'Modo oscuro'}>
       {isDark ? <SunIcon /> : <MoonIcon />}
@@ -816,10 +866,28 @@ export default function App() {
                 )}
               </button>
               <h2 className="exercise-title">{selectedExercise.config.title}</h2>
+              {exerciseLanguages.length > 1 && (
+                <select
+                  className="language-select"
+                  value={language}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  disabled={solvedExercises.has(selectedExercise.config.id)}
+                  aria-label="Lenguaje de programación"
+                >
+                  {exerciseLanguages.map((id) => (
+                    <option key={id} value={id}>{LANGUAGE_LABELS[id] || id}</option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="exercise-description">
               {renderDescription(selectedExercise.config.description)}
+              {exerciseLangConfig.note && (
+                <div className="exercise-note">
+                  {renderDescription(exerciseLangConfig.note)}
+                </div>
+              )}
             </div>
 
             <div className="user-badge">
@@ -827,15 +895,19 @@ export default function App() {
             </div>
 
             {/* key={id} hace que CodeMirror se reinicie al cambiar de ejercicio */}
+            {/* key con el lenguaje: CodeMirror se construye una sola vez, así que
+                cambiar de lenguaje tiene que remontarlo para cambiar el modo de
+                resaltado y las regiones bloqueadas. */}
             <CodeEditor
-              key={selectedExercise.config.id}
+              key={`${selectedExercise.config.id}-${language}`}
               code={code}
               onChange={setCode}
-              starterCode={selectedExercise.config.starterCode}
-              starterCodeTop={selectedExercise.config.starterCodeTop}
-              starterCodeBottom={selectedExercise.config.starterCodeBottom}
-              starterPosition={selectedExercise.config.starterPosition}
-              initialEditable={selectedExercise.config.initialEditable}
+              language={language}
+              starterCode={exerciseLangConfig.starterCode}
+              starterCodeTop={exerciseLangConfig.starterCodeTop}
+              starterCodeBottom={exerciseLangConfig.starterCodeBottom}
+              starterPosition={exerciseLangConfig.starterPosition}
+              initialEditable={exerciseLangConfig.initialEditable}
               readOnly={solvedExercises.has(selectedExercise.config.id)}
               isDark={isDark}
               actionSlot={

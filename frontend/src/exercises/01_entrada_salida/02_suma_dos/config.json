@@ -1,6 +1,23 @@
 {
   "id": "suma-dos-numeros",
   "title": "Suma de dos números",
-  "description": "Escriba un programa que lea dos números de la entrada e imprima la suma de ambos.\n\nEjemplo de entrada:\n```\n5\n3\n```\n\nEjemplo de salida:\n```\n8\n```\n\nNota: Solo lea el valor requerido\n\nINCORRECTO:\n```\nnumero = int(input('Ingrese numero: '))\n```\n\nCORRECTO:\n```\nnumero = int(input())\n```",
-  "initialEditable": "# Tu codigo comienza aqui."
+  "description": "Escriba un programa que lea dos números de la entrada e imprima la suma de ambos.\n\nEjemplo de entrada:\n```\n5\n3\n```\n\nEjemplo de salida:\n```\n8\n```\n\nNota: Solo lea el valor requerido, sin imprimir texto adicional.",
+  "languages": {
+    "python": {
+      "initialEditable": "# Tu codigo comienza aqui.",
+      "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nnumero = int(input('Ingrese numero: '))\n```\n\nCORRECTO:\n```\nnumero = int(input())\n```"
+    },
+    "cpp": {
+      "starterCodeTop": "#include <iostream>\nusing namespace std;\n\nint main() {",
+      "initialEditable": "    // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    return 0;\n}",
+      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+    },
+    "java": {
+      "starterCodeTop": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {",
+      "initialEditable": "        // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    }\n}",
+      "note": "Su clase debe llamarse `Main`.\n\nLea los valores con `Scanner`:\n```\nScanner sc = new Scanner(System.in);\nint n = sc.nextInt();\n```"
+    }
+  }
 }
