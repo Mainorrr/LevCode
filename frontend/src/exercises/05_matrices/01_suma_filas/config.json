@@ -1,0 +1,23 @@
+{
+  "id": "suma-filas",
+  "title": "Suma por filas",
+  "description": "Lea una matriz de `n` filas por `m` columnas e imprima la suma de cada fila, una por linea.\n\nLa primera linea trae `n` y `m` separados por un espacio. Luego vienen `n` lineas con `m` enteros cada una.\n\nEjemplo de entrada:\n```\n3 4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n```\n\nEjemplo de salida:\n```\n10\n26\n42\n```\n\nLos valores pueden ser negativos.",
+  "languages": {
+    "python": {
+      "initialEditable": "# Tu codigo comienza aqui.",
+      "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nn = int(input('Ingrese: '))\n```\n\nCORRECTO:\n```\nn = int(input())\n```\n\nPara leer varios valores de una misma linea use split():\n```\nvalores = input().split()\n```"
+    },
+    "cpp": {
+      "starterCodeTop": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {",
+      "initialEditable": "    // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    return 0;\n}",
+      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+    },
+    "java": {
+      "starterCodeTop": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
+      "initialEditable": "        // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    }\n}",
+      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+    }
+  }
+}

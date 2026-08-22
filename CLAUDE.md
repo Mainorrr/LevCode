@@ -104,12 +104,18 @@ por estudiante, no por ejercicio.
 
 ```json
 [
-  { "input": "", "expectedOutput": "Hello World", "showInfo": true, "showInfoHidden": false }
+  { "input": "3\n500", "expectedOutput": "TOTAL: 1500" }
 ]
 ```
 
-- `showInfo`: si se muestra info del caso cuando `hide_tests = false`
-- `showInfoHidden`: si se muestra info del caso cuando `hide_tests = true`
+La visibilidad de los casos es todo o nada y la decide el tratamiento
+`hide_tests`, no el caso: con el tratamiento activo el estudiante ve todos los
+casos bloqueados, y sin el tratamiento puede desplegarlos todos.
+
+> Las salidas esperadas deben ser **iguales en los tres lenguajes**: sin
+> decimales (C++ imprime `490` donde Python imprime `490.0`), solo ASCII, y sin
+> division ni modulo de negativos (Python redondea hacia abajo, C++ y Java
+> truncan hacia cero).
 
 ---
 

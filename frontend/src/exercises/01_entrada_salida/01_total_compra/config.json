@@ -1,0 +1,23 @@
+{
+  "id": "total-compra",
+  "title": "Total de la compra",
+  "description": "Una tienda necesita calcular el total de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima el total con el formato exacto `TOTAL: ` seguido del monto.\n\nEjemplo de entrada:\n```\n3\n500\n```\n\nEjemplo de salida:\n```\nTOTAL: 1500\n```\n\nAmbos valores son enteros positivos.",
+  "languages": {
+    "python": {
+      "initialEditable": "# Tu codigo comienza aqui.",
+      "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nn = int(input('Ingrese: '))\n```\n\nCORRECTO:\n```\nn = int(input())\n```"
+    },
+    "cpp": {
+      "starterCodeTop": "#include <iostream>\nusing namespace std;\n\nint main() {",
+      "initialEditable": "    // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    return 0;\n}",
+      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+    },
+    "java": {
+      "starterCodeTop": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
+      "initialEditable": "        // Tu codigo comienza aqui.",
+      "starterCodeBottom": "    }\n}",
+      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+    }
+  }
+}

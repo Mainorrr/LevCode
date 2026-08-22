@@ -1,0 +1,42 @@
+[
+  {
+    "input": "3\n500",
+    "expectedOutput": "TOTAL: 1500"
+  },
+  {
+    "input": "1\n1",
+    "expectedOutput": "TOTAL: 1"
+  },
+  {
+    "input": "10\n250",
+    "expectedOutput": "TOTAL: 2500"
+  },
+  {
+    "input": "7\n13",
+    "expectedOutput": "TOTAL: 91"
+  },
+  {
+    "input": "100\n99",
+    "expectedOutput": "TOTAL: 9900"
+  },
+  {
+    "input": "2\n7500",
+    "expectedOutput": "TOTAL: 15000"
+  },
+  {
+    "input": "45\n20",
+    "expectedOutput": "TOTAL: 900"
+  },
+  {
+    "input": "999\n1000",
+    "expectedOutput": "TOTAL: 999000"
+  },
+  {
+    "input": "12\n12",
+    "expectedOutput": "TOTAL: 144"
+  },
+  {
+    "input": "500\n4",
+    "expectedOutput": "TOTAL: 2000"
+  }
+]

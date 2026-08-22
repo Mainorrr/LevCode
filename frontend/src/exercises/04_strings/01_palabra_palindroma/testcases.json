@@ -1,0 +1,42 @@
+[
+  {
+    "input": "reconocer",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "hola",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "a",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "oso",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "casa",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "somos",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "radar",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "murcielago",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "anilina",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "programacion",
+    "expectedOutput": "NO"
+  }
+]

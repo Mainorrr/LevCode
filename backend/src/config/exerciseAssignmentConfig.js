@@ -20,15 +20,23 @@
  * El carnet TEST_CARNET (X00000) NO recibe asignación: siempre los ve todos.
  */
 
-// Banco reducido mientras se prueban los lenguajes: los ejercicios definitivos
-// se escribiran despues. Al volver a crecer, agregar aqui la categoria y su
-// quota junto con las carpetas del frontend.
+// Una categoria por ejercicio y quota 1: todos los estudiantes reciben los
+// cinco. La dificultad es incremental y estan pensados para hacerse en ~40
+// minutos seguidos, asi que no se sortea un subconjunto.
 const CATEGORY_QUOTAS = {
   "01": 1, // Entrada y salida
+  "02": 1, // Condicionales
+  "03": 1, // Arreglos
+  "04": 1, // Strings
+  "05": 1, // Matrices
 };
 
 const EXERCISES_BY_CATEGORY = {
-  "01": ["suma-dos-numeros"],
+  "01": ["total-compra"],
+  "02": ["tipo-triangulo"],
+  "03": ["segundo-mayor"],
+  "04": ["palabra-palindroma"],
+  "05": ["suma-filas"],
 };
 
 const TEST_CARNET = "X00000";
