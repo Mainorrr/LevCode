@@ -27,8 +27,9 @@ import sumaFilasTestcases      from './05_matrices/01_suma_filas/testcases.json'
  * la dificultad es incremental: entrada/salida, condicionales, arreglo 1D,
  * strings y matriz.
  *
- * Los ids que aparezcan aquí deben existir también en EXERCISES_BY_CATEGORY
- * (backend/src/config/exerciseAssignmentConfig.js): el backend asigna ejercicios
+ * Todos los estudiantes reciben todos los ejercicios: no hay categorías ni
+ * sorteo. Los ids que aparezcan aquí deben existir también en ALL_EXERCISE_IDS
+ * (backend/src/config/exerciseAssignmentConfig.js): el backend crea las filas
  * por id y no consulta este archivo, así que si se desincronizan, un estudiante
  * puede recibir asignado un ejercicio que el frontend no sabe mostrar.
  */

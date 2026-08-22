@@ -4,36 +4,9 @@ const pool = require("../config/db");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
 const {
-  CATEGORY_QUOTAS,
-  EXERCISES_BY_CATEGORY,
   TEST_CARNET,
   ALL_EXERCISE_IDS,
 } = require("../config/exerciseAssignmentConfig");
-
-/**
- * Selecciona los ejercicios balanceados por categoría.
- * Retorna lista de problem_id a asignar.
- */
-async function pickBalancedAssignment() {
-  const assigned = [];
-  for (const [category, quota] of Object.entries(CATEGORY_QUOTAS)) {
-    const candidates = EXERCISES_BY_CATEGORY[category] || [];
-    const counts = [];
-    for (const id of candidates) {
-      const r = await pool.query(
-        "SELECT COUNT(DISTINCT carnet)::int AS n FROM exercise_sessions WHERE problem_id = $1",
-        [id],
-      );
-      counts.push({ id, count: r.rows[0].n });
-    }
-    // Ordenar por conteo ascendente; en empate, aleatorio
-    counts.sort((a, b) => a.count - b.count || Math.random() - 0.5);
-    for (let i = 0; i < quota && i < counts.length; i++) {
-      assigned.push(counts[i].id);
-    }
-  }
-  return assigned;
-}
 
 /**
  * Crea las filas iniciales en exercise_sessions con tratamientos rolados.
@@ -62,10 +35,11 @@ async function createInitialSessions(carnet, grupo, problemIds) {
 /**
  * GET /api/exercises/assignment/:carnet?grupo=XX
  *
- * Devuelve la lista de ejercicios asignados al estudiante.
- * - X00000 → siempre todos los ejercicios, sin persistir.
- * - Otros → si ya tienen asignación previa la devuelve; si no, ejecuta
- *   el algoritmo balanceado y crea las filas iniciales.
+ * Todos los estudiantes reciben todos los ejercicios; lo que hace este endpoint
+ * en el primer login es crear sus filas en exercise_sessions con los
+ * tratamientos ya rolados.
+ * - X00000 → siempre todos, sin persistir.
+ * - Otros → si ya tienen filas creadas devuelve esas; si no, las crea.
  */
 router.get("/assignment/:carnet", async (req, res) => {
   const carnet = String(req.params.carnet || "").toUpperCase();
@@ -102,7 +76,7 @@ router.get("/assignment/:carnet", async (req, res) => {
       });
     }
 
-    const assigned = await pickBalancedAssignment();
+    const assigned = ALL_EXERCISE_IDS;
     await createInitialSessions(carnet, grupo, assigned);
 
     logger.info("Exercise assignment created", {
