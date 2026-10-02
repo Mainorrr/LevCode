@@ -1,20 +1,20 @@
 {
   "id": "total-compra",
   "title": "Total de una compra",
-  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres lineas: el subtotal, el IVA del 13% y el total.\n\n- `SUBTOTAL` = cantidad x precio unitario\n- `IVA` = SUBTOTAL x 0.13\n- `TOTAL` = SUBTOTAL + IVA\n\nTodos los montos se imprimen con EXACTAMENTE dos decimales.\n\nEjemplo de entrada:\n```\n4\n50.01\n```\n\nEjemplo de salida:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nLa cantidad es un entero; el precio unitario puede tener decimales.",
+  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres lineas: el subtotal, el IVA del 13% y el total.\n\n- SUBTOTAL = cantidad x precio unitario\n- IVA = SUBTOTAL x 0.13\n- TOTAL = SUBTOTAL + IVA\n\nTodos los montos se imprimen con EXACTAMENTE dos decimales.\n\nEjemplo de entrada:\n```\n4\n50.01\n```\n\nEjemplo de salida:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nLa cantidad es un entero; el precio unitario puede tener decimales.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
       "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nn = int(input('Ingrese: '))\n```\n\nCORRECTO:\n```\nn = int(input())\n```\n\nPara imprimir con dos decimales exactos:\n```\nprint(f\"SUBTOTAL: {subtotal:.2f}\")\n```"
     },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\n#include <iomanip>\nusing namespace std;\n\nint main() {",
+      "starterCodeTop": "#include <iostream>\n#include <iomanip>\n#include <cmath>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
       "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`.\n\nPara dos decimales exactos (ya viene incluido `<iomanip>`):\n```\ncout << fixed << setprecision(2) << subtotal << endl;\n```"
     },
     "java": {
-      "starterCodeTop": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
+      "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
       "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado: use `sc.nextInt()` para la cantidad y `sc.nextDouble()` para el precio.\n\nPara dos decimales exactos:\n```\nSystem.out.printf(\"SUBTOTAL: %.2f%n\", subtotal);\n```"
