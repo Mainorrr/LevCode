@@ -10,13 +10,13 @@ import tipoTrianguloTestcases  from './02_condicionales/01_tipo_triangulo/testca
 import segundoMayorConfig      from './03_arreglos/01_segundo_mayor/config.json'
 import segundoMayorTestcases   from './03_arreglos/01_segundo_mayor/testcases.json'
 
-// 04 - Strings
-import palindromaConfig        from './04_strings/01_palabra_palindroma/config.json'
-import palindromaTestcases     from './04_strings/01_palabra_palindroma/testcases.json'
+// 04 - Matrices
+import sumaMatrizConfig        from './04_matrices/01_suma_matriz/config.json'
+import sumaMatrizTestcases     from './04_matrices/01_suma_matriz/testcases.json'
 
-// 05 - Matrices
-import sumaFilasConfig         from './05_matrices/01_suma_filas/config.json'
-import sumaFilasTestcases      from './05_matrices/01_suma_filas/testcases.json'
+// 05 - Pilas
+import parentesisConfig        from './05_pilas/01_parentesis_balanceados/config.json'
+import parentesisTestcases     from './05_pilas/01_parentesis_balanceados/testcases.json'
 
 /**
  * Registro central de ejercicios.
@@ -25,7 +25,7 @@ import sumaFilasTestcases      from './05_matrices/01_suma_filas/testcases.json'
  *
  * El orden de este arreglo es el orden en que el estudiante ve los ejercicios, y
  * la dificultad es incremental: entrada/salida, condicionales, arreglo 1D,
- * strings y matriz.
+ * matriz y pila.
  *
  * Todos los estudiantes reciben todos los ejercicios: no hay categorías ni
  * sorteo. Los ids que aparezcan aquí deben existir también en ALL_EXERCISE_IDS
@@ -37,6 +37,6 @@ export const exercises = [
   { config: totalCompraConfig,    testcases: totalCompraTestcases },
   { config: tipoTrianguloConfig,  testcases: tipoTrianguloTestcases },
   { config: segundoMayorConfig,   testcases: segundoMayorTestcases },
-  { config: palindromaConfig,     testcases: palindromaTestcases },
-  { config: sumaFilasConfig,      testcases: sumaFilasTestcases },
+  { config: sumaMatrizConfig,     testcases: sumaMatrizTestcases },
+  { config: parentesisConfig,     testcases: parentesisTestcases },
 ]

@@ -1,7 +1,7 @@
 {
-  "id": "suma-filas",
-  "title": "Suma por filas",
-  "description": "Lea una matriz de `n` filas por `m` columnas e imprima la suma de cada fila, una por linea.\n\nLa primera linea trae `n` y `m` separados por un espacio. Luego vienen `n` lineas con `m` enteros cada una.\n\nEjemplo de entrada:\n```\n3 4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n```\n\nEjemplo de salida:\n```\n10\n26\n42\n```\n\nLos valores pueden ser negativos.",
+  "id": "suma-matriz",
+  "title": "Suma de elementos en una matriz",
+  "description": "Lea un entero `n` y luego una matriz de `n` x `n` enteros.\n\nImprima `SI` cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima `NO` en cualquier otro caso.\n\nEjemplo de entrada:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida:\n```\nNO\n```\n\nEn ese ejemplo las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una linea, con sus valores separados por espacios.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",

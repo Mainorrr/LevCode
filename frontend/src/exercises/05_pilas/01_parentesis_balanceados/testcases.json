@@ -1,0 +1,42 @@
+[
+  {
+    "input": "()[]{}<>",
+    "expectedOutput": "BALANCEADO"
+  },
+  {
+    "input": "([)]",
+    "expectedOutput": "NO BALANCEADO"
+  },
+  {
+    "input": ")(",
+    "expectedOutput": "NO BALANCEADO"
+  },
+  {
+    "input": "((()))",
+    "expectedOutput": "BALANCEADO"
+  },
+  {
+    "input": "{[()]}",
+    "expectedOutput": "BALANCEADO"
+  },
+  {
+    "input": "(",
+    "expectedOutput": "NO BALANCEADO"
+  },
+  {
+    "input": "]",
+    "expectedOutput": "NO BALANCEADO"
+  },
+  {
+    "input": "<<>>",
+    "expectedOutput": "BALANCEADO"
+  },
+  {
+    "input": "([{<>}])",
+    "expectedOutput": "BALANCEADO"
+  },
+  {
+    "input": "(()",
+    "expectedOutput": "NO BALANCEADO"
+  }
+]

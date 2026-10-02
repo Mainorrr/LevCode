@@ -16,7 +16,7 @@
     "expectedOutput": "NO ES TRIANGULO"
   },
   {
-    "input": "2\n3\n5",
+    "input": "10\n1\n2",
     "expectedOutput": "NO ES TRIANGULO"
   },
   {
@@ -32,8 +32,8 @@
     "expectedOutput": "EQUILATERO"
   },
   {
-    "input": "6\n8\n10",
-    "expectedOutput": "ESCALENO"
+    "input": "2\n3\n5",
+    "expectedOutput": "NO ES TRIANGULO"
   },
   {
     "input": "3\n3\n7",

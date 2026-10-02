@@ -1,0 +1,42 @@
+[
+  {
+    "input": "3\n1 2 3\n2 3 1\n3 1 2",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "3\n2 7 6\n9 5 1\n4 3 8",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "1\n5",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "2\n1 1\n1 1",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "2\n1 2\n3 4",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "4\n1 15 14 4\n12 6 7 9\n8 10 11 5\n13 3 2 16",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "3\n0 0 0\n0 0 0\n0 0 0",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "3\n4 9 2\n3 5 7\n8 1 6",
+    "expectedOutput": "SI"
+  },
+  {
+    "input": "3\n1 2 3\n4 5 6\n7 8 9",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "2\n2 2\n2 3",
+    "expectedOutput": "NO"
+  }
+]

@@ -19,11 +19,11 @@
  */
 
 const ALL_EXERCISE_IDS = [
-  "total-compra",        // entrada / salida
-  "tipo-triangulo",      // condicionales
-  "segundo-mayor",       // arreglos
-  "palabra-palindroma",  // strings
-  "suma-filas",          // matrices
+  "total-compra",            // entrada / salida
+  "tipo-triangulo",          // condicionales
+  "segundo-mayor",           // arreglos
+  "suma-matriz",             // matrices
+  "parentesis-balanceados",  // pilas
 ];
 
 const TEST_CARNET = "X00000";

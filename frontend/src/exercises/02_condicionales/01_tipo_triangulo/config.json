@@ -1,7 +1,7 @@
 {
   "id": "tipo-triangulo",
   "title": "Tipo de triangulo",
-  "description": "Lea las longitudes de los tres lados de un triangulo e imprima que tipo de triangulo forman.\n\nUn triangulo es valido solo si la suma de cualquier par de lados es MAYOR que el lado restante. Si no lo es, imprima `NO ES TRIANGULO`.\n\nSi es valido, imprima:\n\n- `EQUILATERO` si los tres lados son iguales\n- `ISOSCELES` si exactamente dos lados son iguales\n- `ESCALENO` si los tres son distintos\n\nEjemplo de entrada:\n```\n3\n4\n5\n```\n\nEjemplo de salida:\n```\nESCALENO\n```\n\nLos tres valores son enteros positivos.",
+  "description": "Lea las longitudes de los tres lados de un triangulo e imprima que tipo de triangulo forman.\n\nTres lados forman un triangulo solo si cada lado es MENOR que la suma de los otros dos. Si no lo cumplen, imprima `NO ES TRIANGULO`.\n\nSi forman un triangulo, imprima:\n\n- `EQUILATERO` si los tres lados son iguales\n- `ISOSCELES` si exactamente dos lados son iguales\n- `ESCALENO` si los tres son distintos\n\nEjemplo de entrada:\n```\n3\n4\n5\n```\n\nEjemplo de salida:\n```\nESCALENO\n```\n\nOtro ejemplo de entrada:\n```\n1\n2\n10\n```\n\nSalida:\n```\nNO ES TRIANGULO\n```\n\nCuidado: la validacion tiene que funcionar sin importar en que orden lleguen los lados. Los tres valores son enteros positivos.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",

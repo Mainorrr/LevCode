@@ -112,10 +112,17 @@ La visibilidad de los casos es todo o nada y la decide el tratamiento
 `hide_tests`, no el caso: con el tratamiento activo el estudiante ve todos los
 casos bloqueados, y sin el tratamiento puede desplegarlos todos.
 
-> Las salidas esperadas deben ser **iguales en los tres lenguajes**: sin
-> decimales (C++ imprime `490` donde Python imprime `490.0`), solo ASCII, y sin
-> division ni modulo de negativos (Python redondea hacia abajo, C++ y Java
-> truncan hacia cero).
+> Las salidas esperadas deben ser **iguales en los tres lenguajes**: solo ASCII,
+> sin division ni modulo de negativos (Python redondea hacia abajo, C++ y Java
+> truncan hacia cero), y sin decimales salvo que el enunciado exija un formato
+> explicito.
+>
+> Con decimales hay una trampa que NO se ve venir: Java formatea la
+> representacion CORTA del double con HALF_UP, mientras Python y C++ redondean el
+> valor binario exacto. Con 10 x 2.75 el total real es 31.07499999..., asi que
+> Python y C++ imprimen `31.07` y Java `31.08`. Al elegir casos de prueba con
+> decimales hay que verificar cada salida en los tres lenguajes: medido, 4 de 30
+> combinaciones de cantidad y precio divergian.
 
 ---
 
