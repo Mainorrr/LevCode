@@ -11,13 +11,13 @@
       "starterCodeTop": "#include <iostream>\n#include <iomanip>\n#include <cmath>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`.\n\nEl andamiaje ya incluye `<iomanip>`."
+      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\").\n\nEl andamiaje ya incluye <iomanip>."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado: use `sc.nextInt()` para la cantidad y `sc.nextDouble()` para el precio."
+      "note": "Su clase debe llamarse Main. El Scanner ya esta creado: use sc.nextInt() para la cantidad y sc.nextDouble() para el precio."
     }
   }
 }

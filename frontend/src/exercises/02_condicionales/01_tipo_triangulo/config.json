@@ -1,7 +1,7 @@
 {
   "id": "tipo-triangulo",
   "title": "Tipo de triangulo",
-  "description": "Lea las longitudes de los tres lados de un triangulo, que llegan en el orden `a`, `b`, `c`, e imprima que tipo de triangulo forman.\n\nImprima `NO ES TRIANGULO` cuando se cumpla CUALQUIERA de estas tres condiciones:\n```\na + b <= c\na + c <= b\nb + c <= a\n```\nEs decir, cuando algun lado sea mayor o igual que la suma de los otros dos. Hay que revisar las tres: con una sola no alcanza, porque el lado mas largo puede llegar en cualquier posicion.\n\nSi forman un triangulo, imprima:\n\n- `EQUILATERO` si los tres lados son iguales\n- `ISOSCELES` si exactamente dos lados son iguales\n- `ESCALENO` si los tres son distintos\n\nEjemplo de entrada:\n```\n3\n4\n5\n```\n\nEjemplo de salida:\n```\nESCALENO\n```\n\nOtro ejemplo de entrada:\n```\n1\n2\n10\n```\n\nSalida:\n```\nNO ES TRIANGULO\n```\n\nEn ese ejemplo `1 + 2 <= 10`, asi que no forman un triangulo. Los tres valores son enteros positivos.",
+  "description": "Lea las longitudes de los tres lados de un triangulo, que llegan en el orden a, b, c, e imprima que tipo de triangulo forman.\n\nImprima NO ES TRIANGULO cuando se cumpla CUALQUIERA de estas tres condiciones:\n```\na + b <= c\na + c <= b\nb + c <= a\n```\nEs decir, cuando algun lado sea mayor o igual que la suma de los otros dos. Hay que revisar las tres: con una sola no alcanza, porque el lado mas largo puede llegar en cualquier posicion.\n\nSi forman un triangulo, imprima:\n\n- EQUILATERO si los tres lados son iguales\n- ISOSCELES si exactamente dos lados son iguales\n- ESCALENO si los tres son distintos\n\nEjemplo de entrada:\n```\n3\n4\n5\n```\n\nEjemplo de salida:\n```\nESCALENO\n```\n\nOtro ejemplo de entrada:\n```\n1\n2\n10\n```\n\nSalida:\n```\nNO ES TRIANGULO\n```\n\nEn ese ejemplo 1 + 2 <= 10, asi que no forman un triangulo. Los tres valores son enteros positivos.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
@@ -11,13 +11,13 @@
       "starterCodeTop": "#include <iostream>\n#include <algorithm>\n#include <cmath>\n#include <cstdlib>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
     }
   }
 }

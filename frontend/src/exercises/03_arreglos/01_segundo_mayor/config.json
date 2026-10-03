@@ -1,7 +1,7 @@
 {
   "id": "segundo-mayor",
   "title": "Segundo mayor",
-  "description": "Lea una cantidad `n` y luego `n` numeros enteros, uno por linea. Imprima el segundo valor mas grande, considerando solo valores DISTINTOS.\n\nSi todos los numeros son iguales, o si hay uno solo, imprima `NO EXISTE`.\n\nEjemplo de entrada:\n```\n4\n3\n98\n2\n10\n```\n\nEjemplo de salida:\n```\n10\n```\n\nCon los valores 5, 5 y 3 la respuesta es 3: el mayor es 5 y el segundo mayor distinto es 3. Los numeros pueden ser negativos.",
+  "description": "Lea una cantidad n y luego n numeros enteros, uno por linea. Imprima el segundo valor mas grande, considerando solo valores DISTINTOS.\n\nSi todos los numeros son iguales, o si hay uno solo, imprima NO EXISTE.\n\nEjemplo de entrada:\n```\n4\n3\n98\n2\n10\n```\n\nEjemplo de salida:\n```\n10\n```\n\nCon los valores 5, 5 y 3 la respuesta es 3: el mayor es 5 y el segundo mayor distinto es 3. Los numeros pueden ser negativos.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
@@ -11,13 +11,13 @@
       "starterCodeTop": "#include <iostream>\n#include <vector>\n#include <algorithm>\n#include <set>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
     }
   }
 }

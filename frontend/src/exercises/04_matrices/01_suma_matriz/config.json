@@ -1,7 +1,7 @@
 {
   "id": "suma-matriz",
   "title": "Suma de elementos en una matriz",
-  "description": "Lea un entero `n` y luego una matriz de `n` x `n` enteros.\n\nImprima `SI` cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima `NO` en cualquier otro caso.\n\nEjemplo de entrada:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida:\n```\nNO\n```\n\nEn ese ejemplo las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una linea, con sus valores separados por espacios.",
+  "description": "Lea un entero n y luego una matriz de n x n enteros.\n\nImprima SI cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima NO en cualquier otro caso.\n\nEjemplo de entrada:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida:\n```\nNO\n```\n\nEn ese ejemplo las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una linea, con sus valores separados por espacios.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
@@ -11,13 +11,13 @@
       "starterCodeTop": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
     }
   }
 }

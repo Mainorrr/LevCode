@@ -1,7 +1,7 @@
 {
   "id": "parentesis-balanceados",
   "title": "Parentesis balanceados",
-  "description": "Lea una linea con simbolos de agrupacion y determine si estan balanceados.\n\nUna secuencia esta balanceada si cada simbolo que abre se cierra con el simbolo del mismo tipo y en el orden correcto. Los simbolos posibles son `(` `)` `[` `]` `{` `}` `<` `>`.\n\nImprima `BALANCEADO` o `NO BALANCEADO`.\n\nEjemplo de entrada:\n```\n()[]{}<>\n```\n\nEjemplo de salida:\n```\nBALANCEADO\n```\n\nOtro ejemplo de entrada:\n```\n([)]\n```\n\nSalida:\n```\nNO BALANCEADO\n```\n\nAqui no alcanza con contar cuantos abren y cuantos cierran: `([)]` tiene la misma cantidad de cada uno y no esta balanceado. Conviene usar una pila.",
+  "description": "Lea una linea con simbolos de agrupacion y determine si estan balanceados.\n\nUna secuencia esta balanceada si cada simbolo que abre se cierra con el simbolo del mismo tipo y en el orden correcto. Los simbolos posibles son ( ) [ ] { } < >.\n\nImprima BALANCEADO o NO BALANCEADO.\n\nEjemplo de entrada:\n```\n()[]{}<>\n```\n\nEjemplo de salida:\n```\nBALANCEADO\n```\n\nOtro ejemplo de entrada:\n```\n([)]\n```\n\nSalida:\n```\nNO BALANCEADO\n```\n\nAqui no alcanza con contar cuantos abren y cuantos cierran: ([)] tiene la misma cantidad de cada uno y no esta balanceado. Conviene usar una pila.",
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
@@ -11,13 +11,13 @@
       "starterCodeTop": "#include <iostream>\n#include <string>\n#include <stack>\n#include <algorithm>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`."
+      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado, use `sc.nextInt()` para enteros o `sc.next()` para palabras."
+      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
     }
   }
 }
