@@ -219,6 +219,17 @@ class CodeRunner {
         this._killTree(proc);
       }, timeout);
 
+      // Un programa que termina sin leer su entrada (un main vacío, uno que solo
+      // imprime) cierra la tubería antes de que le escribamos, y la escritura
+      // falla con EPIPE. Es legítimo: el resultado lo deciden la salida y el
+      // código de retorno. Sin este listener el error queda sin manejar y el
+      // uncaughtException de index.js tira el backend entero, para todos.
+      proc.stdin.on("error", (err) => {
+        if (err.code !== "EPIPE") {
+          logger.warn("Error escribiendo stdin", { command, phase, error: err.message });
+        }
+      });
+
       if (input) {
         proc.stdin.write(input);
       }
