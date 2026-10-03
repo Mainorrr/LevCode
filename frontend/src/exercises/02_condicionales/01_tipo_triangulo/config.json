@@ -5,7 +5,7 @@
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nn = int(input('Ingrese: '))\n```\n\nCORRECTO:\n```\nn = int(input())\n```"
+      "note": "Lea los valores con input() sin argumentos."
     },
     "cpp": {
       "starterCodeTop": "#include <iostream>\n#include <algorithm>\n#include <cmath>\n#include <cstdlib>\nusing namespace std;\n\nint main() {",

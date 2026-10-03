@@ -5,19 +5,19 @@
   "languages": {
     "python": {
       "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos.\n\nINCORRECTO:\n```\nn = int(input('Ingrese: '))\n```\n\nCORRECTO:\n```\nn = int(input())\n```\n\nPara imprimir con dos decimales exactos:\n```\nprint(f\"SUBTOTAL: {subtotal:.2f}\")\n```"
+      "note": "Lea los valores con input() sin argumentos."
     },
     "cpp": {
       "starterCodeTop": "#include <iostream>\n#include <iomanip>\n#include <cmath>\nusing namespace std;\n\nint main() {",
       "initialEditable": "    // Tu codigo comienza aqui.",
       "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`.\n\nPara dos decimales exactos (ya viene incluido `<iomanip>`):\n```\ncout << fixed << setprecision(2) << subtotal << endl;\n```"
+      "note": "Lea con `cin >>` y escriba con `cout`.\n\nNo use `printf`: las cabeceras `<cstdio>` y `<stdio.h>` estan bloqueadas por seguridad. Tampoco use `system(\"pause\")`.\n\nEl andamiaje ya incluye `<iomanip>`."
     },
     "java": {
       "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
       "initialEditable": "        // Tu codigo comienza aqui.",
       "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado: use `sc.nextInt()` para la cantidad y `sc.nextDouble()` para el precio.\n\nPara dos decimales exactos:\n```\nSystem.out.printf(\"SUBTOTAL: %.2f%n\", subtotal);\n```"
+      "note": "Su clase debe llamarse `Main`. El `Scanner` ya esta creado: use `sc.nextInt()` para la cantidad y `sc.nextDouble()` para el precio."
     }
   }
 }
