@@ -69,26 +69,45 @@ frontend/src/exercises/
 ### config.json
 
 El enunciado comun va en `description`; lo que cambia entre lenguajes vive bajo
-`languages`. El andamiaje obligatorio (el `public class Main` de Java, el
-`int main()` de C++) va en `starterCodeTop`/`starterCodeBottom`, que el editor
-muestra como regiones bloqueadas.
+`languages`.
 
 ```json
 {
   "id": "suma-dos-numeros",
-  "title": "Suma de dos numeros",
-  "description": "Lea dos numeros e imprima la suma.",
+  "title": "Suma de dos números",
+  "description": "Lea dos números e imprima la suma.",
   "languages": {
-    "python": { "initialEditable": "# Tu codigo aqui.", "note": "Use input() sin argumentos." },
+    "python": {
+      "initialEditable": "# Tu código comienza aquí.",
+      "note": "Sugerencia: puede leer los valores con input() sin argumentos."
+    },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\nusing namespace std;\n\nint main() {",
-      "initialEditable": "    // Tu codigo aqui.",
-      "starterCodeBottom": "    return 0;\n}",
-      "note": "No use printf: <cstdio> esta bloqueado."
+      "initialEditable": "#include <iostream>\n\nint main() {\n}",
+      "note": "Use std::cin y std::cout para entrada y salida."
     }
   }
 }
 ```
+
+El codigo inicial es **generico, minimo y todo editable**: va entero en
+`initialEditable`, sin `starterCodeTop`/`starterCodeBottom`. Los estudiantes son
+de Progra 2: bloquear el preambulo y dejar editables unas lineas de `main()` es
+cosa de Intro, y traer las inclusiones hechas ya los sesga hacia una solucion.
+C++ y Java van a 2 espacios, sin `using namespace std;`, y Java con `final` en
+`args` y en el `Scanner`. El editor indenta a 2 en C++/Java y a 4 en Python.
+
+`starterCodeTop`/`starterCodeBottom` siguen soportados (el editor los muestra
+como regiones bloqueadas con candado), pero estos ejercicios no los usan.
+
+Las notas por lenguaje solo describen el entorno (que la clase se llama `Main`,
+que ya hay un `Scanner`), nunca como resolver ni que NO usar: decirles que no
+usen algo es invitarlos a probar el sistema, y una nota que le da a un lenguaje
+una pista que los otros no tienen desequilibra la comparacion.
+
+Redaccion de los enunciados: con tildes, ejemplos numerados ("Ejemplo de
+entrada 1:"), y las garantias de la entrada como "Puede suponer que...", para que
+no se lean como algo que el estudiante debe validar. Los textos que el programa
+imprime (`NO ES TRIANGULO`, `SI`) van SIN tilde: la salida es solo ASCII.
 
 Un ejercicio sin `languages` usa los campos de primer nivel (`starterCode`,
 `initialEditable`) y solo ofrece Python.
@@ -274,9 +293,12 @@ C++ y Java tienen listas propias: ejecutar programas (`system(`, `fork(`,
 > real son los limites de proceso y el kill de grupo. La lista solo cierra las
 > puertas obvias.
 
-Efectos colaterales conocidos en C++: bloquear `<cstdio>` y `<stdio.h>` deja sin
-`printf` (hay que usar `cout`), y `system("pause")` se rechaza. Ambos a
-proposito, pero conviene decirselo al estudiante en el enunciado.
+`<cstdio>` y `<stdio.h>` NO se bloquean: con libstdc++ sus declaraciones ya
+llegan por `<iostream>`, asi que bloquear la cabecera no quitaba `fopen` ni
+`remove`, solo rechazaba `printf`. `fopen`/`freopen` se bloquean por nombre.
+
+`system("pause")` se rechaza (por `system(`). No se avisa en el enunciado: avisar
+que no usen algo invita a probarlo.
 
 ---
 

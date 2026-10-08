@@ -1,23 +1,19 @@
 {
   "id": "total-compra",
   "title": "Total de una compra",
-  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres lineas: el subtotal, el IVA del 13% y el total.\n\n- SUBTOTAL = cantidad x precio unitario\n- IVA = SUBTOTAL x 0.13\n- TOTAL = SUBTOTAL + IVA\n\nTodos los montos se imprimen con EXACTAMENTE dos decimales.\n\nEjemplo de entrada:\n```\n4\n50.01\n```\n\nEjemplo de salida:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nLa cantidad es un entero; el precio unitario puede tener decimales.",
+  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres líneas: el subtotal, el IVA del 13% y el total.\n\n- SUBTOTAL = cantidad x precio unitario\n- IVA = SUBTOTAL x 0.13\n- TOTAL = SUBTOTAL + IVA\n\nTodos los montos se imprimen con dos decimales.\n\nEjemplo de entrada 1:\n```\n4\n50.01\n```\n\nEjemplo de salida 1:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nPuede suponer que la cantidad siempre es un entero positivo y que el precio unitario es un número positivo, que puede tener decimales.",
   "languages": {
     "python": {
-      "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos."
+      "initialEditable": "# Tu código comienza aquí.",
+      "note": "Sugerencia: puede leer los valores con input() sin argumentos."
     },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\n#include <iomanip>\n#include <cmath>\nusing namespace std;\n\nint main() {",
-      "initialEditable": "    // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\").\n\nEl andamiaje ya incluye <iomanip>."
+      "initialEditable": "#include <iostream>\n\nint main() {\n}",
+      "note": "Use std::cin y std::cout para entrada y salida. Puede usar <iomanip> para controlar el formato."
     },
     "java": {
-      "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
-      "initialEditable": "        // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse Main. El Scanner ya esta creado: use sc.nextInt() para la cantidad y sc.nextDouble() para el precio."
+      "initialEditable": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(final String[] args) {\n    final Scanner sc = new Scanner(System.in);\n  }\n}",
+      "note": "Su clase debe llamarse Main. Note que ya tiene un Scanner creado para leer de la entrada estándar."
     }
   }
 }

@@ -1,23 +1,19 @@
 {
   "id": "parentesis-balanceados",
-  "title": "Parentesis balanceados",
-  "description": "Lea una linea con simbolos de agrupacion y determine si estan balanceados.\n\nUna secuencia esta balanceada si cada simbolo que abre se cierra con el simbolo del mismo tipo y en el orden correcto. Los simbolos posibles son ( ) [ ] { } < >.\n\nImprima BALANCEADO o NO BALANCEADO.\n\nEjemplo de entrada:\n```\n()[]{}<>\n```\n\nEjemplo de salida:\n```\nBALANCEADO\n```\n\nOtro ejemplo de entrada:\n```\n([)]\n```\n\nSalida:\n```\nNO BALANCEADO\n```\n\nAqui no alcanza con contar cuantos abren y cuantos cierran: ([)] tiene la misma cantidad de cada uno y no esta balanceado. Conviene usar una pila.",
+  "title": "Paréntesis balanceados",
+  "description": "Lea una línea con símbolos de agrupación y determine si están balanceados.\n\nUna secuencia está balanceada si cada símbolo que abre se cierra con el símbolo del mismo tipo y en el orden correcto. Los símbolos posibles son ( ) [ ] { } < >.\n\nImprima BALANCEADO o NO BALANCEADO.\n\nEjemplo de entrada 1:\n```\n()[]{}<>\n```\n\nEjemplo de salida 1:\n```\nBALANCEADO\n```\n\nEjemplo de entrada 2:\n```\n([)]\n```\n\nEjemplo de salida 2:\n```\nNO BALANCEADO\n```\n\nEn el ejemplo de entrada 2 no alcanza con contar cuántos abren y cuántos cierran: ([)] tiene la misma cantidad de cada uno y no está balanceado. Conviene usar una pila.\n\nPuede suponer que la línea no está vacía y que solo contiene esos símbolos.",
   "languages": {
     "python": {
-      "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos."
+      "initialEditable": "# Tu código comienza aquí.",
+      "note": "Sugerencia: puede leer los valores con input() sin argumentos."
     },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\n#include <string>\n#include <stack>\n#include <algorithm>\nusing namespace std;\n\nint main() {",
-      "initialEditable": "    // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
+      "initialEditable": "#include <iostream>\n\nint main() {\n}",
+      "note": "Use std::cin y std::cout para entrada y salida."
     },
     "java": {
-      "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
-      "initialEditable": "        // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
+      "initialEditable": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(final String[] args) {\n    final Scanner sc = new Scanner(System.in);\n  }\n}",
+      "note": "Su clase debe llamarse Main. Note que ya tiene un Scanner creado para leer de la entrada estándar."
     }
   }
 }

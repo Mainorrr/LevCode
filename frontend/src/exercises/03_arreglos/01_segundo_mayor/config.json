@@ -1,23 +1,19 @@
 {
   "id": "segundo-mayor",
   "title": "Segundo mayor",
-  "description": "Lea una cantidad n y luego n numeros enteros, uno por linea. Imprima el segundo valor mas grande, considerando solo valores DISTINTOS.\n\nSi todos los numeros son iguales, o si hay uno solo, imprima NO EXISTE.\n\nEjemplo de entrada:\n```\n4\n3\n98\n2\n10\n```\n\nEjemplo de salida:\n```\n10\n```\n\nCon los valores 5, 5 y 3 la respuesta es 3: el mayor es 5 y el segundo mayor distinto es 3. Los numeros pueden ser negativos.",
+  "description": "Lea una cantidad n y luego n números enteros, uno por línea. Imprima el segundo valor más grande, considerando solo valores DISTINTOS.\n\nSi todos los números son iguales, o si hay uno solo, imprima NO EXISTE.\n\nEjemplo de entrada 1:\n```\n4\n3\n98\n2\n10\n```\n\nEjemplo de salida 1:\n```\n10\n```\n\nEjemplo de entrada 2:\n```\n3\n5\n5\n3\n```\n\nEjemplo de salida 2:\n```\n3\n```\n\nEn el ejemplo de entrada 2 el mayor es 5, y el segundo mayor distinto es 3: el 5 repetido no cuenta dos veces.\n\nPuede suponer que n es al menos 1. Los números pueden ser negativos.",
   "languages": {
     "python": {
-      "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos."
+      "initialEditable": "# Tu código comienza aquí.",
+      "note": "Sugerencia: puede leer los valores con input() sin argumentos."
     },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\n#include <vector>\n#include <algorithm>\n#include <set>\nusing namespace std;\n\nint main() {",
-      "initialEditable": "    // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
+      "initialEditable": "#include <iostream>\n\nint main() {\n}",
+      "note": "Use std::cin y std::cout para entrada y salida."
     },
     "java": {
-      "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
-      "initialEditable": "        // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
+      "initialEditable": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(final String[] args) {\n    final Scanner sc = new Scanner(System.in);\n  }\n}",
+      "note": "Su clase debe llamarse Main. Note que ya tiene un Scanner creado para leer de la entrada estándar."
     }
   }
 }

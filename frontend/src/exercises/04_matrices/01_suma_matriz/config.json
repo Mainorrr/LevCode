@@ -1,23 +1,19 @@
 {
   "id": "suma-matriz",
   "title": "Suma de elementos en una matriz",
-  "description": "Lea un entero n y luego una matriz de n x n enteros.\n\nImprima SI cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima NO en cualquier otro caso.\n\nEjemplo de entrada:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida:\n```\nNO\n```\n\nEn ese ejemplo las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una linea, con sus valores separados por espacios.",
+  "description": "Lea un entero n y luego una matriz de n x n enteros.\n\nImprima SI cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima NO en cualquier otro caso.\n\nEjemplo de entrada 1:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida 1:\n```\nNO\n```\n\nEn el ejemplo de entrada 1 las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una línea, con sus valores separados por espacios. Puede suponer que n es al menos 1.",
   "languages": {
     "python": {
-      "initialEditable": "# Tu codigo comienza aqui.",
-      "note": "Lea los valores con input() sin argumentos.\n\nCada fila de la matriz llega como una sola linea."
+      "initialEditable": "# Tu código comienza aquí.",
+      "note": "Sugerencia: puede leer los valores con input() sin argumentos."
     },
     "cpp": {
-      "starterCodeTop": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {",
-      "initialEditable": "    // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    return 0;\n}",
-      "note": "Lea con cin >> y escriba con cout.\n\nNo use printf: las cabeceras <cstdio> y <stdio.h> estan bloqueadas por seguridad. Tampoco use system(\"pause\")."
+      "initialEditable": "#include <iostream>\n\nint main() {\n}",
+      "note": "Use std::cin y std::cout para entrada y salida."
     },
     "java": {
-      "starterCodeTop": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);",
-      "initialEditable": "        // Tu codigo comienza aqui.",
-      "starterCodeBottom": "    }\n}",
-      "note": "Su clase debe llamarse Main. El Scanner ya esta creado, use sc.nextInt() para enteros o sc.next() para palabras."
+      "initialEditable": "import java.util.Scanner;\n\npublic class Main {\n  public static void main(final String[] args) {\n    final Scanner sc = new Scanner(System.in);\n  }\n}",
+      "note": "Su clase debe llamarse Main. Note que ya tiene un Scanner creado para leer de la entrada estándar."
     }
   }
 }
