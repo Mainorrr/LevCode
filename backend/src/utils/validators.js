@@ -65,7 +65,12 @@ const DANGEROUS_PATTERNS = {
     /\b__asm\b|\basm\s*(volatile)?\s*[({]/,
     // Sistema de archivos y red por cabecera. Bloquear la cabecera es más
     // fiable que perseguir cada función que trae.
-    /#\s*include\s*[<"]\s*(fstream|filesystem|cstdio|stdio\.h|unistd\.h|sys\/|netdb\.h|arpa\/|netinet\/|dlfcn\.h|csignal|signal\.h|thread|future)/,
+    //
+    // <cstdio> y <stdio.h> NO están: con libstdc++ sus declaraciones ya llegan
+    // por <iostream>, así que bloquear la cabecera no quitaba fopen ni remove,
+    // solo rechazaba a quien escribía printf con su #include. fopen y freopen
+    // se bloquean por nombre más abajo.
+    /#\s*include\s*[<"]\s*(fstream|filesystem|unistd\.h|sys\/|netdb\.h|arpa\/|netinet\/|dlfcn\.h|csignal|signal\.h|thread|future)/,
     /\bstd\s*::\s*filesystem/,
     /\bfopen\s*\(|\bfreopen\s*\(/,
     /\bofstream\b|\bifstream\b|\bfstream\b/,
