@@ -162,7 +162,7 @@ Cuando `hide_tests = false`, se usa `showInfo` de testcases.json (comportamiento
 ## Flujo de Ejecucion
 
 1. Usuario selecciona un ejercicio del menu (frontend carga config.json)
-2. Usuario ingresa datos: carnet, grupo
+2. Usuario ingresa carnet y contrasena de acceso; el grupo lo determina la contrasena
 3. Frontend registra sesion via `POST /api/sessions` (crea registro con tratamientos aleatorios)
 4. Usuario escribe codigo Python 3 y hace submit
 5. Frontend envia al backend: `{ code, userId, problemId, inputs }`
@@ -216,9 +216,23 @@ CREATE TABLE attempt_code (
 CREATE TABLE access_passwords (
   id            SERIAL PRIMARY KEY,
   password_hash VARCHAR(64) NOT NULL,
+  grupo         VARCHAR(255),          -- NULL = contrasena vieja, no sirve para ingresar
+  description   VARCHAR(200),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ```
+
+### Tabla: students
+
+```sql
+CREATE TABLE students (
+  carnet         VARCHAR(6)   PRIMARY KEY,
+  grupo          VARCHAR(255) NOT NULL,
+  registered_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+```
+
+No se llama `users`: la migracion borra una tabla legacy con ese nombre.
 
 ### Proposito de los datos
 
@@ -234,14 +248,29 @@ CREATE TABLE access_passwords (
 
 ## Informacion del Usuario
 
-Sin autenticacion. El usuario provee al inicio:
+Sin autenticacion de usuarios. El estudiante provee al inicio:
 
 | Campo | Descripcion | Validacion |
 |-------|-------------|-----------|
-| `carnet` | ID estudiantil | `/^[A-Za-z\d]{6}$/` |
-| `grupo` | Numero de grupo | Seleccion de lista |
+| `carnet` | ID estudiantil | `/^[A-Za-z\d]{6}$/` (frontend y backend) |
+| contrasena | Contrasena de acceso de su grupo | Debe existir y tener grupo |
 
-Estos datos se almacenan con cada session para analisis estadistico.
+**El grupo no se elige: lo determina la contrasena.** Cada contrasena se crea
+desde `/admin` para un grupo concreto. La lista de grupos que ofrece el panel
+vive en `frontend/src/courses.js`.
+
+**No hay lista precargada de carnets.** El primer ingreso registra el carnet en
+`students` con el grupo de la contrasena. Los ingresos siguientes deben usar una
+contrasena de ese mismo grupo; con la de otro grupo se rechazan. Sin eso, un
+mismo carnet podria repartir sus datos entre dos grupos. El registro es
+`INSERT ... ON CONFLICT DO NOTHING` + `SELECT`: si llegan a la vez dos ingresos
+del mismo carnet con grupos distintos, gana uno.
+
+El usuario de pruebas `X00000` no se registra. Para que la app lo trate como tal
+debe entrar con una contrasena del grupo `Test`.
+
+Un carnet mal escrito queda registrado como un estudiante mas: no hay lista
+contra la cual detectarlo.
 
 ---
 
@@ -363,10 +392,10 @@ servidor esta ocupado.
 | GET | `/api/sessions/treatments/:carnet` | Access PW | Tratamientos por ejercicio |
 | POST | `/api/admin/sessions` | Admin PW | Todos los registros (panel admin) |
 | GET | `/api/export/csv` | API PW | Exportar datos como CSV |
-| POST | `/api/access/passwords` | Admin PW | Crear contrasena de acceso |
+| POST | `/api/access/passwords` | Admin PW | Crear contrasena de acceso (con grupo) |
 | GET | `/api/access/passwords` | Admin PW | Listar contrasenas |
 | DELETE | `/api/access/passwords/:id` | Admin PW | Eliminar contrasena |
-| POST | `/api/access/validate` | -- | Validar contrasena de acceso |
+| POST | `/api/access/validate` | -- | Validar contrasena y registrar carnet; devuelve el grupo |
 | GET | `/health` | -- | Health check |
 
 ---

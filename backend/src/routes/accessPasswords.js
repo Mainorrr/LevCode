@@ -5,58 +5,93 @@ const pool = require("../config/db");
 const env = require("../config/env");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
-const { carnetBelongsToGroup } = require("../Users/usersLoader");
+const { TEST_CARNET } = require("../config/exerciseAssignmentConfig");
+
+const CARNET_RE = /^[A-Za-z\d]{6}$/;
+const MAX_GRUPO = 50;
 
 function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
 /**
+ * Registra al estudiante en el grupo de la contraseña, o confirma que ya
+ * estaba en ese grupo. Retorna { grupo, nuevo } con el grupo REGISTRADO, que
+ * puede no coincidir con el pedido: decidirlo le toca a quien llama.
+ *
+ * INSERT ... ON CONFLICT DO NOTHING y luego SELECT: si dos ingresos del mismo
+ * carnet llegan a la vez con contraseñas de grupos distintos, gana uno y el otro
+ * ve ese grupo, en vez de quedar los dos registrados.
+ */
+async function registerStudent(carnet, grupo) {
+  const ins = await pool.query(
+    `INSERT INTO students (carnet, grupo) VALUES ($1, $2)
+     ON CONFLICT (carnet) DO NOTHING
+     RETURNING grupo`,
+    [carnet, grupo],
+  );
+  if (ins.rows.length > 0) return { grupo, nuevo: true };
+
+  const sel = await pool.query("SELECT grupo FROM students WHERE carnet = $1", [carnet]);
+  return { grupo: sel.rows[0].grupo, nuevo: false };
+}
+
+/**
  * POST /api/access/validate
- * Validates a student access password.
- * Body: { password }
+ * Body: { password, carnet }
+ *
+ * La contraseña determina el grupo: el estudiante no lo elige. No hay lista
+ * precargada de carnets; el primer ingreso registra el carnet en el grupo de la
+ * contraseña, y los siguientes deben usar una contraseña de ese mismo grupo.
+ *
+ * Responde { valid: true, grupo } para que el frontend use el grupo real.
  */
 router.post("/validate", async (req, res) => {
-  const { password, carnet, grupo } = req.body;
+  const { password, carnet } = req.body;
   const carnetStr = typeof carnet === "string" ? carnet.trim().toUpperCase() : "";
-  const grupoStr = typeof grupo === "string" ? grupo.trim() : "";
+  const carnetForLog = carnetStr || "NONE";
 
-  const carnetForFail = carnetStr || "NONE";
+  const fail = (status, error) => {
+    res.status(status).json({ valid: false, error });
+    csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForLog });
+  };
 
-  if (!password) {
-    res.status(400).json({ valid: false, error: "Contraseña requerida" });
-    csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
-    return;
+  if (!password) return fail(400, "Contraseña requerida");
+  if (!CARNET_RE.test(carnetStr)) {
+    return fail(400, "Formato de carnet inválido. Debe tener exactamente 6 caracteres alfanuméricos.");
   }
 
   try {
-    const hash = hashPassword(password);
     const result = await pool.query(
-      "SELECT id FROM access_passwords WHERE password_hash = $1 LIMIT 1",
-      [hash],
+      "SELECT grupo FROM access_passwords WHERE password_hash = $1 LIMIT 1",
+      [hashPassword(password)],
     );
 
-    if (result.rows.length === 0) {
-      res.json({ valid: false, error: "Contraseña incorrecta" });
-      csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
-      return;
+    if (result.rows.length === 0) return fail(200, "Contraseña incorrecta");
+
+    const grupo = result.rows[0].grupo;
+    if (!grupo) {
+      return fail(200, "Esta contraseña no tiene un grupo asignado. Avísele al profesor.");
     }
 
-    // Verificación de carnet/grupo: el carnet debe pertenecer al grupo seleccionado.
-    if (carnetStr && grupoStr) {
-      if (!carnetBelongsToGroup(carnetStr, grupoStr)) {
-        res.json({ valid: false, error: "El carnet no forma parte de este grupo" });
-        csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
-        return;
+    // El usuario de pruebas no se registra: entra con cualquier contraseña y no
+    // debe quedar atado a un grupo de estudiantes.
+    if (carnetStr !== TEST_CARNET) {
+      const registro = await registerStudent(carnetStr, grupo);
+      if (registro.grupo !== grupo) {
+        return fail(200, `Este carnet ya está registrado en el grupo ${registro.grupo}. Use la contraseña de su grupo.`);
+      }
+      if (registro.nuevo) {
+        logger.info("Student registered", { carnet: carnetStr, grupo });
+        csvLogger.logLogin("STUDENT_REGISTERED", { carnet: carnetStr });
       }
     }
 
-    res.json({ valid: true });
+    res.json({ valid: true, grupo });
     csvLogger.logLogin("LOGIN_SUCCESS", { carnet: carnetStr });
   } catch (err) {
     logger.error("Access password validation failed", { error: err.message });
-    res.status(500).json({ valid: false, error: "Error del servidor" });
-    csvLogger.logLogin("LOGIN_FAILED", { carnet: carnetForFail });
+    fail(500, "Error del servidor");
   }
 });
 
@@ -74,7 +109,7 @@ router.get("/passwords", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, description, created_at FROM access_passwords ORDER BY created_at DESC",
+      "SELECT id, grupo, description, created_at FROM access_passwords ORDER BY grupo NULLS FIRST, created_at DESC",
     );
     res.json({ passwords: result.rows });
   } catch (err) {
@@ -86,10 +121,12 @@ router.get("/passwords", async (req, res) => {
 /**
  * POST /api/access/passwords
  * Creates a new access password (admin only).
- * Body: { adminPassword, newPassword }
+ * Body: { adminPassword, newPassword, grupo, description? }
+ *
+ * El grupo es obligatorio: es lo que la contraseña le asigna al estudiante.
  */
 router.post("/passwords", async (req, res) => {
-  const { adminPassword, newPassword, description } = req.body;
+  const { adminPassword, newPassword, description, grupo } = req.body;
 
   if (!adminPassword || adminPassword !== env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: "No autorizado" });
@@ -97,6 +134,14 @@ router.post("/passwords", async (req, res) => {
 
   if (!newPassword || newPassword.trim().length === 0) {
     return res.status(400).json({ error: "La contraseña no puede estar vacía" });
+  }
+
+  const cleanGrupo = typeof grupo === "string" ? grupo.trim() : "";
+  if (!cleanGrupo) {
+    return res.status(400).json({ error: "Debe indicar el grupo de la contraseña" });
+  }
+  if (cleanGrupo.length > MAX_GRUPO) {
+    return res.status(400).json({ error: `El grupo no puede exceder ${MAX_GRUPO} caracteres` });
   }
 
   const cleanDescription = typeof description === "string" ? description.trim() : "";
@@ -117,11 +162,11 @@ router.post("/passwords", async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO access_passwords (password_hash, description) VALUES ($1, $2) RETURNING id, description, created_at",
-      [hash, cleanDescription || null],
+      "INSERT INTO access_passwords (password_hash, grupo, description) VALUES ($1, $2, $3) RETURNING id, grupo, description, created_at",
+      [hash, cleanGrupo, cleanDescription || null],
     );
 
-    logger.info("Access password created", { id: result.rows[0].id });
+    logger.info("Access password created", { id: result.rows[0].id, grupo: cleanGrupo });
     res.status(201).json({ password: result.rows[0] });
   } catch (err) {
     logger.error("Create access password failed", { error: err.message });

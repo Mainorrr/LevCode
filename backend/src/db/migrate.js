@@ -124,8 +124,38 @@ async function migrate() {
         ADD COLUMN IF NOT EXISTS description VARCHAR(200);
     `);
 
-    // Tabla legacy `users` — la lista de estudiantes ahora vive en memoria (Users.csv)
+    // Grupo de cada contraseña: el estudiante no elige su grupo, lo determina la
+    // contraseña con la que entra. Las contraseñas anteriores quedan con NULL y
+    // no sirven para ingresar hasta que se recreen con grupo.
+    await pool.query(`
+      ALTER TABLE access_passwords
+        ADD COLUMN IF NOT EXISTS grupo VARCHAR(255);
+    `);
+
+    // Tabla legacy `users` (lista precargada de carnets). Ya no hay lista: los
+    // estudiantes se registran al ingresar, en la tabla `students`.
     await pool.query(`DROP TABLE IF EXISTS users CASCADE;`);
+
+    // Registro de estudiantes: el carnet queda ligado al grupo de la contraseña
+    // con la que entró por primera vez. Sin esto, un mismo carnet podría entrar
+    // con contraseñas de dos grupos y repartir sus datos entre ambos.
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS students (
+        carnet         VARCHAR(6)   PRIMARY KEY,
+        grupo          VARCHAR(255) NOT NULL,
+        registered_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+      );
+    `);
+    // Backfill: quien ya tiene sesiones queda registrado en el grupo de su
+    // primera sesión, para que el registro no contradiga los datos existentes.
+    await pool.query(`
+      INSERT INTO students (carnet, grupo, registered_at)
+      SELECT DISTINCT ON (carnet) carnet, grupo, created_at
+        FROM exercise_sessions
+       WHERE carnet <> 'X00000'
+       ORDER BY carnet, created_at
+      ON CONFLICT (carnet) DO NOTHING;
+    `);
 
     // Tabla de respuestas del cuestionario SUS (System Usability Scale)
     await pool.query(`

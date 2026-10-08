@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { groups } from '../../courses'
 import './AdminPanel.css'
 
 function ExportButton({ onClick, label, info }) {
@@ -29,6 +30,7 @@ export default function AdminPanel({ themeToggle }) {
   const [accessPasswords, setAccessPasswords] = useState([])
   const [newAccessPw, setNewAccessPw] = useState('')
   const [newAccessPwDesc, setNewAccessPwDesc] = useState('')
+  const [newAccessPwGrupo, setNewAccessPwGrupo] = useState('')
   const [accessPwError, setAccessPwError] = useState('')
 
   const fetchSessions = async () => {
@@ -204,6 +206,11 @@ export default function AdminPanel({ themeToggle }) {
     e.preventDefault()
     setAccessPwError('')
     if (!newAccessPw.trim()) return
+    // La contraseña le asigna el grupo al estudiante: sin grupo no sirve.
+    if (!newAccessPwGrupo) {
+      setAccessPwError('Seleccione el grupo de la contraseña')
+      return
+    }
     try {
       const res = await fetch('/api/access/passwords', {
         method: 'POST',
@@ -211,6 +218,7 @@ export default function AdminPanel({ themeToggle }) {
         body: JSON.stringify({
           adminPassword: password,
           newPassword: newAccessPw.trim(),
+          grupo: newAccessPwGrupo,
           description: newAccessPwDesc.trim(),
         }),
       })
@@ -411,6 +419,16 @@ export default function AdminPanel({ themeToggle }) {
             onChange={(e) => setNewAccessPw(e.target.value)}
             className="admin-filter-input"
           />
+          <select
+            value={newAccessPwGrupo}
+            onChange={(e) => setNewAccessPwGrupo(e.target.value)}
+            className="admin-filter-input"
+          >
+            <option value="">Grupo...</option>
+            {groups.map((g) => (
+              <option key={g} value={g}>Grupo {g}</option>
+            ))}
+          </select>
           <input
             type="text"
             placeholder="Descripción (opcional)"
@@ -427,6 +445,7 @@ export default function AdminPanel({ themeToggle }) {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Grupo</th>
                 <th>Descripción</th>
                 <th>Fecha de creación</th>
                 <th>Acción</th>
@@ -436,6 +455,7 @@ export default function AdminPanel({ themeToggle }) {
               {accessPasswords.map((pw) => (
                 <tr key={pw.id}>
                   <td>{pw.id}</td>
+                  <td>{pw.grupo || <span className="admin-error">Sin grupo: no sirve para ingresar</span>}</td>
                   <td>{pw.description || <span className="admin-empty-cell">—</span>}</td>
                   <td>{formatDate(pw.created_at)}</td>
                   <td>
@@ -450,7 +470,7 @@ export default function AdminPanel({ themeToggle }) {
               ))}
               {accessPasswords.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="admin-empty">No hay contraseñas configuradas</td>
+                  <td colSpan="5" className="admin-empty">No hay contraseñas configuradas</td>
                 </tr>
               )}
             </tbody>

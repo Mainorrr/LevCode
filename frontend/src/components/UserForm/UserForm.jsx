@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { groups } from '../../courses'
 import './UserForm.css'
 
+/**
+ * Ingreso del estudiante: carnet y contraseña. El grupo NO se elige: lo
+ * determina la contraseña, y el backend lo devuelve al validar. No hay lista
+ * precargada de carnets; el primer ingreso registra al estudiante.
+ */
 export default function UserForm({ onSubmit }) {
   const [carnet, setCarnet] = useState('')
-  const [selectedGrupo, setSelectedGrupo] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -23,33 +26,31 @@ export default function UserForm({ onSubmit }) {
       setError('Formato de carnet inválido. Debe tener exactamente 6 caracteres alfanuméricos.')
       return
     }
-    if (!selectedGrupo) {
-      setError('Debes seleccionar un grupo.')
-      return
-    }
     if (!password) {
       setError('La contraseña es requerida.')
       return
     }
 
     setSubmitting(true)
+    let grupo
     try {
       const res = await fetch('/api/access/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, carnet: upperCarnet, grupo: selectedGrupo }),
+        body: JSON.stringify({ password, carnet: upperCarnet }),
       })
-      if (!res.ok) {
+      const data = await res.json().catch(() => null)
+      if (!data) {
         setError('Error del servidor. Intenta de nuevo.')
         setSubmitting(false)
         return
       }
-      const data = await res.json()
       if (!data.valid) {
         setError(data.error || 'Contraseña incorrecta')
         setSubmitting(false)
         return
       }
+      grupo = data.grupo
     } catch {
       setError('Error de conexión con el servidor')
       setSubmitting(false)
@@ -59,7 +60,7 @@ export default function UserForm({ onSubmit }) {
 
     onSubmit({
       carnet: upperCarnet,
-      grupo: selectedGrupo,
+      grupo,
       accessPassword: password,
     })
   }
@@ -81,21 +82,6 @@ export default function UserForm({ onSubmit }) {
               maxLength={6}
               className="userform-input"
             />
-          </div>
-
-          <div className="userform-field">
-            <label htmlFor="grupo">Grupo</label>
-            <select
-              id="grupo"
-              value={selectedGrupo}
-              onChange={(e) => setSelectedGrupo(e.target.value)}
-              className="userform-input"
-            >
-              <option value="">Selecciona un grupo</option>
-              {groups.map((g) => (
-                <option key={g} value={g}>Grupo {g}</option>
-              ))}
-            </select>
           </div>
 
           <div className="userform-field">
