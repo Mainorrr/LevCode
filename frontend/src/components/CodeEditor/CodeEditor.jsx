@@ -14,12 +14,15 @@ import './CodeEditor.css'
 
 const privilegedTx = Annotation.define()
 
-// Modo de CodeMirror y etiqueta por lenguaje. Se cae a Python si llega un id
-// desconocido: sin resaltado el editor sigue siendo usable.
+// Modo de CodeMirror, etiqueta y ancho de indentación por lenguaje. Python va
+// a 4 espacios (PEP 8); C++ y Java a 2, igual que su código inicial: si el Tab
+// metiera otro ancho, el código del estudiante quedaría desalineado con el
+// andamiaje. Se cae a Python si llega un id desconocido: sin resaltado el
+// editor sigue siendo usable.
 const LANGUAGE_MODES = {
-  python: { mode: python, label: 'Código Python' },
-  cpp:    { mode: cpp,    label: 'Código C++' },
-  java:   { mode: java,   label: 'Código Java' },
+  python: { mode: python, label: 'Código Python', indent: 4 },
+  cpp:    { mode: cpp,    label: 'Código C++',    indent: 2 },
+  java:   { mode: java,   label: 'Código Java',   indent: 2 },
 }
 
 function languageMode(id) {
@@ -190,8 +193,8 @@ export default function CodeEditor({ code, onChange, starterCode, starterCodeTop
         basicSetup,
         keymap.of([indentWithTab]),
         Prec.highest(keymap.of([{ key: 'Enter', run: insertNewlineKeepIndent }])),
-        indentUnit.of('    '),
-        EditorState.tabSize.of(4),
+        indentUnit.of(' '.repeat(languageMode(language).indent)),
+        EditorState.tabSize.of(languageMode(language).indent),
         languageMode(language).mode(),
         themeCompartment.current.of(isDark ? githubDark : githubLight),
         EditorView.theme({
