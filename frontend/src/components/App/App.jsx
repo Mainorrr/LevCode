@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Play, HelpCircle, Trash2, Home, LogOut, ArrowLeft, ArrowRight } from 'lucide-react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import HelpModal from '../HelpModal/HelpModal'
+import HelpModal, { helpTitle } from '../HelpModal/HelpModal'
 import ResultDisplay from '../ResultDisplay/ResultDisplay'
 import UserForm from '../UserForm/UserForm'
 import ExerciseMenu from '../ExerciseMenu/ExerciseMenu'
@@ -673,7 +673,7 @@ export default function App() {
   )
 
   const helpButton = !isAdmin && view !== 'form' && (
-    <button className="help-toggle" onClick={() => setHelpOpen(true)} title="Ayuda de Python">
+    <button className="help-toggle" onClick={() => setHelpOpen(true)} title={helpTitle(language)}>
       <HelpCircle size={18} />
     </button>
   )
@@ -749,7 +749,7 @@ export default function App() {
         </div>
       </header>
       <div className="app-container">
-      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
+      {helpOpen && <HelpModal language={language} onClose={() => setHelpOpen(false)} />}
       {logoutConfirmOpen && (
         <div className="confirm-overlay" onClick={() => setLogoutConfirmOpen(false)}>
           <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
