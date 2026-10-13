@@ -292,7 +292,7 @@ export default function AdminPanel({ themeToggle }) {
         <ExportButton
           onClick={exportAttemptsCSV}
           label="Exportar intentos"
-          info="Descarga (en JSON) la tabla attempt_code: el código Python enviado en cada intento. Usa JSON porque el código tiene saltos de línea."
+          info="Descarga (en JSON) la tabla attempt_code: el código enviado en cada intento, con su lenguaje. Usa JSON porque el código tiene saltos de línea."
         />
         <ExportButton
           onClick={exportEventsLog}
@@ -302,7 +302,7 @@ export default function AdminPanel({ themeToggle }) {
         <ExportButton
           onClick={exportSubmissionsLog}
           label="Exportar log de envíos"
-          info="Descarga submissions_log.csv del servidor: cada ejecución de código Python con tiempo de ejecución."
+          info="Descarga submissions_log.csv del servidor: cada ejecución de código con su lenguaje y tiempo de ejecución."
         />
         <ExportButton
           onClick={exportLoginsLog}

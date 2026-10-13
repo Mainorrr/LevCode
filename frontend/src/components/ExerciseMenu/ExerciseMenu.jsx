@@ -21,7 +21,7 @@ export default function ExerciseMenu({ exercises, onSelect, userInfo, solvedExer
       </div>
 
       <p className="menu-instructions">
-        Cuando se le indique que puede comenzar, seleccione uno de los ejercicios de la lista. En la esquina superior derecha encontrará los botones para alternar entre modo claro y oscuro, y para acceder a la guía del lenguaje Python.
+        Cuando se le indique que puede comenzar, seleccione uno de los ejercicios de la lista. En la esquina superior derecha encontrará los botones para alternar entre modo claro y oscuro, y para acceder a la guía del lenguaje que esté usando.
       </p>
 
       <div className="menu-grid">
