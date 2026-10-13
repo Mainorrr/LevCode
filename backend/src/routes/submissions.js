@@ -48,9 +48,10 @@ router.post("/", async (req, res) => {
       executionTime: result.executionTime,
     });
 
-    // Return result
-    res.json({
+    // Cola llena: 503, para que el frontend no lo cuente como intento del estudiante.
+    res.status(result.busy ? 503 : 200).json({
       success: result.success,
+      busy: Boolean(result.busy),
       output: result.output,
       error: result.error,
       executionTime: result.executionTime,
@@ -183,8 +184,11 @@ router.post("/batch", async (req, res) => {
       executionTime: result.executionTime,
     });
 
-    res.json({
+    // Cola llena: 503, no 200. Un "servidor ocupado" no es un error del código
+    // del estudiante, y el frontend no debe contarlo como intento fallido.
+    res.status(result.busy ? 503 : 200).json({
       success: result.success,
+      busy: Boolean(result.busy),
       results: result.results,
       error: result.error,
       executionTime: result.executionTime,
@@ -208,7 +212,7 @@ router.post("/batch", async (req, res) => {
       had_runtime_error: Boolean(result.error || firstStderr),
       output: firstOutput,
       stderr: result.error || firstStderr,
-      details: { endpoint: "batch" },
+      details: { endpoint: "batch", busy: Boolean(result.busy) },
     });
   } catch (error) {
     logger.error("Batch submission endpoint error", { error: error.message });

@@ -362,6 +362,18 @@ vez (`MAX_CONCURRENT_RUNS`, default 4). El tope cuenta submissions completas
 espera turno; si la espera pasa de `QUEUE_TIMEOUT` (30s) se responde que el
 servidor esta ocupado.
 
+El "ocupado" sale con **HTTP 503** y `busy: true`, no como un error del codigo.
+El frontend NO registra como intento ni activa el cooldown ante un 503, 500,
+502 (proxy caido, sin JSON) o 401: son fallas del servidor, y contarlas
+inflaria el conteo de prueba y error y castigaria de mas a `try_timer`. Un 400
+(patron bloqueado, codigo vacio) si cuenta: es el codigo del estudiante.
+
+Capacidad medida en Railway (Hobby, `MAX_CONCURRENT_RUNS=4`): Java es el cuello
+de botella, ~1.2 envios/s, porque cada envio arranca 11 JVM (javac + una por
+caso). Un grupo de 20 todo en Java: p50 1.3s, sin fallos. 80 a la vez todo en
+Java: p50 26s y 5% de "ocupado". Subir `MAX_CONCURRENT_RUNS` no ayuda: la CPU
+ya esta saturada por los hilos de las JVM.
+
 ---
 
 ## Reglas de Desarrollo

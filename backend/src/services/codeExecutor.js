@@ -25,7 +25,7 @@ class CodeExecutor {
       result = await queue.run(() => codeRunner.execute(code, input, language));
     } catch (err) {
       if (err instanceof QueueTimeoutError) {
-        return { success: false, output: "", error: err.message, executionTime: Date.now() - startTime };
+        return { success: false, busy: true, output: "", error: err.message, executionTime: Date.now() - startTime };
       }
       throw err;
     }
@@ -56,7 +56,7 @@ class CodeExecutor {
       result = await queue.run(() => codeRunner.executeBatch(code, inputs, language));
     } catch (err) {
       if (err instanceof QueueTimeoutError) {
-        return { success: false, results: [], error: err.message, executionTime: Date.now() - startTime };
+        return { success: false, busy: true, results: [], error: err.message, executionTime: Date.now() - startTime };
       }
       throw err;
     }

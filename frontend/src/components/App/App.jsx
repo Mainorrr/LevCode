@@ -577,9 +577,23 @@ export default function App() {
         }),
       })
 
-      const data = await response.json()
+      const data = await response.json().catch(() => null)
 
-      // Error global (código bloqueado, error de Docker, etc.)
+      // Fallos del SERVIDOR, no del código: cola llena (503), error interno
+      // (500), proxy caído (502, sin JSON) o contraseña revocada (401). No se
+      // registran como intento ni activan el cooldown: contarlos inflaría el
+      // conteo de prueba y error que mide el estudio, y castigaría de más a
+      // quien tiene try_timer.
+      if (!data || response.status === 401 || response.status >= 500) {
+        const motivo = data?.busy
+          ? data.error
+          : 'No se pudo ejecutar por un problema del servidor. Intenta de nuevo en unos segundos.'
+        setCompilationError(`${motivo} Este envío no cuenta como intento.`)
+        setLoading(false)
+        return
+      }
+
+      // Error global por el código (patrón bloqueado, código vacío, etc.)
       if (!data.success) {
         setCompilationError(data.error)
         recordSession(false)
