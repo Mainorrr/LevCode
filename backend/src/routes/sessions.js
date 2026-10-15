@@ -3,8 +3,7 @@ const router = express.Router();
 const pool = require("../config/db");
 const logger = require("../utils/logger");
 const csvLogger = require("../utils/csvLogger");
-const validators = require("../utils/validators");
-const { DEFAULT_LANGUAGE } = require("../services/languages");
+const { DEFAULT_LANGUAGE, getLanguage } = require("../services/languages");
 
 // Carnet reservado para hacer pruebas — único cuyos datos pueden borrarse por API.
 const TEST_CARNET = "X00000";
@@ -73,9 +72,12 @@ router.post("/", async (req, res) => {
     });
   }
 
-  const languageValidation = validators.validateLanguage(language);
-  if (!languageValidation.valid) {
-    return res.status(400).json({ success: false, error: languageValidation.error });
+  // Basta con que sea un lenguaje conocido: aquí solo se registra (es covariable
+  // del análisis), no se ejecuta nada. Exigir que esté habilitado hacía que, con
+  // ENABLED_LANGUAGES mal configurado, abrir un ejercicio fallara y el
+  // estudiante rebotara al menú.
+  if (!getLanguage(language)) {
+    return res.status(400).json({ success: false, error: `Lenguaje desconocido: ${language}` });
   }
 
   try {

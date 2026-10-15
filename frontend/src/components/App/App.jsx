@@ -509,6 +509,16 @@ export default function App() {
       setInProgressExercises((prev) => new Set(prev).add(exercise.config.id))
     }
 
+    // Si no se pudo abrir la sesión, volver al menú DICIÉNDOLO: antes rebotaba
+    // en silencio y el ejercicio parecía abrirse y cerrarse solo.
+    // markStarted() ya lo marcó "En progreso" de forma optimista: se vuelve a
+    // pedir el estado real para no mostrar en progreso algo que no se abrió.
+    const abrirFallo = () => {
+      showToast('No se pudo abrir el ejercicio. Intenta de nuevo.')
+      goTo('menu')
+      fetchSessionStatus(userInfo.carnet, accessPassword)
+    }
+
     const applyTreatments = (data) => {
       setAttempts(data.attempts)
       setShowTries(!!data.showTries)
@@ -522,16 +532,18 @@ export default function App() {
       fetch('/api/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
+        // Con el lenguaje: sin él, el backend asumía python y lo registraba así.
         body: JSON.stringify({
           carnet: userInfo.carnet,
           grupo: userInfo.grupo,
           problemId: exercise.config.id,
           solved: false,
+          language: lang,
         }),
       })
         .then((r) => r.ok ? r.json() : Promise.reject())
         .then((data) => { if (data.success) applyTreatments(data) })
-        .catch(() => { goTo('menu') })
+        .catch(abrirFallo)
     } else {
       fetch(`/api/sessions/${userInfo.carnet}/${exercise.config.id}`, {
         headers: { 'X-Access-Password': accessPassword },
@@ -546,7 +558,7 @@ export default function App() {
             }
           }
         })
-        .catch(() => { goTo('menu') })
+        .catch(abrirFallo)
     }
   }
 
@@ -600,7 +612,7 @@ export default function App() {
       // conteo de prueba y error que mide el estudio, y castigaría de más a
       // quien tiene try_timer.
       if (!data || response.status === 401 || response.status >= 500) {
-        const motivo = data?.busy
+        const motivo = response.status === 503 && data?.error
           ? data.error
           : 'No se pudo ejecutar por un problema del servidor. Intenta de nuevo en unos segundos.'
         setCompilationError(`${motivo} Este envío no cuenta como intento.`)
