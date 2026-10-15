@@ -140,15 +140,19 @@ el tratamiento activo se ven bloqueados; sin el, se pueden desplegar.
 Cada ejercicio tiene ~20 casos: los ejemplos, casos chicos, bordes y al final
 casos grandes. Reglas para los grandes:
 - El enunciado declara los limites de la entrada ("Puede suponer que n esta
-  entre 1 y 5000..."), elegidos para que todo quepa en `int`. Sin limites
-  escritos, el estudiante no sabe que tipo usar y falla por desbordamiento.
+  entre 1 y 5000..."). **Regla: una solucion razonable con `int` nunca
+  desborda, y en los ejercicios con decimales alcanza con `float`.** Por eso el
+  triangulo llega a 7*10^8 (a + b + c = 2.1*10^9 cabe en int) y la compra a
+  cantidad 100 y precio 100.00 (float tiene ~7 digitos). Un caso que solo falla
+  por el tipo agrega ruido: con hide_tests el estudiante ni siquiera ve cual
+  fallo, y prueba a ciegas por un detalle de tipos, no de razonamiento.
 - Topes del backend: 100 000 caracteres por caso y el envio completo bajo 1 MB
   (`express.json`). Los casos viven en el bundle del frontend, que crece.
 - En pantalla, entradas y salidas largas se recortan (20 lineas / 1500
   caracteres) con una nota del tamano total (`ResultDisplay.jsx`).
 - En la compra no hay empates de redondeo (`centavos * 13 % 100 != 50`): asi
-  dan lo mismo IVA redondeado antes o despues, `* 1.13` o centavos enteros.
-  Usar `float` en vez de `double` falla los 3 casos grandes, a proposito.
+  dan lo mismo IVA redondeado antes o despues, `* 1.13`, centavos en int o
+  float. Verificado con 11 variantes (5 de ellas solo con float).
 
 > Las salidas esperadas deben ser **iguales en los tres lenguajes**: solo ASCII,
 > sin division ni modulo de negativos (Python redondea hacia abajo, C++ y Java

@@ -56,27 +56,27 @@
     "expectedOutput": "NO ES TRIANGULO"
   },
   {
-    "input": "1000000000\n1000000000\n1000000000",
+    "input": "700000000\n700000000\n700000000",
     "expectedOutput": "EQUILATERO"
   },
   {
-    "input": "1000000000\n1000000000\n1",
+    "input": "700000000\n700000000\n1",
     "expectedOutput": "ISOSCELES"
   },
   {
-    "input": "1\n1000000000\n1000000000",
+    "input": "1\n700000000\n700000000",
     "expectedOutput": "ISOSCELES"
   },
   {
-    "input": "500000000\n500000000\n1000000000",
+    "input": "350000000\n350000000\n700000000",
     "expectedOutput": "NO ES TRIANGULO"
   },
   {
-    "input": "999999999\n1000000000\n1",
+    "input": "699999999\n700000000\n1",
     "expectedOutput": "NO ES TRIANGULO"
   },
   {
-    "input": "999999998\n999999999\n1000000000",
+    "input": "699999998\n699999999\n700000000",
     "expectedOutput": "ESCALENO"
   }
 ]

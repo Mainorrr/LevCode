@@ -24,10 +24,6 @@
     "expectedOutput": "SUBTOTAL: 101.00\nIVA: 13.13\nTOTAL: 114.13"
   },
   {
-    "input": "5\n999.99",
-    "expectedOutput": "SUBTOTAL: 4999.95\nIVA: 649.99\nTOTAL: 5649.94"
-  },
-  {
     "input": "12\n8.33",
     "expectedOutput": "SUBTOTAL: 99.96\nIVA: 12.99\nTOTAL: 112.95"
   },
@@ -60,23 +56,23 @@
     "expectedOutput": "SUBTOTAL: 10.00\nIVA: 1.30\nTOTAL: 11.30"
   },
   {
-    "input": "1\n10000.00",
+    "input": "100\n0.01",
+    "expectedOutput": "SUBTOTAL: 1.00\nIVA: 0.13\nTOTAL: 1.13"
+  },
+  {
+    "input": "37\n99.99",
+    "expectedOutput": "SUBTOTAL: 3699.63\nIVA: 480.95\nTOTAL: 4180.58"
+  },
+  {
+    "input": "88\n77.77",
+    "expectedOutput": "SUBTOTAL: 6843.76\nIVA: 889.69\nTOTAL: 7733.45"
+  },
+  {
+    "input": "99\n99.99",
+    "expectedOutput": "SUBTOTAL: 9899.01\nIVA: 1286.87\nTOTAL: 11185.88"
+  },
+  {
+    "input": "100\n100.00",
     "expectedOutput": "SUBTOTAL: 10000.00\nIVA: 1300.00\nTOTAL: 11300.00"
-  },
-  {
-    "input": "1000000\n0.01",
-    "expectedOutput": "SUBTOTAL: 10000.00\nIVA: 1300.00\nTOTAL: 11300.00"
-  },
-  {
-    "input": "123456\n7891.23",
-    "expectedOutput": "SUBTOTAL: 974219690.88\nIVA: 126648559.81\nTOTAL: 1100868250.69"
-  },
-  {
-    "input": "999999\n9999.99",
-    "expectedOutput": "SUBTOTAL: 9999980000.01\nIVA: 1299997400.00\nTOTAL: 11299977400.01"
-  },
-  {
-    "input": "1000000\n10000.00",
-    "expectedOutput": "SUBTOTAL: 10000000000.00\nIVA: 1300000000.00\nTOTAL: 11300000000.00"
   }
 ]
