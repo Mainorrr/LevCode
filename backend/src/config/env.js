@@ -39,9 +39,13 @@ module.exports = {
 
   // Lenguajes expuestos a los estudiantes. C++ y Java quedan fuera hasta que
   // existan sus límites de proceso y listas de patrones bloqueados.
+  // Se normaliza lo que es fácil escribir mal en el panel de Railway: mayúsculas,
+  // comillas y "c++" en vez de "cpp". Con el valor literal "C++" el backend no
+  // reconocía ningún lenguaje y rechazaba todos los envíos.
   ENABLED_LANGUAGES: (process.env.ENABLED_LANGUAGES || "python")
     .split(",")
-    .map((s) => s.trim())
+    .map((s) => s.trim().replace(/^["']|["']$/g, "").trim().toLowerCase())
+    .map((s) => (s === "c++" ? "cpp" : s))
     .filter(Boolean),
 
   // Database

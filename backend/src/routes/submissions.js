@@ -115,6 +115,26 @@ router.post("/batch", async (req, res) => {
       return;
     }
 
+    // Un lenguaje no habilitado es un problema de configuración del servidor,
+    // no del código del estudiante: 503, para que el frontend no lo cuente como
+    // intento. Con 400 un ENABLED_LANGUAGES mal escrito convertía cada envío en
+    // un intento fallido y le aplicaba el cooldown a quien tiene try_timer.
+    const languageValidation = validators.validateLanguage(language);
+    if (!languageValidation.valid) {
+      res.status(503).json({ success: false, error: languageValidation.error });
+      csvLogger.logSubmission("CODE_REJECTED", req, res, {
+        carnet: userId,
+        problem_id: problemId,
+        language,
+        success: false,
+        code,
+        test_cases_total: inputs.length,
+        error_message: languageValidation.error,
+        details: { endpoint: "batch", reason: "language_not_enabled" },
+      });
+      return;
+    }
+
     // Validate code security
     const validation = validators.validateSubmissionRequest(req.body);
     if (!validation.valid) {
