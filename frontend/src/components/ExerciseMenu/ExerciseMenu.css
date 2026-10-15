@@ -138,3 +138,75 @@
 .menu-card-btn-progress:hover {
   background: var(--danger-hover);
 }
+
+/* ── Cuestionario final ── */
+.menu-sus {
+  margin-top: 32px;
+  padding: 28px 32px;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.menu-sus-title {
+  font-size: 1.5em;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+
+.menu-sus-text {
+  font-size: 1em;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 640px;
+}
+
+.menu-sus-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  padding: 16px 36px;
+  font-size: 1.2em;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.menu-sus-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Con todos los ejercicios resueltos ya no hay nada más que hacer: el bloque
+   llama la atención igual que el botón de volver en un ejercicio resuelto. */
+.menu-sus-ready {
+  border-color: var(--success);
+  animation: menu-sus-pulse 2s ease-in-out infinite;
+}
+
+.menu-sus-ready .menu-sus-title { color: var(--success); }
+.menu-sus-ready .menu-sus-btn { background: var(--success); }
+.menu-sus-ready .menu-sus-btn:hover { background: var(--success-hover); }
+
+@keyframes menu-sus-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.6); }
+  50% { box-shadow: 0 0 18px 10px rgba(126, 231, 135, 0); }
+}
+
+.menu-sus-done {
+  border-color: var(--border);
+}
+
+.menu-sus-done .menu-sus-title { color: var(--success); }
+
+@media (max-width: 700px) {
+  .menu-sus { padding: 20px; }
+  .menu-sus-btn { width: 100%; }
+}

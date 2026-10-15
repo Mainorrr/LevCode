@@ -867,6 +867,8 @@ export default function App() {
             userInfo={userInfo}
             solvedExercises={solvedExercises}
             inProgressExercises={inProgressExercises}
+            susSubmitted={susStatus.submitted}
+            onOpenSus={() => setSusConfirmOpen(true)}
           />
         </div>
       )}
