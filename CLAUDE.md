@@ -137,8 +137,8 @@ puede desplegar todo estudiante (`ALWAYS_VISIBLE_CASES` en App.jsx): no revelan
 nada que no este ya en el enunciado. Del 3 en adelante decide `hide_tests`: con
 el tratamiento activo se ven bloqueados; sin el, se pueden desplegar.
 
-Cada ejercicio tiene ~20 casos: los ejemplos, casos chicos, bordes y al final
-casos grandes. Reglas para los grandes:
+Todos los ejercicios tienen **exactamente 20 casos** (la misma cantidad en todos):
+los ejemplos, casos chicos, bordes y al final casos grandes. Reglas para los grandes:
 - El enunciado declara los limites de la entrada ("Puede suponer que n esta
   entre 1 y 5000..."). **Regla: una solucion razonable con `int` nunca
   desborda, y en los ejercicios con decimales alcanza con `float`.** Por eso el

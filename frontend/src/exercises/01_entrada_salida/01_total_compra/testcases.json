@@ -56,6 +56,10 @@
     "expectedOutput": "SUBTOTAL: 10.00\nIVA: 1.30\nTOTAL: 11.30"
   },
   {
+    "input": "10\n0.10",
+    "expectedOutput": "SUBTOTAL: 1.00\nIVA: 0.13\nTOTAL: 1.13"
+  },
+  {
     "input": "100\n0.01",
     "expectedOutput": "SUBTOTAL: 1.00\nIVA: 0.13\nTOTAL: 1.13"
   },

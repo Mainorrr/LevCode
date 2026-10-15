@@ -40,6 +40,14 @@
     "expectedOutput": "NO"
   },
   {
+    "input": "2\n1 2\n2 1",
+    "expectedOutput": "NO"
+  },
+  {
+    "input": "1\n10000",
+    "expectedOutput": "SI"
+  },
+  {
     "input": "3\n10000 10000 10000\n10000 10000 10000\n10000 10000 10000",
     "expectedOutput": "SI"
   },
