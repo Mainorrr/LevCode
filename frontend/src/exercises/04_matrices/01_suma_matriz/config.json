@@ -1,7 +1,7 @@
 {
   "id": "suma-matriz",
   "title": "Suma de elementos en una matriz",
-  "description": "Lea un entero n y luego una matriz de n x n enteros.\n\nImprima SI cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima NO en cualquier otro caso.\n\nEjemplo de entrada 1:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida 1:\n```\nNO\n```\n\nEn el ejemplo de entrada 1 las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9.\n\nCada fila de la matriz viene en una línea, con sus valores separados por espacios. Puede suponer que n es al menos 1.",
+  "description": "Lea un entero n y luego una matriz de n x n enteros.\n\nImprima SI cuando todas las filas, todas las columnas y las dos diagonales suman lo mismo. Imprima NO en cualquier otro caso.\n\nEjemplo de entrada 1:\n```\n3\n1 2 3\n2 3 1\n3 1 2\n```\n\nEjemplo de salida 1:\n```\nNO\n```\n\nEjemplo de entrada 2:\n```\n3\n2 7 6\n9 5 1\n4 3 8\n```\n\nEjemplo de salida 2:\n```\nSI\n```\n\nEn el ejemplo de entrada 1 las filas y las columnas suman 6, pero la diagonal que va de arriba a la derecha hacia abajo a la izquierda es 3, 3, 3 y suma 9. En el ejemplo de entrada 2 todas las filas, las columnas y las dos diagonales suman 15.\n\nCada fila de la matriz viene en una línea, con sus valores separados por espacios. Puede suponer que n siempre es al menos 1 y a lo sumo 50, y que cada valor de la matriz siempre es al menos 1 y a lo sumo 10000.",
   "languages": {
     "python": {
       "initialEditable": "# Tu código comienza aquí.",

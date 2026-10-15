@@ -1,7 +1,7 @@
 {
   "id": "total-compra",
   "title": "Total de una compra",
-  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres líneas: el subtotal, el IVA del 13% y el total.\n\n- SUBTOTAL = cantidad x precio unitario\n- IVA = SUBTOTAL x 0.13\n- TOTAL = SUBTOTAL + IVA\n\nTodos los montos se imprimen con dos decimales.\n\nEjemplo de entrada 1:\n```\n4\n50.01\n```\n\nEjemplo de salida 1:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nPuede suponer que la cantidad siempre es un entero positivo y que el precio unitario es un número positivo, que puede tener decimales.",
+  "description": "Una tienda necesita el detalle de una compra.\n\nLea la cantidad de productos y el precio unitario, e imprima tres líneas: el subtotal, el IVA del 13% y el total.\n\n- SUBTOTAL = cantidad x precio unitario\n- IVA = SUBTOTAL x 0.13\n- TOTAL = SUBTOTAL + IVA\n\nTodos los montos se imprimen con dos decimales.\n\nEjemplo de entrada 1:\n```\n4\n50.01\n```\n\nEjemplo de salida 1:\n```\nSUBTOTAL: 200.04\nIVA: 26.01\nTOTAL: 226.05\n```\n\nEjemplo de entrada 2:\n```\n1\n100.00\n```\n\nEjemplo de salida 2:\n```\nSUBTOTAL: 100.00\nIVA: 13.00\nTOTAL: 113.00\n```\n\nPuede suponer que la cantidad es un entero entre 1 y 1000000, y que el precio unitario es un número entre 0.01 y 10000, con a lo sumo dos decimales.",
   "languages": {
     "python": {
       "initialEditable": "# Tu código comienza aquí.",

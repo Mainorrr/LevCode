@@ -112,9 +112,14 @@ imprime (`NO ES TRIANGULO`, `SI`) van SIN tilde: la salida es solo ASCII.
 Un ejercicio sin `languages` usa los campos de primer nivel (`starterCode`,
 `initialEditable`) y solo ofrece Python.
 
-Los lenguajes que ve el estudiante salen de las claves de `languages`; que el
-backend los acepte depende ademas de `ENABLED_LANGUAGES`. Si se desincronizan,
-el estudiante ve un lenguaje que el backend rechaza.
+Los lenguajes que ve el estudiante son las claves de `languages` que ademas
+esten en `OFFERED_LANGUAGES` (`frontend/src/components/App/App.jsx`); que el
+backend los acepte depende de `ENABLED_LANGUAGES`. Si se desincronizan, el
+estudiante ve un lenguaje que el backend rechaza.
+
+**En este experimento solo se ofrece C++** (`OFFERED_LANGUAGES = ['cpp']`). Los
+config.json conservan Python y Java para poder volver a ofrecerlos agregandolos
+ahi y en `ENABLED_LANGUAGES`. Con un solo lenguaje el selector no se muestra.
 
 El borrador en localStorage es **por lenguaje**; el lenguaje elegido se recuerda
 por estudiante, no por ejercicio.
@@ -127,9 +132,23 @@ por estudiante, no por ejercicio.
 ]
 ```
 
-La visibilidad de los casos es todo o nada y la decide el tratamiento
-`hide_tests`, no el caso: con el tratamiento activo el estudiante ve todos los
-casos bloqueados, y sin el tratamiento puede desplegarlos todos.
+**Los casos 1 y 2 son, en orden, los ejemplos 1 y 2 del enunciado**, y los
+puede desplegar todo estudiante (`ALWAYS_VISIBLE_CASES` en App.jsx): no revelan
+nada que no este ya en el enunciado. Del 3 en adelante decide `hide_tests`: con
+el tratamiento activo se ven bloqueados; sin el, se pueden desplegar.
+
+Cada ejercicio tiene ~20 casos: los ejemplos, casos chicos, bordes y al final
+casos grandes. Reglas para los grandes:
+- El enunciado declara los limites de la entrada ("Puede suponer que n esta
+  entre 1 y 5000..."), elegidos para que todo quepa en `int`. Sin limites
+  escritos, el estudiante no sabe que tipo usar y falla por desbordamiento.
+- Topes del backend: 100 000 caracteres por caso y el envio completo bajo 1 MB
+  (`express.json`). Los casos viven en el bundle del frontend, que crece.
+- En pantalla, entradas y salidas largas se recortan (20 lineas / 1500
+  caracteres) con una nota del tamano total (`ResultDisplay.jsx`).
+- En la compra no hay empates de redondeo (`centavos * 13 % 100 != 50`): asi
+  dan lo mismo IVA redondeado antes o despues, `* 1.13` o centavos enteros.
+  Usar `float` en vez de `double` falla los 3 casos grandes, a proposito.
 
 > Las salidas esperadas deben ser **iguales en los tres lenguajes**: solo ASCII,
 > sin division ni modulo de negativos (Python redondea hacia abajo, C++ y Java
@@ -151,7 +170,7 @@ Cada combinacion estudiante + ejercicio recibe 3 tratamientos booleanos aleatori
 
 | Tratamiento  | Efecto cuando `true` |
 | ------------ | -------------------- |
-| `hide_tests` | Oculta la informacion de los casos de prueba fallidos; usa `showInfoHidden` de testcases.json |
+| `hide_tests` | Bloquea los casos de prueba del 3 en adelante (el 1 y el 2, ejemplos del enunciado, se ven siempre) |
 | `show_tries` | Muestra contador de intentos con escala de color verde (0) a rojo (5+) |
 | `try_timer`  | Cooldown global de 30 segundos entre intentos fallidos (persiste en localStorage) |
 

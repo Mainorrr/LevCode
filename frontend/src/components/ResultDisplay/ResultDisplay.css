@@ -236,6 +236,18 @@
   border: 1px solid var(--border);
 }
 
+.case-value-wrap {
+  min-width: 0;
+}
+
+.case-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75em;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .case-value.expected {
   border-color: var(--border);
   color: var(--text-muted);

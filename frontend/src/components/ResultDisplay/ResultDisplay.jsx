@@ -10,6 +10,35 @@ import './ResultDisplay.css'
  *   - compilationError: string|null - mensaje de error de compilación/ejecución
  *   - loading: boolean
  */
+// Los casos grandes tienen entradas de miles de líneas o decenas de miles de
+// caracteres en una sola línea. Mostrarlas completas llena la pantalla y
+// congela el navegador; se muestra el inicio y cuánto hay en total. Aplica
+// también a "Tu salida": el backend permite hasta 10 MB.
+const MAX_LINEAS = 20
+const MAX_CARACTERES = 1500
+
+function recortar(texto) {
+  const lineas = texto.split('\n')
+  let visible = lineas.slice(0, MAX_LINEAS).join('\n')
+  if (visible.length > MAX_CARACTERES) visible = visible.slice(0, MAX_CARACTERES)
+  if (visible.length === texto.length) return { visible: texto, nota: null }
+  const nota = lineas.length > 1
+    ? `Se muestra solo el inicio: ${lineas.length.toLocaleString('es')} líneas en total.`
+    : `Se muestra solo el inicio: ${texto.length.toLocaleString('es')} caracteres en total.`
+  return { visible: visible + '\n…', nota }
+}
+
+function Valor({ texto, className }) {
+  const { visible, nota } = recortar(texto)
+  // Un solo contenedor: la fila es una grilla de dos columnas (etiqueta, valor).
+  return (
+    <div className="case-value-wrap">
+      <pre className={className}>{visible}</pre>
+      {nota && <span className="case-note">{nota}</span>}
+    </div>
+  )
+}
+
 export default function ResultDisplay({ testResults, compilationError, loading }) {
   const [openCases, setOpenCases] = useState({})
 
@@ -115,16 +144,16 @@ export default function ResultDisplay({ testResults, compilationError, loading }
                       {tc.input !== '' && (
                         <div className="case-row">
                           <span className="case-label">Entrada</span>
-                          <pre className="case-value">{tc.input}</pre>
+                          <Valor className="case-value" texto={tc.input} />
                         </div>
                       )}
                       <div className="case-row">
                         <span className="case-label">Esperado</span>
-                        <pre className="case-value expected">{tc.expectedOutput}</pre>
+                        <Valor className="case-value expected" texto={tc.expectedOutput} />
                       </div>
                       <div className="case-row">
                         <span className="case-label">Tu salida</span>
-                        <pre className="case-value actual">{tc.actualOutput || '(vacío)'}</pre>
+                        <Valor className="case-value actual" texto={tc.actualOutput || '(vacío)'} />
                       </div>
                     </div>
                   )}
