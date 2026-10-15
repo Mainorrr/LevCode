@@ -100,6 +100,17 @@ const DEFAULT_LANGUAGE = 'python'
 
 const LANGUAGE_LABELS = { python: 'Python 3', cpp: 'C++', java: 'Java' }
 
+// Lenguajes que se les ofrecen a los estudiantes. Los config.json conservan
+// Python y Java (andamiaje y notas), pero en este experimento solo se resuelve
+// en C++. Para volver a ofrecerlos: agregarlos aquí Y en ENABLED_LANGUAGES del
+// backend. Con un solo lenguaje el selector no se muestra.
+const OFFERED_LANGUAGES = ['cpp']
+
+// Los casos 1 y 2 son los ejemplos del enunciado: verlos no le revela al
+// estudiante nada que no tenga ya, así que se muestran a todos, también a
+// quien tiene hide_tests. El tratamiento oculta solo los demás.
+const ALWAYS_VISIBLE_CASES = 2
+
 /**
  * Devuelve la configuración del ejercicio para un lenguaje concreto.
  * Si el ejercicio no declara `languages` se usan los campos de primer nivel,
@@ -112,7 +123,8 @@ function configForLanguage(config, language) {
 
 /** Ids de lenguaje que este ejercicio ofrece, en orden estable. */
 function languagesOf(config) {
-  return config.languages ? Object.keys(config.languages) : [DEFAULT_LANGUAGE]
+  const propios = config.languages ? Object.keys(config.languages) : [DEFAULT_LANGUAGE]
+  return propios.filter((id) => OFFERED_LANGUAGES.includes(id))
 }
 
 const ROUTES = {
@@ -173,9 +185,12 @@ export default function App() {
   const [assignedExercises, setAssignedExercises] = useState(new Set())
   // El lenguaje se recuerda entre ejercicios: cambiarlo es una decisión del
   // estudiante sobre cómo trabaja, no algo por ejercicio.
-  const [language, setLanguage] = useState(
-    () => localStorage.getItem('levcode_language') || DEFAULT_LANGUAGE,
-  )
+  // Un lenguaje recordado que ya no se ofrece se descarta: si no, el botón de
+  // ayuda del menú mostraría la guía de ese lenguaje antes de abrir un ejercicio.
+  const [language, setLanguage] = useState(() => {
+    const guardado = localStorage.getItem('levcode_language')
+    return OFFERED_LANGUAGES.includes(guardado) ? guardado : OFFERED_LANGUAGES[0]
+  })
   const [attempts, setAttempts] = useState(0)
   const [showTries, setShowTries] = useState(false)
   const [hideTests, setHideTests] = useState(false)
@@ -621,7 +636,7 @@ export default function App() {
           actualOutput: r.output ?? '',
           passed: r.output?.trim() === tc.expectedOutput.trim(),
           executionTime: Math.round(data.executionTime / testcases.length),
-          showInfo: !hideTests,
+          showInfo: i < ALWAYS_VISIBLE_CASES || !hideTests,
         }
       })
 
